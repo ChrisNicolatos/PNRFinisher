@@ -13,9 +13,26 @@
     <MyType>WindowsForms</MyType>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>C:\Users\Chris.Nicolatos\Documents\Click-Once Applications\PNR Finisher ATH\</PublishUrl>
+    <Install>false</Install>
+    <InstallFrom>Unc</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <InstallUrl>\\gr-ath-pc063\pnr finisher ath\</InstallUrl>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>3.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <DefineDebug>true</DefineDebug>
@@ -23,6 +40,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>PNRFinisher.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <CodeAnalysisRuleSet>PNRFinisher.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +51,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>PNRFinisher.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <CodeAnalysisRuleSet>PNRFinisher.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -46,7 +65,28 @@
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>712EE5F0BA597FAEDCEEF0CD742219169F86BC1C</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>PNRFinisher_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="itextsharp">
+      <HintPath>..\..\..\..\Visual Studio 2012\Projects\Amadeus\PNR Finisher\Classes\itextsharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -57,6 +97,12 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="Travelport.Smartpoint">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Travelport\Smartpoint\Travelport.Smartpoint.dll</HintPath>
+    </Reference>
+    <Reference Include="Travelport.TravelData">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Travelport\Smartpoint\Travelport.TravelData.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -72,13 +118,189 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="frmPNR.vb">
+    <Compile Include="AirlinePointsCollection.vb" />
+    <Compile Include="Classes\Airlines.vb" />
+    <Compile Include="Classes\Airport.vb" />
+    <Compile Include="Classes\AlertsCollection.vb" />
+    <Compile Include="Classes\AlertsItem.vb" />
+    <Compile Include="Classes\ApisPaxItem.vb" />
+    <Compile Include="Classes\AirlineNotesCollection.vb" />
+    <Compile Include="Classes\AirlineNotesItem.vb" />
+    <Compile Include="Classes\ApisPaxCollection.vb" />
+    <Compile Include="Classes\AveragePriceCollection.vb" />
+    <Compile Include="Classes\AveragePriceItem.vb" />
+    <Compile Include="Classes\ClassOfServiceCollection.vb" />
+    <Compile Include="Classes\ClassOfServiceItem.vb" />
+    <Compile Include="Classes\CloseOffEntriesCollection.vb" />
+    <Compile Include="Classes\CloseOffEntriesItem.vb" />
+    <Compile Include="Classes\ConditionalGDSEntryCollection.vb" />
+    <Compile Include="Classes\ConditionalGDSEntryItem.vb" />
+    <Compile Include="Classes\Config.vb" />
+    <Compile Include="Classes\ConfigGDSReferenceCollection.vb" />
+    <Compile Include="Classes\ConfigGDSReferenceItem.vb" />
+    <Compile Include="Classes\CostCentreLookupCollection.vb" />
+    <Compile Include="Classes\CostCentreLookupItem.vb" />
+    <Compile Include="Classes\CRMCollection.vb" />
+    <Compile Include="Classes\CRMItem.vb" />
+    <Compile Include="Classes\CustomerCollection.vb" />
+    <Compile Include="Classes\CustomerCollectionAll.vb" />
+    <Compile Include="Classes\CustomerGroupCollection.vb" />
+    <Compile Include="Classes\CustomerGroupCollectionAll.vb" />
+    <Compile Include="Classes\CustomerGroupItem.vb" />
+    <Compile Include="Classes\CustomerItem.vb" />
+    <Compile Include="Classes\CustomPropertiesCollection.vb" />
+    <Compile Include="Classes\CustomPropertiesItem.vb" />
+    <Compile Include="Classes\CustomPropertiesXMLValues.vb" />
+    <Compile Include="Classes\DBUser.vb" />
+    <Compile Include="Classes\DICollection.vb" />
+    <Compile Include="Classes\DIItem.vb" />
+    <Compile Include="Classes\DownsellCollection.vb" />
+    <Compile Include="Classes\DownsellItem.vb" />
+    <Compile Include="Classes\EmailCollection.vb" />
+    <Compile Include="Classes\EmailItem.vb" />
+    <Compile Include="Classes\ExportDataGrid.vb" />
+    <Compile Include="Classes\FrequentFlyerCollection.vb" />
+    <Compile Include="Classes\FrequentFlyerItem.vb" />
+    <Compile Include="Classes\GDSAssociationsCollection.vb" />
+    <Compile Include="Classes\GDSExistingCollection.vb" />
+    <Compile Include="Classes\GDSExistingItem.vb" />
+    <Compile Include="Classes\GDSItineraryRemarksCollection.vb" />
+    <Compile Include="Classes\GDSItineraryRemarksItem.vb" />
+    <Compile Include="Classes\GDSNewCollection.vb" />
+    <Compile Include="Classes\GDSNewItem.vb" />
+    <Compile Include="Classes\GDSNumberParser.vb" />
+    <Compile Include="Classes\GDSPaxCollection.vb" />
+    <Compile Include="Classes\GDSPaxItem.vb" />
+    <Compile Include="Classes\GDSReadPNR.vb" />
+    <Compile Include="Classes\GDSReadPNR1G.vb" />
+    <Compile Include="Classes\GDSSegCollection.vb" />
+    <Compile Include="Classes\GDSSegItem.vb" />
+    <Compile Include="Classes\GDSTicketCollection.vb" />
+    <Compile Include="Classes\GDSTicketItem.vb" />
+    <Compile Include="Classes\GDSUser.vb" />
+    <Compile Include="Classes\GreekToLatin.vb" />
+    <Compile Include="Classes\ItnRTBDoc.vb" />
+    <Compile Include="Classes\ItnWebDoc.vb" />
+    <Compile Include="Classes\OpenSegmentCollection.vb" />
+    <Compile Include="Classes\OpenSegmentItem.vb" />
+    <Compile Include="Classes\OptionQueueCollection.vb" />
+    <Compile Include="Classes\OptionQueueItem.vb" />
+    <Compile Include="Classes\OSMAddressCollection.vb" />
+    <Compile Include="Classes\OSMAddressItem.vb" />
+    <Compile Include="Classes\OSMEmailCollection.vb" />
+    <Compile Include="Classes\OSMEmailItem.vb" />
+    <Compile Include="Classes\OSMLog.vb" />
+    <Compile Include="Classes\OSMPaxCollection.vb" />
+    <Compile Include="Classes\OSMPaxItem.vb" />
+    <Compile Include="Classes\OSMVesselCollection.vb" />
+    <Compile Include="Classes\OSMVesselGroupCollection.vb" />
+    <Compile Include="Classes\OSMVesselGroupItem.vb" />
+    <Compile Include="Classes\OSMVesselItem.vb" />
+    <Compile Include="Classes\OSMVessel_VesselGroupCollection.vb" />
+    <Compile Include="Classes\OSMVessel_VesselGroupItem.vb" />
+    <Compile Include="Classes\OSMWebDoc.vb" />
+    <Compile Include="Classes\PhoneNumbersCollection.vb" />
+    <Compile Include="Classes\PhoneNumbersItem.vb" />
+    <Compile Include="Classes\PNRFinisherTransactions.vb" />
+    <Compile Include="Classes\ReferenceCountriesCollection.vb" />
+    <Compile Include="Classes\ReferenceGenderCollection.vb" />
+    <Compile Include="Classes\ReferenceItem.vb" />
+    <Compile Include="Classes\ReferenceSalutationsCollection.vb" />
+    <Compile Include="Classes\RemarksCollection.vb" />
+    <Compile Include="Classes\RemarksItem.vb" />
+    <Compile Include="Classes\SSRCollection.vb" />
+    <Compile Include="Classes\SSRitem.vb" />
+    <Compile Include="Classes\SubDepartmentCollection.vb" />
+    <Compile Include="Classes\SubDepartmentItem.vb" />
+    <Compile Include="Classes\TicketElementItem.vb" />
+    <Compile Include="Classes\TQTItem.vb" />
+    <Compile Include="Classes\UtilitiesDB.vb" />
+    <Compile Include="Classes\VesselCollection.vb" />
+    <Compile Include="Classes\VesselItem.vb" />
+    <Compile Include="Forms\frmAPISPax.Designer.vb">
+      <DependentUpon>frmAPISPax.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmAPISPax.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPNR.Designer.vb">
+    <Compile Include="Forms\frmAPISPaxSelect.Designer.vb">
+      <DependentUpon>frmAPISPaxSelect.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmAPISPaxSelect.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmCostCentre.Designer.vb">
+      <DependentUpon>frmCostCentre.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmCostCentre.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmMain.Designer.vb">
+      <DependentUpon>frmMain.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmMain.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmOSMAddVessel.Designer.vb">
+      <DependentUpon>frmOSMAddVessel.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmOSMAddVessel.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmOSMAgents.Designer.vb">
+      <DependentUpon>frmOSMAgents.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmOSMAgents.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmOSMLoG.Designer.vb">
+      <DependentUpon>frmOSMLoG.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmOSMLoG.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmOSMVessels.Designer.vb">
+      <DependentUpon>frmOSMVessels.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmOSMVessels.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmPNR.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmPNR.Designer.vb">
       <DependentUpon>frmPNR.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\frmPriceOptimiser.Designer.vb">
+      <DependentUpon>frmPriceOptimiser.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmPriceOptimiser.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmShowOptions.Designer.vb">
+      <DependentUpon>frmShowOptions.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmShowOptions.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmUser.Designer.vb">
+      <DependentUpon>frmUser.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmUser.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmVesselForPNR.Designer.vb">
+      <DependentUpon>frmVesselForPNR.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmVesselForPNR.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\mod1A.vb" />
+    <Compile Include="Modules\modAPIS.vb" />
+    <Compile Include="Modules\modEnums.vb" />
+    <Compile Include="Modules\modOSM.vb" />
+    <Compile Include="Modules\modPNR.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -96,6 +318,45 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\frmAPISPax.resx">
+      <DependentUpon>frmAPISPax.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmAPISPaxSelect.resx">
+      <DependentUpon>frmAPISPaxSelect.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmCostCentre.resx">
+      <DependentUpon>frmCostCentre.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmMain.resx">
+      <DependentUpon>frmMain.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmOSMAddVessel.resx">
+      <DependentUpon>frmOSMAddVessel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmOSMAgents.resx">
+      <DependentUpon>frmOSMAgents.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmOSMLoG.resx">
+      <DependentUpon>frmOSMLoG.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmOSMVessels.resx">
+      <DependentUpon>frmOSMVessels.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPNR.resx">
+      <DependentUpon>frmPNR.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPriceOptimiser.resx">
+      <DependentUpon>frmPriceOptimiser.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmShowOptions.resx">
+      <DependentUpon>frmShowOptions.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmUser.resx">
+      <DependentUpon>frmUser.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmVesselForPNR.resx">
+      <DependentUpon>frmVesselForPNR.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
@@ -104,6 +365,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="My Project\app.manifest" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -114,6 +376,70 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="App.config" />
+    <None Include="PNRFinisher.ruleset" />
+    <None Include="PNRFinisher_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Forms\ATPI PNR.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="k1aHostConstantsLib">
+      <Guid>{24103141-FAF1-11D1-BE3C-000083270237}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="k1aHostInterface">
+      <Guid>{A4D24A60-0756-11D2-BE3E-000083270237}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="k1aHostToolKit">
+      <Guid>{F7BB0B4D-0783-11D2-BE3E-000083270237}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="s1aAirlineDate">
+      <Guid>{405DE3B7-0CBA-11D1-80ED-000083262C75}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="s1aPNR">
+      <Guid>{2B999FE1-68B2-11D0-9771-00008322DB13}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
