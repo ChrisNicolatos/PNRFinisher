@@ -4,7 +4,7 @@ Public Class AlertsCollection
     Inherits Collections.Generic.Dictionary(Of String, AlertsItem)
     Private mAlertsLoaded As Boolean = False
     Public Sub Load()
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
         Dim pobjClass As AlertsItem
@@ -16,17 +16,17 @@ Public Class AlertsCollection
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = "SELECT pnaID " &
-                               "     , ISNULL(pnaBOId_fkey, 0) AS pnaBOId_fkey " &
-                               "     , ISNULL(pnaClientCode, '') AS pnaClientCode " &
-                               "     , pnaAlert " &
-                               "     , ISNULL(pnaOriginCountry, '') AS pnaOriginCountry " &
-                               "     , ISNULL(pnaDestinationCountry, '') AS pnaDestinationCountry " &
-                               "     , ISNULL(pnaAirline, '') AS pnaAirline " &
-                               "     , ISNULL(pnaAmadeusQueue, '') AS pnaAmadeusQueue " &
-                               "     , ISNULL(pnaGalileoQueue, '') AS pnaGalileoQueue " &
-                               "     , ISNULL(pnaAlertForDownsell, '') AS pnaAlertForDownsell " &
-                               " FROM [AmadeusReports].[dbo].[PNRFinisherAlerts]"
+            .CommandText = "SELECT pnaID 
+                            , ISNULL(pnaBOId_fkey, 0) AS pnaBOId_fkey 
+                            , ISNULL(pnaClientCode, '') AS pnaClientCode 
+                            , pnaAlert 
+                            , ISNULL(pnaOriginCountry, '') AS pnaOriginCountry 
+                            , ISNULL(pnaDestinationCountry, '') AS pnaDestinationCountry
+                            , ISNULL(pnaAirline, '') AS pnaAirline 
+                            , ISNULL(pnaAmadeusQueue, '') AS pnaAmadeusQueue 
+                            , ISNULL(pnaGalileoQueue, '') AS pnaGalileoQueue 
+                            , ISNULL(pnaAlertForDownsell, '') AS pnaAlertForDownsell 
+                            FROM [AmadeusReports].[dbo].[PNRFinisherAlerts]"
             pobjReader = .ExecuteReader
         End With
 
@@ -48,6 +48,34 @@ Public Class AlertsCollection
             For Each pItem As AlertsItem In MyBase.Values
                 If pItem.BackOfficeID = pBackOfficeId And pClientCode = pItem.ClientCode And pItem.AlertForFinisher <> "" Then
                     AlertForFinisher = pItem.AlertForFinisher
+                    Exit For
+                End If
+            Next
+        End Get
+    End Property
+    Public ReadOnly Property AmadeusAlertForClientQueue(ByVal pBackOfficeId As Integer, ByVal pClientCode As String) As String
+        Get
+            If Not mAlertsLoaded Then
+                Load()
+            End If
+            AmadeusAlertForClientQueue = ""
+            For Each pItem As AlertsItem In MyBase.Values
+                If pItem.BackOfficeID = pBackOfficeId And pClientCode = pItem.ClientCode And pItem.AlertForFinisher = "" And pItem.AlertForDownsell = "" Then
+                    AmadeusAlertForClientQueue = pItem.AmadeusQueue
+                    Exit For
+                End If
+            Next
+        End Get
+    End Property
+    Public ReadOnly Property GalileoAlertForClientQueue(ByVal pBackOfficeId As Integer, ByVal pClientCode As String) As String
+        Get
+            If Not mAlertsLoaded Then
+                Load()
+            End If
+            GalileoAlertForClientQueue = ""
+            For Each pItem As AlertsItem In MyBase.Values
+                If pItem.BackOfficeID = pBackOfficeId And pClientCode = pItem.ClientCode And pItem.AlertForFinisher = "" And pItem.AlertForDownsell = "" Then
+                    GalileoAlertForClientQueue = pItem.GalileoQueue
                     Exit For
                 End If
             Next
@@ -95,28 +123,28 @@ Public Class AlertsCollection
             Next
         End Get
     End Property
-    Public ReadOnly Property AmadeusQueue(ByVal AirlineCode As String) As String
+    Public ReadOnly Property AmadeusQueueForAirline(ByVal AirlineCode As String) As String
         Get
             If Not mAlertsLoaded Then
                 Load()
             End If
-            AmadeusQueue = ""
+            AmadeusQueueForAirline = ""
             For Each pItem As AlertsItem In MyBase.Values
                 If pItem.Airline = AirlineCode And pItem.AmadeusQueue <> "" Then
-                    AmadeusQueue = pItem.AmadeusQueue
+                    AmadeusQueueForAirline = pItem.AmadeusQueue
                 End If
             Next
         End Get
     End Property
-    Public ReadOnly Property GalileoQueue(ByVal AirlineCode As String) As String
+    Public ReadOnly Property GalileoQueueForAirline(ByVal AirlineCode As String) As String
         Get
             If Not mAlertsLoaded Then
                 Load()
             End If
-            GalileoQueue = ""
+            GalileoQueueForAirline = ""
             For Each pItem As AlertsItem In MyBase.Values
                 If pItem.Airline = AirlineCode And pItem.GalileoQueue <> "" Then
-                    GalileoQueue = pItem.GalileoQueue
+                    GalileoQueueForAirline = pItem.GalileoQueue
                 End If
             Next
         End Get

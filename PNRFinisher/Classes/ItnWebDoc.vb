@@ -3,23 +3,7 @@
     Public Sub New(ByRef pPNR As GDSReadPNR)
         mobjPNR = pPNR
     End Sub
-    Public ReadOnly Property WebHead As String
-        Get
-            Return "<head>
-<style>
-td {
-    font-size:10.0pt;
-    font-family:arial;
-}
-</style>
-</head><body>"
-        End Get
-    End Property
-    Public ReadOnly Property WebClose As String
-        Get
-            Return "</body></html>"
-        End Get
-    End Property
+
     Public ReadOnly Property WebDoc As String
         Get
             WebDoc = ""
@@ -130,15 +114,15 @@ td {
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;</td>")
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;</td>")
                     Else
-                        pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & Format(pobjSeg.DepartTime, "HH:mm") & "</td>")
+                        pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.DepartTimeShort(":") & "</td>")
                         Dim pDateDiff As Long = DateDiff(DateInterval.Day, pobjSeg.DepartureDate, pobjSeg.ArrivalDate)
                         If pDateDiff = 0 Then
-                            pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & Format(pobjSeg.ArriveTime, "HH:mm") & "</td>")
+                            pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.ArriveTimeShort(":") & "</td>")
                         Else
-                            pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & Format(pobjSeg.ArriveTime, "HH:mm") & " " & Format(pDateDiff, "+0;-0") & "</td>")
+                            pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.ArriveTimeShort(":") & " " & Format(pDateDiff, "+0;-0") & "</td>")
                         End If
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;" & pobjSeg.AirlineLocator & "</td>")
-                        pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;" & .AllowanceForSegment(pobjSeg.BoardPoint, pobjSeg.OffPoint, pobjSeg.Airline) & "</td>")
+                        pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;" & .AllowanceForSegment(pobjSeg.BoardPoint, pobjSeg.OffPoint, pobjSeg.Airline, pobjSeg.FlightNo, pobjSeg.ClassOfService, pobjSeg.DepartureDateIATA, pobjSeg.DepartTimeShort) & "</td>")
 
                     End If
                     pString.AppendLine("</tr>")

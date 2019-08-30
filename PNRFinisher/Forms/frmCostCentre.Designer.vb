@@ -37,6 +37,7 @@ Partial Class frmCostCentre
         Me.Label1 = New System.Windows.Forms.Label()
         Me.cmdCancel = New System.Windows.Forms.Button()
         Me.cmdAccept = New System.Windows.Forms.Button()
+        Me.cmdSearch = New System.Windows.Forms.Button()
         CType(Me.dgvCostCentres, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.mnuCostCentre.SuspendLayout()
         Me.SuspendLayout()
@@ -96,7 +97,7 @@ Partial Class frmCostCentre
         Me.txtSearch.Font = New System.Drawing.Font("Courier New", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
         Me.txtSearch.Location = New System.Drawing.Point(65, 186)
         Me.txtSearch.Name = "txtSearch"
-        Me.txtSearch.Size = New System.Drawing.Size(662, 20)
+        Me.txtSearch.Size = New System.Drawing.Size(517, 20)
         Me.txtSearch.TabIndex = 18
         '
         'Label3
@@ -168,11 +169,22 @@ Partial Class frmCostCentre
         Me.cmdAccept.Text = "Accept"
         Me.cmdAccept.UseVisualStyleBackColor = True
         '
+        'cmdSearch
+        '
+        Me.cmdSearch.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cmdSearch.Location = New System.Drawing.Point(588, 183)
+        Me.cmdSearch.Name = "cmdSearch"
+        Me.cmdSearch.Size = New System.Drawing.Size(142, 23)
+        Me.cmdSearch.TabIndex = 22
+        Me.cmdSearch.Text = "Search"
+        Me.cmdSearch.UseVisualStyleBackColor = True
+        '
         'frmCostCentre
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(748, 493)
+        Me.Controls.Add(Me.cmdSearch)
         Me.Controls.Add(Me.dgvCostCentres)
         Me.Controls.Add(Me.lstCustomerGroup)
         Me.Controls.Add(Me.lstCustomers)
@@ -206,4 +218,5 @@ Partial Class frmCostCentre
     Friend WithEvents Label1 As Label
     Friend WithEvents cmdCancel As Button
     Friend WithEvents cmdAccept As Button
+    Friend WithEvents cmdSearch As Button
 End Class

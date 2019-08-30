@@ -1,4 +1,6 @@
-﻿Public Class frmOSMAgents
+﻿Option Strict On
+Option Explicit On
+Public Class frmOSMAgents
     Private mOSMSelectedEmail As OSMEmailItem
 
     Private Sub frmOSMVessels_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -27,7 +29,7 @@
     Private Sub lstOSMEditAgents_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstOSMEditAgents.SelectedIndexChanged
 
         If Not lstOSMEditAgents.SelectedItem Is Nothing Then
-            mOSMSelectedEmail = lstOSMEditAgents.SelectedItem
+            mOSMSelectedEmail = CType(lstOSMEditAgents.SelectedItem, OSMEmailItem)
             DisplaySelectedEmail()
             CheckValid()
         End If

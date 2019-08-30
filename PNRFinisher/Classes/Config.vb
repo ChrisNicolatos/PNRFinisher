@@ -10,11 +10,7 @@ Friend Class Config
         Dim Phone As String
         Dim AOHPhone As String
         Dim PCCBackOffice As Integer
-        Dim pCCDBDataSource As String
-        Dim pCCDBInitialCatalog As String
-        Dim pCCDBUserId As String
-        Dim pCCDBUserPassword As String
-        Dim pCCDBBranchCode As String
+
         Dim pCCIATANumber As String
         Dim PCCFormalOfficeName As String
 
@@ -36,10 +32,12 @@ Friend Class Config
         Dim ShowCabinDescription As Boolean
         Dim ShowSeating As Boolean
         Dim ShowVessel As Boolean
-        Dim ShowitinRemarks As Boolean
+        Dim ShowItinRemarks As Boolean
+        Dim ShowEquipmentCode As Boolean
+        Dim ShowCO2 As Boolean
         Dim Administrator As Boolean
         Dim FormatStyle As EnumItnFormat
-        Dim LastVersionTextShown As Integer
+
         Dim OSMVesselGroup As Integer
         Dim OSMLoGPerPax As Boolean
         Dim OSMLoGOnsigner As Boolean
@@ -53,17 +51,19 @@ Friend Class Config
     Private mobjGDSUser As GDSUser
     Private mflgIsDirtyPCC As Boolean
     Private mflgIsDirtyUser As Boolean
-    Private mGDSReferences As New ConfigGDSReferenceCollection
+    Private mGDSReferences As New GDS_BOReferenceCollection
     Public Sub New()
-
     End Sub
-    Public Sub New(mGDSUser As GDSUser)
+    Public Sub New(mGDSUser As GDSUser, ByVal pBackOffice As Integer)
         Try
             mobjGDSUser = mGDSUser
             mflgIsDirtyPCC = False
             mflgIsDirtyUser = False
             mGDSReferences.Clear()
             DBReadPCC()
+            If pBackOffice <> 0 Then
+                mudtProps.PCCBackOffice = pBackOffice
+            End If
             If PCCId = 0 Then
                 If mobjGDSUser.GDSCode = EnumGDSCode.Amadeus Then
                     Throw New Exception("You are signed in to Amadeus PCC : " & mobjGDSUser.PCC & vbCrLf & "This PCC is not registered in the PNR FInisher" & vbCrLf & "Please contact your system administrator")
@@ -91,12 +91,19 @@ Friend Class Config
                     Throw New Exception("You are signed in to PCC : " & mobjGDSUser.PCC & " as user : " & mobjGDSUser.User & vbCrLf & "This user is not registered in the PNR FInisher" & vbCrLf & "Please contact your system administrator")
                 End If
             End If
-            mGDSReferences.Read(PCCBackOffice, mobjGDSUser.GDSCode)
+            LoadGDSReferences(PCCBackOffice, mobjGDSUser.GDSCode)
 
         Catch ex As Exception
             Throw New Exception(ex.Message)
         End Try
 
+    End Sub
+    Public Sub LoadGDSReferences(ByVal pBackOffice As Integer, ByVal pGDSCode As EnumGDSCode)
+        Try
+            mGDSReferences.Read(pBackOffice, pGDSCode)
+        Catch ex As Exception
+            Throw New Exception("Config.LoadGDSReference()" & vbCrLf & ex.Message)
+        End Try
     End Sub
     Public ReadOnly Property Administrator As Boolean
         Get
@@ -171,13 +178,35 @@ Friend Class Config
     End Property
     Public Property ShowItinRemarks As Boolean
         Get
-            Return mudtProps.ShowitinRemarks
+            Return mudtProps.ShowItinRemarks
         End Get
         Set(value As Boolean)
-            If value <> mudtProps.ShowitinRemarks Then
+            If value <> mudtProps.ShowItinRemarks Then
                 mflgIsDirtyUser = True
             End If
-            mudtProps.ShowitinRemarks = value
+            mudtProps.ShowItinRemarks = value
+        End Set
+    End Property
+    Public Property ShowEquipmentCode As Boolean
+        Get
+            Return mudtProps.ShowEquipmentCode
+        End Get
+        Set(value As Boolean)
+            If value <> mudtProps.ShowEquipmentCode Then
+                mflgIsDirtyUser = True
+            End If
+            mudtProps.ShowEquipmentCode = value
+        End Set
+    End Property
+    Public Property ShowCO2 As Boolean
+        Get
+            Return mudtProps.ShowCO2
+        End Get
+        Set(value As Boolean)
+            If value <> mudtProps.ShowCO2 Then
+                mflgIsDirtyUser = True
+            End If
+            mudtProps.ShowCO2 = value
         End Set
     End Property
     Public Property ShowPaxSegPerTkt As Boolean
@@ -354,32 +383,6 @@ Friend Class Config
             Return mudtProps.PCCBackOffice
         End Get
     End Property
-    Public ReadOnly Property PCCDBDataSource As String
-        Get
-            Return mudtProps.pCCDBDataSource
-        End Get
-    End Property
-    Public ReadOnly Property PCCDBInitialCatalog As String
-        Get
-            Return mudtProps.pCCDBInitialCatalog
-        End Get
-    End Property
-    Public ReadOnly Property PCCDBUserId As String
-        Get
-            Return mudtProps.pCCDBUserId
-        End Get
-    End Property
-
-    Public ReadOnly Property PCCDBUserPassword As String
-        Get
-            Return mudtProps.pCCDBUserPassword
-        End Get
-    End Property
-    Public ReadOnly Property PCCBranchCode As String
-        Get
-            Return mudtProps.pCCDBBranchCode
-        End Get
-    End Property
     Public ReadOnly Property IATANumber As String
         Get
             Return mudtProps.pCCIATANumber
@@ -452,7 +455,7 @@ Friend Class Config
     End Property
     Private Sub DBReadPCC()
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
 
@@ -462,26 +465,18 @@ Friend Class Config
         With pobjComm
             .CommandType = CommandType.Text
             .Parameters.Add("@PCC", SqlDbType.NVarChar, 9).Value = mobjGDSUser.PCC
-            .CommandText = " SELECT pfpId " &
-                           " ,pfpOfficeCityCode " &
-                           " ,pfpCountryCode " &
-                           " ,pfpOfficeName " &
-                           " ,pfpCityName " &
-                           " ,pfpOfficePhone " &
-                           " ,pfpAOHPhone " &
-                           " ,pfpBO_fkey " &
-                           " ,coalesce(pfrBODBDataSource,'') AS pfpDBDataSource " &
-                           " ,coalesce(pfrBODBInitialCatalog, '') AS pfpDBInitialCatalog " &
-                           " ,coalesce(pfrBODBUserId, '') AS pfpDBUserId " &
-                           " ,coalesce(pfrBODBUserPassword, '') AS pfpDBUserPassword " &
-                           " ,coalesce(pfrBODBBranchCode, '') AS pfrBODBBranchCode " &
-                           " ,pfpIATANumber " &
-                           " ,pfpFormalOfficeName " &
-                           " FROM [AmadeusReports].[dbo].[PNRFinisherPCC] " &
-                           " LEFT JOIN AmadeusReports.dbo.PNRFinisherBackOffice " &
-                           " ON pfpBO_fkey = pfrBOId " &
-                           " WHERE pfpPCC = @PCC"
-
+            .CommandText = " SELECT pfpId 
+                             ,pfpOfficeCityCode  
+                             ,pfpCountryCode  
+                             ,pfpOfficeName  
+                             ,pfpCityName  
+                             ,pfpOfficePhone  
+                             ,pfpAOHPhone  
+                             ,pfpBO_fkey  
+                             ,pfpIATANumber  
+                             ,pfpFormalOfficeName  
+                             FROM [AmadeusReports].[dbo].[PNRFinisherPCC]  
+                             WHERE pfpPCC = @PCC"
             pobjReader = .ExecuteReader
         End With
         With pobjReader
@@ -494,11 +489,6 @@ Friend Class Config
                 mudtProps.Phone = CStr(.Item("pfpOfficePhone"))
                 mudtProps.AOHPhone = CStr(.Item("pfpAOHPhone"))
                 mudtProps.PCCBackOffice = CInt(.Item("pfpBO_fkey"))
-                mudtProps.pCCDBDataSource = CStr(.Item("pfpDBDataSource"))
-                mudtProps.pCCDBInitialCatalog = CStr(.Item("pfpDBInitialCatalog"))
-                mudtProps.pCCDBUserId = CStr(.Item("pfpDBUserId"))
-                mudtProps.pCCDBUserPassword = CStr(.Item("pfpDBUserPassword"))
-                mudtProps.pCCDBBranchCode = CStr(.Item("pfrBODBBranchCode"))
                 mudtProps.pCCIATANumber = CStr(.Item("pfpIATANumber"))
                 mudtProps.PCCFormalOfficeName = CStr(.Item("pfpFormalOfficeName"))
             Else
@@ -510,11 +500,6 @@ Friend Class Config
                 mudtProps.Phone = ""
                 mudtProps.AOHPhone = ""
                 mudtProps.PCCBackOffice = 0
-                mudtProps.pCCDBDataSource = ""
-                mudtProps.pCCDBInitialCatalog = ""
-                mudtProps.pCCDBUserId = ""
-                mudtProps.pCCDBUserPassword = ""
-                mudtProps.pCCDBBranchCode = ""
                 mudtProps.pCCIATANumber = ""
                 mudtProps.PCCFormalOfficeName = ""
             End If
@@ -526,7 +511,7 @@ Friend Class Config
     Private Sub DBUpdatePCC()
 
         If mudtProps.PCCId > 0 Then
-            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
             Dim pobjComm As New SqlClient.SqlCommand
 
             pobjConn.Open()
@@ -541,14 +526,14 @@ Friend Class Config
                 .Parameters.Add("@pfpCityName", SqlDbType.NVarChar, 254).Value = CityName
                 .Parameters.Add("@pfpOfficePhone", SqlDbType.NVarChar, 254).Value = Phone
                 .Parameters.Add("@pfpAOHPhone", SqlDbType.NVarChar, 254).Value = AOHPhone
-                .CommandText = " UPDATE [AmadeusReports].[dbo].[PNRFinisherPCC]" &
-                               "  SET pfpOfficeCityCode =@pfpOfficeCityCode " &
-                               " ,pfpCountryCode =@pfpCountryCode " &
-                               " ,pfpOfficeName =@pfpOfficeName " &
-                               " ,pfpCityName =@pfpCityName " &
-                               " ,pfpOfficePhone =@pfpOfficePhone " &
-                               " ,pfpAOHPhone =@pfpAOHPhone " &
-                               " WHERE pfpId = @PCCId"
+                .CommandText = " UPDATE [AmadeusReports].[dbo].[PNRFinisherPCC]
+                                SET pfpOfficeCityCode =@pfpOfficeCityCode 
+                                ,pfpCountryCode =@pfpCountryCode 
+                                ,pfpOfficeName =@pfpOfficeName 
+                                ,pfpCityName =@pfpCityName 
+                                ,pfpOfficePhone =@pfpOfficePhone 
+                                ,pfpAOHPhone =@pfpAOHPhone 
+                                WHERE pfpId = @PCCId"
             End With
         Else
             Throw New Exception("Cannot update PCC")
@@ -557,7 +542,7 @@ Friend Class Config
     Private Sub DBUpdateUser()
 
         If mudtProps.AgentId > 0 Then
-            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
             Dim pobjComm As New SqlClient.SqlCommand
 
             pobjConn.Open()
@@ -565,35 +550,64 @@ Friend Class Config
 
             With pobjComm
                 .CommandType = CommandType.Text
-                .CommandText = " UPDATE AmadeusReports.dbo.PNRFinisherUsers" &
-                               "  SET pfAgentQueue ='" & AgentQueue & "'" &
-                               "     ,pfAgentOPQueue ='" & AgentOPQueue & "'" &
-                               "     ,pfAgentName ='" & AgentName & "'" &
-                               "     ,pfAgentEmail ='" & AgentEmail & "'" &
-                               "     ,pfAirportName =" & AirportName &
-                               "     ,pfAirlineLocator =" & If(ShowAirlineLocator, 1, 0) &
-                               "     ,pfClassOfService =" & If(ShowClassOfService, 1, 0) &
-                               "     ,pfBanElectricalEquipment = 0" &
-                               "     ,pfBrazilText = 0" &
-                               "     ,pfUSAText = 0" &
-                               "     ,pfShowEMD =" & If(ShowEMD, 1, 0) &
-                               "     ,pfPaxSegPerTkt =" & If(ShowPaxSegPerTkt, 1, 0) &
-                               "     ,pfShowStopovers =" & If(ShowStopovers, 1, 0) &
-                               "     ,pfShowTerminal =" & If(ShowTerminal, 1, 0) &
-                               "     ,pfFlyingTime =" & If(ShowFlyingTime, 1, 0) &
-                               "     ,pfCostCentre =" & If(ShowCostCentre, 1, 0) &
-                               "     ,pfShowCabinDescription =" & If(ShowCabinDescription, 1, 0) &
-                               "     ,pfShowItinRemarks =" & If(ShowItinRemarks, 1, 0) &
-                               "     ,pfTickets =" & If(ShowTickets, 1, 0) &
-                               "     ,pfSeating =" & If(ShowSeating, 1, 0) &
-                               "     ,pfVessel =" & If(ShowVessel, 1, 0) &
-                               "     ,pfPlainFormat = 0" &
-                               "     ,pfFormatStyle =" & FormatStyle &
-                               "     ,pfOSMVesselGroup = " & OSMVesselGroup &
-                               "     ,pfOSMLOGPerPax = " & If(OSMLoGPerPax, 1, 0) &
-                               "     ,pfOSMLOGOnSigner = " & If(OSMLoGOnSigner, 1, 0) &
-                               "     ,pfOSMLOGPath = '" & OSMLoGPath & "' " &
-                               "   WHERE pfPCC = '" & mobjGDSUser.PCC & "' AND pfUser = '" & mobjGDSUser.User & "'"
+                .Parameters.Add("@PCC", SqlDbType.NVarChar, 9).Value = mobjGDSUser.PCC
+                .Parameters.Add("@User", SqlDbType.NVarChar, 254).Value = mobjGDSUser.User
+
+                .Parameters.Add("@AgentQueue", SqlDbType.NVarChar, 20).Value = AgentQueue
+                .Parameters.Add("@AgentOPQueue", SqlDbType.NVarChar, 20).Value = AgentOPQueue
+                .Parameters.Add("@AgentName", SqlDbType.NVarChar, 50).Value = AgentName
+                .Parameters.Add("@AgentEmail", SqlDbType.NVarChar, 255).Value = AgentEmail
+                .Parameters.Add("@AirportName", SqlDbType.Int).Value = AirportName
+                .Parameters.Add("@AirlineLocator", SqlDbType.Bit).Value = If(ShowAirlineLocator, 1, 0)
+                .Parameters.Add("@ClassOfService", SqlDbType.Bit).Value = If(ShowClassOfService, 1, 0)
+                .Parameters.Add("@ShowEMD", SqlDbType.Bit).Value = If(ShowEMD, 1, 0)
+                .Parameters.Add("@PaxSegPerTkt", SqlDbType.Bit).Value = If(ShowPaxSegPerTkt, 1, 0)
+                .Parameters.Add("@ShowStopovers", SqlDbType.Bit).Value = If(ShowStopovers, 1, 0)
+                .Parameters.Add("@ShowTerminal", SqlDbType.Bit).Value = If(ShowTerminal, 1, 0)
+                .Parameters.Add("@FlyingTime", SqlDbType.Bit).Value = If(ShowFlyingTime, 1, 0)
+                .Parameters.Add("@CostCentre", SqlDbType.Bit).Value = If(ShowCostCentre, 1, 0)
+                .Parameters.Add("@ShowCabinDescription", SqlDbType.Bit).Value = If(ShowCabinDescription, 1, 0)
+                .Parameters.Add("@ShowItinRemarks", SqlDbType.Bit).Value = If(ShowItinRemarks, 1, 0)
+                .Parameters.Add("@ShowEquipmentCode", SqlDbType.Bit).Value = If(ShowEquipmentCode, 1, 0)
+                .Parameters.Add("@Tickets", SqlDbType.Bit).Value = If(ShowTickets, 1, 0)
+                .Parameters.Add("@Seating", SqlDbType.Bit).Value = If(ShowSeating, 1, 0)
+                .Parameters.Add("@Vessel", SqlDbType.Bit).Value = If(ShowVessel, 1, 0)
+                .Parameters.Add("@FormatStyle", SqlDbType.Int).Value = FormatStyle
+                .Parameters.Add("@OSMVesselGroup", SqlDbType.Int).Value = OSMVesselGroup
+                .Parameters.Add("@OSMLOGPerPax", SqlDbType.Bit).Value = If(OSMLoGPerPax, 1, 0)
+                .Parameters.Add("@OSMLOGOnSigner", SqlDbType.Bit).Value = If(OSMLoGOnSigner, 1, 0)
+                .Parameters.Add("@OSMLOGPath", SqlDbType.NVarChar, 255).Value = OSMLoGPath
+
+                .CommandText = " UPDATE AmadeusReports.dbo.PNRFinisherUsers
+                                  SET pfAgentQueue =  @AgentQueue    
+                                     ,pfAgentOPQueue =  @AgentOPQueue   
+                                     ,pfAgentName =  @AgentName   
+                                     ,pfAgentEmail =  @AgentEmail   
+                                     ,pfAirportName = @AirportName  
+                                     ,pfAirlineLocator = @AirlineLocator   
+                                     ,pfClassOfService = @ClassOfService   
+                                     ,pfBanElectricalEquipment = 0
+                                     ,pfBrazilText = 0
+                                     ,pfUSAText = 0
+                                     ,pfShowEMD = @ShowEMD   
+                                     ,pfPaxSegPerTkt = @PaxSegPerTkt   
+                                     ,pfShowStopovers = @ShowStopovers   
+                                     ,pfShowTerminal = @ShowTerminal   
+                                     ,pfFlyingTime = @FlyingTime   
+                                     ,pfCostCentre = @CostCentre   
+                                     ,pfShowCabinDescription = @ShowCabinDescription   
+                                     ,pfShowItinRemarks = @ShowItinRemarks   
+                                     ,pfShowEquipmentCode = @ShowEquipmentCode   
+                                     ,pfTickets = @Tickets   
+                                     ,pfSeating = @Seating   
+                                     ,pfVessel = @Vessel   
+                                     ,pfPlainFormat = 0
+                                     ,pfFormatStyle = @FormatStyle  
+                                     ,pfOSMVesselGroup =  @OSMVesselGroup  
+                                     ,pfOSMLOGPerPax =  @OSMLoGPerPax   
+                                     ,pfOSMLOGOnSigner =  @OSMLoGOnSigner   
+                                     ,pfOSMLOGPath =   @OSMLoGPath    
+                                  WHERE pfPCC = @PCC AND pfUser = @User"
                 .ExecuteNonQuery()
             End With
             pobjConn.Close()
@@ -603,7 +617,7 @@ Friend Class Config
     End Sub
     Private Sub DBReadUser()
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
 
@@ -612,39 +626,42 @@ Friend Class Config
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = " SELECT [pfID] " &
-                           "       ,[pfPCC] " &
-                           "       ,[pfUser] " &
-                           "       ,[pfAgentQueue] " &
-                           "       ,[pfAgentOPQueue] " &
-                           "       ,[pfAgentName] " &
-                           "       ,[pfAgentEmail] " &
-                           "       ,[pfAirportName] " &
-                           "       ,[pfAirlineLocator] " &
-                           "       ,[pfClassOfService] " &
-                           "       ,[pfTickets] " &
-                           "       ,[pfPaxSegPerTkt] " &
-                           "       ,[pfShowStopovers] " &
-                           "       ,[pfShowTerminal] " &
-                           "       ,[pfFlyingTime] " &
-                           "       ,[pfCostCentre] " &
-                           "       ,[pfSeating] " &
-                           "       ,[pfVessel] " &
-                           "       ,[pfPlainFormat] " &
-                           "       ,[pfAdministrator] " &
-                           "       ,[pfFormatStyle] " &
-                           "       ,ISNULL(pfOSMVesselGroup,0) AS pfOSMVesselGroup " &
-                           "       ,ISNULL(pfOSMLOGPerPax,0) AS pfOSMLOGPerPax " &
-                           "       ,ISNULL(pfOSMLOGOnSigner,0) AS pfOSMLOGOnSigner " &
-                           "       ,ISNULL(pfOSMLOGPath,'') AS pfOSMLOGPath " &
-                           "       ,ISNULL(pfnLocation,'') AS pfnLocation " &
-                           "       ,ISNULL(pfnPriceOptimiser,0) AS pfnPriceOptimiser " &
-                           "       ,ISNULL(pfShowCabinDescription,0) AS pfShowCabinDescription " &
-                           "       ,ISNULL(pfShowItinRemarks, 0) AS pfShowItinRemarks " &
-                           "       ,ISNULL(pfShowEMD, 0) AS pfShowEMD " &
-                           "   FROM [AmadeusReports].[dbo].[PNRFinisherUsers] " &
-                           "   LEFT JOIN [AmadeusReports].[dbo].[PNRFinisherUserName] ON pfnID = pfUserName_fk " &
-                           "   WHERE pfPCC = '" & mobjGDSUser.PCC & "' AND pfUser = '" & mobjGDSUser.User & "'"
+            .Parameters.Add("@PCC", SqlDbType.NVarChar, 9).Value = mobjGDSUser.PCC
+            .Parameters.Add("@User", SqlDbType.NVarChar, 254).Value = mobjGDSUser.User
+            .CommandText = " SELECT [pfID] 
+                                  ,[pfPCC] 
+                                  ,[pfUser] 
+                                  ,[pfAgentQueue] 
+                                  ,[pfAgentOPQueue] 
+                                  ,[pfAgentName] 
+                                  ,[pfAgentEmail] 
+                                  ,[pfAirportName] 
+                                  ,[pfAirlineLocator] 
+                                  ,[pfClassOfService] 
+                                  ,[pfTickets] 
+                                  ,[pfPaxSegPerTkt] 
+                                  ,[pfShowStopovers] 
+                                  ,[pfShowTerminal] 
+                                  ,[pfFlyingTime] 
+                                  ,[pfCostCentre] 
+                                  ,[pfSeating] 
+                                  ,[pfVessel] 
+                                  ,[pfPlainFormat] 
+                                  ,[pfAdministrator] 
+                                  ,[pfFormatStyle] 
+                                  ,ISNULL(pfOSMVesselGroup,0) AS pfOSMVesselGroup 
+                                  ,ISNULL(pfOSMLOGPerPax,0) AS pfOSMLOGPerPax 
+                                  ,ISNULL(pfOSMLOGOnSigner,0) AS pfOSMLOGOnSigner 
+                                  ,ISNULL(pfOSMLOGPath,'') AS pfOSMLOGPath 
+                                  ,ISNULL(pfnLocation,'') AS pfnLocation 
+                                  ,ISNULL(pfnPriceOptimiser,0) AS pfnPriceOptimiser 
+                                  ,ISNULL(pfShowCabinDescription,0) AS pfShowCabinDescription 
+                                  ,ISNULL(pfShowItinRemarks, 0) AS pfShowItinRemarks 
+                                  ,ISNULL(pfShowEMD, 0) AS pfShowEMD 
+                                  ,ISNULL(pfShowEquipmentCode,0) AS pfShowEquipmentCode 
+                              FROM [AmadeusReports].[dbo].[PNRFinisherUsers] 
+                              LEFT JOIN [AmadeusReports].[dbo].[PNRFinisherUserName] ON pfnID = pfUserName_fk 
+                              WHERE pfPCC = @PCC AND pfUser = @User"
             pobjReader = .ExecuteReader
         End With
 
@@ -666,7 +683,8 @@ Friend Class Config
                 mudtProps.ShowFlyingTime = CBool(.Item("pfFlyingTime"))
                 mudtProps.ShowCostCentre = CBool(.Item("pfCostCentre"))
                 mudtProps.ShowCabinDescription = CBool(.Item("pfShowCabinDescription"))
-                mudtProps.ShowitinRemarks = CBool(.Item("pfShowItinRemarks"))
+                mudtProps.ShowItinRemarks = CBool(.Item("pfShowItinRemarks"))
+                mudtProps.ShowEquipmentCode = CBool(.Item("pfShowEquipmentCode"))
                 mudtProps.ShowSeating = CBool(.Item("pfSeating"))
                 mudtProps.ShowVessel = CBool(.Item("pfVessel"))
                 mudtProps.Administrator = CBool(.Item("pfAdministrator"))
@@ -675,7 +693,7 @@ Friend Class Config
                 mudtProps.OSMLoGPerPax = CBool(.Item("pfOSMLOGPerPax"))
                 mudtProps.OSMLoGOnsigner = CBool(.Item("pfOSMLOGOnSigner"))
                 mudtProps.OSMLoGPath = CStr(.Item("pfOSMLOGPath"))
-                mudtProps.LastVersionTextShown = 0 ' .Item("pfLastVersionTextShown_fk")
+                'mudtProps.LastVersionTextShown = 0 ' .Item("pfLastVersionTextShown_fk")
                 mudtProps.OSMLoGLanguage = EnumLoGLanguage.English
                 mudtProps.Location = CStr(.Item("pfnLocation"))
                 mudtProps.PriceOptimiser = CBool(.Item("pfnPriceOptimiser"))
@@ -695,13 +713,15 @@ Friend Class Config
                 mudtProps.ShowTerminal = False
                 mudtProps.ShowFlyingTime = False
                 mudtProps.ShowCostCentre = False
+                mudtProps.ShowEquipmentCode = False
+                mudtProps.ShowCO2 = False
                 mudtProps.ShowCabinDescription = False
-                mudtProps.ShowitinRemarks = False
+                mudtProps.ShowItinRemarks = False
                 mudtProps.ShowSeating = False
                 mudtProps.ShowVessel = False
                 mudtProps.Administrator = False
                 mudtProps.FormatStyle = 0
-                mudtProps.LastVersionTextShown = 0
+                'mudtProps.LastVersionTextShown = 0
                 mudtProps.OSMVesselGroup = 0
                 mudtProps.OSMLoGPerPax = False
                 mudtProps.OSMLoGOnsigner = False
@@ -766,47 +786,44 @@ Friend Class Config
         ' "CityName"              ' %CITYNAME%
         ' GalileoTrackingCode     ' %GALTRACK%
 
-        ConvertGDSValue = ValueToConvert
-
-        If ConvertGDSValue.IndexOf("%") >= 0 Then
+        If ValueToConvert.IndexOf("%") >= 0 Then
             If AgentQueue.IndexOf("/") >= 0 Then
-                ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%PCC-AGENTQ%", "/" & AgentQueue)
-                ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%AGENTQ%", "/" & AgentQueue)
+                ValueToConvert = ReplaceReference(ValueToConvert, "%PCC-AGENTQ%", "/" & AgentQueue)
+                ValueToConvert = ReplaceReference(ValueToConvert, "%AGENTQ%", "/" & AgentQueue)
             ElseIf AgentQueue.IndexOf("*") > 0 Then
                 Dim pQueue As String = AgentQueue.Substring(0, AgentQueue.IndexOf("*"))
-                ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%PCC-AGENTQ%", mobjGDSUser.PCC & "/" & pQueue)
-                ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%AGENTQ%", pQueue)
+                ValueToConvert = ReplaceReference(ValueToConvert, "%PCC-AGENTQ%", mobjGDSUser.PCC & "/" & pQueue)
+                ValueToConvert = ReplaceReference(ValueToConvert, "%AGENTQ%", pQueue)
             Else
-                ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%PCC-AGENTQ%", mobjGDSUser.PCC & "/" & AgentQueue)
-                ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%AGENTQ%", AgentQueue)
+                ValueToConvert = ReplaceReference(ValueToConvert, "%PCC-AGENTQ%", mobjGDSUser.PCC & "/" & AgentQueue)
+                ValueToConvert = ReplaceReference(ValueToConvert, "%AGENTQ%", AgentQueue)
             End If
             If AgentOPQueue.IndexOf("/") >= 0 Then
-                ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%AGENTOPQ%", "/" & AgentOPQueue)
+                ValueToConvert = ReplaceReference(ValueToConvert, "%AGENTOPQ%", "/" & AgentOPQueue)
             Else
-                ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%AGENTOPQ%", AgentOPQueue)
+                ValueToConvert = ReplaceReference(ValueToConvert, "%AGENTOPQ%", AgentOPQueue)
             End If
-            Do While ConvertGDSValue.IndexOf("//") >= 0
-                ConvertGDSValue.Replace("//", "/")
+            Do While ValueToConvert.IndexOf("//") >= 0
+                ValueToConvert.Replace("//", "/")
             Loop
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%PCC%", mobjGDSUser.PCC)
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%AgentID%", mobjGDSUser.User)
-
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%MID%", CountryCode)
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%AGENTNAME%", AgentName)
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%AGENTEMAIL%", AgentEmail)
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%CITYCODE%", OfficeCityCode)
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%CITYNAME%", CityName)
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%AOHP%", AOHPhone)
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%PHONE%", Phone)
-            ConvertGDSValue = ReplaceReference(ConvertGDSValue, "%OFFICENAME%", OfficeName)
-
+            ValueToConvert = ReplaceReference(ValueToConvert, "%PCC%", mobjGDSUser.PCC)
+            ValueToConvert = ReplaceReference(ValueToConvert, "%AgentID%", mobjGDSUser.User)
+            ValueToConvert = ReplaceReference(ValueToConvert, "%MID%", CountryCode)
+            ValueToConvert = ReplaceReference(ValueToConvert, "%AGENTNAME%", AgentName)
+            ValueToConvert = ReplaceReference(ValueToConvert, "%AGENTEMAIL%", AgentEmail)
+            ValueToConvert = ReplaceReference(ValueToConvert, "%CITYCODE%", OfficeCityCode)
+            ValueToConvert = ReplaceReference(ValueToConvert, "%CITYNAME%", CityName)
+            ValueToConvert = ReplaceReference(ValueToConvert, "%AOHP%", AOHPhone)
+            ValueToConvert = ReplaceReference(ValueToConvert, "%PHONE%", Phone)
+            ValueToConvert = ReplaceReference(ValueToConvert, "%OFFICENAME%", OfficeName)
         End If
+        Return ValueToConvert
 
     End Function
     Public ReadOnly Property isValid As Boolean
         Get
             With mudtProps
-                isValid = mobjGDSUser.PCC <> "" And
+                Return mobjGDSUser.PCC <> "" And
                           mobjGDSUser.User <> "" And
                           .AgentQueue <> "" And
                           .AgentOPQueue <> "" And
@@ -818,16 +835,11 @@ Friend Class Config
                           .OfficeName <> "" And
                           .AOHPhone <> "" And
                           .PCCBackOffice <> 0 And
-                          .pCCDBDataSource <> "" And
-                          .pCCDBInitialCatalog <> "" And
-                          .pCCDBUserId <> "" And
-                          .pCCDBUserPassword <> "" And
                           .Phone <> ""
             End With
         End Get
     End Property
-
-    Private Function ReplaceReference(ByVal InputValue As String, ByVal RefKey As String, ByVal RefValue As String) As String
+    Private Shared Function ReplaceReference(ByVal InputValue As String, ByVal RefKey As String, ByVal RefValue As String) As String
         If InputValue.IndexOf(RefKey) >= 0 Then
             Return InputValue.Replace(RefKey, RefValue)
         Else

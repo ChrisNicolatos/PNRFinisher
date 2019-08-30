@@ -35,10 +35,10 @@ Public Class SubDepartmentItem
         End With
     End Sub
 
-    Public Sub Load(ByVal pSubID As Integer)
-        If MySettings.PCCBackOffice = 1 Then
+    Public Sub Load(ByVal pSubID As Integer, ByVal pBackOffice As Integer)
+        If pBackOffice = 1 Then
 
-            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringACC) ' ActiveConnection)
+            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(pBackOffice))
             Dim pobjComm As New SqlClient.SqlCommand
             Dim pobjReader As SqlClient.SqlDataReader
 
@@ -47,17 +47,15 @@ Public Class SubDepartmentItem
 
             With pobjComm
                 .CommandType = CommandType.Text
-                .CommandText = " SELECT [Id] " &
-                           " ,[Code] " &
-                           " ,[Name] " &
-                           " FROM [TravelForceCosmos].[dbo].[TFEntitySubdepartments] " &
-                           " WHERE ID = " & pSubID & "  " &
-                           " ORDER BY Name "
-
-
+                .Parameters.Add("@SubID", SqlDbType.Int).Value = pSubID
+                .CommandText = " SELECT Id  
+                                       ,Code
+                                       ,Name
+                                 FROM TravelForceCosmos.dbo.TFEntitySubdepartments 
+                                 WHERE ID = @SubID  
+                                 ORDER BY Name "
                 pobjReader = .ExecuteReader
             End With
-
             With pobjReader
                 Do While .Read
                     SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")))

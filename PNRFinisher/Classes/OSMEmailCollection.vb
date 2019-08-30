@@ -5,7 +5,7 @@ Public Class OSMEmailCollection
 
     Public Sub Load(ByVal pVesselID As Integer)
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
         Dim pobjClass As OSMEmailItem
@@ -15,18 +15,19 @@ Public Class OSMEmailCollection
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = "SELECT osmeId " &
-                           "      ,ISNULL(osmeVessel_FK,0) AS osmeVessel_FK " &
-                           "      ,ISNULL(osmeName, '') AS osmeName " &
-                           "      ,ISNULL(osmeDetails, '') AS osmeDetails " &
-                           "      ,ISNULL(osmeType, '') AS osmeType " &
-                           "      ,ISNULL(osmeEmail, '') AS osmeEmail " &
-                           "      ,ISNULL(osmvVesselName, '') AS osmvVesselName " &
-                           "  FROM AmadeusReports.dbo.osmEmailDetails " &
-                           " LEFT JOIN AmadeusReports.dbo.osmVessels " &
-                           "   ON osmeVessel_FK = osmVessels.osmvID " &
-                           "  WHERE ISNULL(osmeVessel_FK, " & pVesselID & ") = " & pVesselID & " " &
-                           "  ORDER BY osmeType, osmeName"
+            .Parameters.Add("@VesselID", SqlDbType.Int).Value = pVesselID
+            .CommandText = "SELECT osmeId  
+                                  ,ISNULL(osmeVessel_FK,0) AS osmeVessel_FK  
+                                  ,ISNULL(osmeName, '') AS osmeName  
+                                  ,ISNULL(osmeDetails, '') AS osmeDetails  
+                                  ,ISNULL(osmeType, '') AS osmeType  
+                                  ,ISNULL(osmeEmail, '') AS osmeEmail  
+                                  ,ISNULL(osmvVesselName, '') AS osmvVesselName  
+                              FROM AmadeusReports.dbo.osmEmailDetails  
+                             LEFT JOIN AmadeusReports.dbo.osmVessels  
+                               ON osmeVessel_FK = osmVessels.osmvID  
+                              WHERE ISNULL(osmeVessel_FK, @VesselID) = @VesselID  
+                              ORDER BY osmeType, osmeName"
             pobjReader = .ExecuteReader
         End With
 
@@ -44,7 +45,7 @@ Public Class OSMEmailCollection
     End Sub
     Public Sub Load()
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
         Dim pobjClass As OSMEmailItem
@@ -54,18 +55,18 @@ Public Class OSMEmailCollection
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = "SELECT osmeId " &
-                           "      ,ISNULL(osmeVessel_FK,0) AS osmeVessel_FK " &
-                           "      ,ISNULL(osmeName, '') AS osmeName " &
-                           "      ,ISNULL(osmeDetails, '') AS osmeDetails " &
-                           "      ,ISNULL(osmeType, '') AS osmeType " &
-                           "      ,ISNULL(osmeEmail, '') AS osmeEmail " &
-                           "      ,ISNULL(osmvVesselName, '') AS osmvVesselName " &
-                           "  FROM AmadeusReports.dbo.osmEmailDetails " &
-                           " LEFT JOIN AmadeusReports.dbo.osmVessels " &
-                           "   ON osmeVessel_FK = osmVessels.osmvID " &
-                           "  WHERE osmeType = 'AGENT' " &
-                           "  ORDER BY  osmeName"
+            .CommandText = "SELECT osmeId  
+                                  ,ISNULL(osmeVessel_FK,0) AS osmeVessel_FK  
+                                  ,ISNULL(osmeName, '') AS osmeName  
+                                  ,ISNULL(osmeDetails, '') AS osmeDetails  
+                                  ,ISNULL(osmeType, '') AS osmeType  
+                                  ,ISNULL(osmeEmail, '') AS osmeEmail  
+                                  ,ISNULL(osmvVesselName, '') AS osmvVesselName  
+                              FROM AmadeusReports.dbo.osmEmailDetails  
+                             LEFT JOIN AmadeusReports.dbo.osmVessels  
+                               ON osmeVessel_FK = osmVessels.osmvID  
+                              WHERE osmeType = 'AGENT'  
+                              ORDER BY  osmeName"
             pobjReader = .ExecuteReader
         End With
 

@@ -1,9 +1,9 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class PNRFinisherTransactions
-    Public Sub UpdateTransactions(ByVal pPNR As String, ByVal pGDS As String, ByVal pPCC As String, ByVal pUserID As String, ByVal pTransactionDate As Date _
+    Public Shared Sub UpdateTransactions(ByVal pPNR As String, ByVal pGDS As String, ByVal pPCC As String, ByVal pUserID As String, ByVal pTransactionDate As Date _
                                 , ByVal pPax As String, ByVal pSegs As String, ByVal pFares As String, ByVal pClientCode As String, ByVal pNewEntry As Boolean)
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
 
         pobjConn.Open()

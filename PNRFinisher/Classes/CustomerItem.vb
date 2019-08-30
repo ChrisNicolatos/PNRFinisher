@@ -12,6 +12,9 @@ Public Class CustomerItem
         Dim AlertForFinisher As String
         Dim AlertForDownsell As String
         Dim GalileoTrackingCode As String
+        Dim OpsGroup As String
+        Dim CTCCount As Integer
+        Dim BackOffice As Integer
     End Structure
     Private mudtProps As ClassProps
     Private mobjCustomProperties As New CustomPropertiesCollection
@@ -20,7 +23,12 @@ Public Class CustomerItem
 
     Public Overrides Function ToString() As String
 
-        Return Code & " " & Logo ' Name
+        If mudtProps.CTCCount > 0 Then
+            Return Code & " " & Logo & " ==>"
+        Else
+            Return Code & " " & Logo
+        End If
+
 
     End Function
 
@@ -55,7 +63,16 @@ Public Class CustomerItem
             Return mudtProps.EntityKindLT
         End Get
     End Property
-
+    Public ReadOnly Property OpsGroup As String
+        Get
+            Return mudtProps.OpsGroup
+        End Get
+    End Property
+    Public ReadOnly Property CTCCount As Integer
+        Get
+            Return mudtProps.CTCCount
+        End Get
+    End Property
     Public ReadOnly Property HasVessels() As Boolean
         Get
             Return mudtProps.HasVessels
@@ -90,14 +107,14 @@ Public Class CustomerItem
     Public ReadOnly Property CustomerProperties As CustomPropertiesCollection
         Get
             If Not mflgCustomProperties Then
-                mobjCustomProperties.Load(mudtProps.ID)
+                mobjCustomProperties.Load(mudtProps.ID, mudtProps.BackOffice)
                 mflgCustomProperties = True
             End If
             Return mobjCustomProperties
         End Get
     End Property
 
-    Friend Sub SetValues(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String, ByVal pLogo As String, ByVal pEntityKindLT As Integer, ByVal pAlertForFinisher As String, ByVal pAlertForDownsell As String, ByVal pGalileoTrackingCode As String)
+    Friend Sub SetValues(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String, ByVal pLogo As String, ByVal pEntityKindLT As Integer, ByVal pAlertForFinisher As String, ByVal pAlertForDownsell As String, ByVal pGalileoTrackingCode As String, ByVal pOpsGroup As String, ByVal pCTCCount As Integer, ByVal pBackOffice As Integer)
         With mudtProps
             .ID = pID
             .Code = pCode
@@ -107,6 +124,9 @@ Public Class CustomerItem
             .AlertForFinisher = pAlertForFinisher.Trim
             .AlertForDownsell = pAlertForDownsell.Trim
             .GalileoTrackingCode = pGalileoTrackingCode
+            .OpsGroup = pOpsGroup
+            .CTCCount = pCTCCount
+            .BackOffice = pBackOffice
             ' TFEntityKind (from DB table [TravelForceCosmos].[dbo].[LookupTable])
             ' 404 = Other
             ' 405 = Individual
@@ -124,11 +144,11 @@ Public Class CustomerItem
             mflgCustomProperties = False
         End With
     End Sub
-    Public Sub Load(ByVal pCode As String)
+    Public Sub Load(ByVal pCode As String, ByVal pBackOffice As Integer)
 
         mobjAlerts.Load()
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringACC) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(pBackOffice))
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
 
@@ -137,12 +157,13 @@ Public Class CustomerItem
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = PrepareClientSelectCommand(pCode)
+            .Parameters.Add("@ClientCode", SqlDbType.NVarChar, 20).Value = pCode
+            .CommandText = PrepareClientSelectCommand(pBackOffice)
             pobjReader = .ExecuteReader
         End With
         With pobjReader
             If pobjReader.Read Then
-                SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")), CStr(.Item("Logo")), CInt(.Item("TFEntityKindLT")), mobjAlerts.AlertForFinisher(MySettings.PCCBackOffice, CStr(.Item("Code"))), mobjAlerts.AlertForDownsell(MySettings.PCCBackOffice, CStr(.Item("Code"))), CStr(.Item("GalileoTrackingCode")))
+                SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")), CStr(.Item("Logo")), CInt(.Item("TFEntityKindLT")), mobjAlerts.AlertForFinisher(pBackOffice, CStr(.Item("Code"))), mobjAlerts.AlertForDownsell(pBackOffice, CStr(.Item("Code"))), CStr(.Item("GalileoTrackingCode")), CStr(.Item("OpsGroup")), CInt(.Item("CTCCount")), pBackOffice)
                 .Close()
             End If
         End With
@@ -150,36 +171,59 @@ Public Class CustomerItem
 
     End Sub
 
-    Private Function PrepareClientSelectCommand(ByVal pCode As String) As String
+    Private Shared ReadOnly Property PrepareClientSelectCommand(ByVal pBackOffice As Integer) As String
+        Get
 
-        Select Case MySettings.PCCBackOffice
-            Case 1 ' Travel Force
-                PrepareClientSelectCommand = " SELECT TFEntities.Id " &
-                           " ,TFEntities.Code" &
-                           " ,TFEntities.Name " &
-                           " ,TFEntities.Logo" &
-                           " ,TFEntityCategories.TFEntityKindLT " &
-                           " ,ISNULL(DealCodes.Code, '') AS GalileoTrackingCode " &
-                           " FROM [TravelForceCosmos].[dbo].[TFEntities] " &
-                           " LEFT JOIN [TravelForceCosmos].[dbo].[TFEntityCategories] " &
-                           " ON TFEntities.CategoryID = TFEntityCategories.Id " &
-                           " LEFT JOIN TravelForceCosmos.dbo.DealCodes " &
-                           " ON DealCodes.ClientID=TFEntities.Id And DealCodes.AirlineID=3352 " &
-                           " WHERE TFEntities.IsClient = 1  " &
-                           " AND TFEntities.CanHaveCT = 1 " &
-                           " AND TFEntities.IsActive = 1 " &
-                           " AND TFEntities.Code = '" & pCode & "' "
-            Case 2 ' Discovery
-                PrepareClientSelectCommand = " Select [Account_Id] As Id " &
-                                            " ,[Account_Abbriviation] AS Code " &
-                                            " ,[Account_Name] AS Name " &
-                                            " ,[Account_Name] AS Logo " &
-                                            " ,526 AS TFEntityKindLT " &
-                                            " ,'' AS GalileoTrackingCode " &
-                                            " From [Disco_Instone_EU].[dbo].[Company] " &
-                                            " Where Account_Abbriviation = '" & pCode & "' "
-            Case Else
-                PrepareClientSelectCommand = ""
-        End Select
-    End Function
+            Select Case pBackOffice
+                Case 1 ' Travel Force
+                    Return " SELECT TFEntities.Id 
+                                ,TFEntities.Code
+                                ,TFEntities.Name 
+                                ,TFEntities.Logo
+                                ,TFEntityCategories.TFEntityKindLT 
+                                ,ISNULL(DealCodes.Code, '') AS GalileoTrackingCode 
+                                , ISNULL((SELECT Description 
+							    FROM  [TravelForceCosmos].[dbo].TFEntityTags 
+							    LEFT JOIN [TravelForceCosmos].[dbo].Tags 
+								ON TFEntityTags.TagId = Tags.Id
+								WHERE TFEntityTags.TFEntityId = TFEntities.Id AND Tags.TagGroupId = 149), '') AS OpsGroup
+                             , (SELECT COUNT(*) AS CTCCount
+								   FROM [EUDC-CLSSQL14.atpi.pri].AmadeusReports.dbo.PaxCTC  
+								   WHERE ctcBackOffice_fkey=1 
+								     AND ctcClientId_fkey=TFEntities.Id 
+									 AND ISNULL(ctcVesselName, '') = '' 
+									 AND ISNULL(ctcPassengerFirstName, '') = '' 
+									 AND ISNULL(ctcPassengerLastName, '') = '') AS CTCCount
+                                FROM [TravelForceCosmos].[dbo].[TFEntities] 
+                                LEFT JOIN [TravelForceCosmos].[dbo].[TFEntityCategories] 
+                                ON TFEntities.CategoryID = TFEntityCategories.Id 
+                                LEFT JOIN TravelForceCosmos.dbo.DealCodes 
+                                ON DealCodes.ClientID=TFEntities.Id And DealCodes.AirlineID=3352 
+                                WHERE TFEntities.IsClient = 1  
+                                AND TFEntities.CanHaveCT = 1 
+                                AND TFEntities.IsActive = 1 
+                                AND TFEntities.Code = @ClientCode "
+                Case 2 ' Discovery
+                    Return " Select [Account_Id] As Id 
+                            ,[Account_Abbriviation] AS Code 
+                            ,[Account_Name] AS Name 
+                            ,[Account_Name] AS Logo 
+                            ,526 AS TFEntityKindLT 
+                            ,'' AS GalileoTrackingCode 
+                            ,'' AS OpsGroup
+                             , (SELECT COUNT(*) AS CTCCount
+								   FROM [EUDC-CLSSQL14.atpi.pri].AmadeusReports.dbo.PaxCTC  
+								   WHERE ctcBackOffice_fkey=2
+								     AND ctcClientId_fkey=[Account_Id] 
+									 AND ISNULL(ctcVesselName, '') = '' 
+									 AND ISNULL(ctcPassengerFirstName, '') = '' 
+									 AND ISNULL(ctcPassengerLastName, '') = '') AS CTCCount
+
+                            From [Disco_Instone_EU].[dbo].[Company] 
+                            Where Account_Abbriviation = @ClientCode "
+                Case Else
+                    Return ""
+            End Select
+        End Get
+    End Property
 End Class

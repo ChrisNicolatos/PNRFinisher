@@ -1,5 +1,8 @@
-﻿Public Class frmCostCentre
+﻿Option Strict On
+Option Explicit On
+Public Class frmCostCentre
 
+    Private mintBackOffice As Integer
     Private mobjCustomers As CustomerCollection
     Private mobjCustomerGroups As CustomerGroupCollection
     Private SearchString As String = ""
@@ -13,20 +16,28 @@
     Private mCodeSelected As String = ""
     Private mVesselSelected As String = ""
     Private mCostCentreSelected As String = ""
+    Public Sub New(ByVal pBackOffice As Integer)
 
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+        mintBackOffice = pBackOffice
+
+    End Sub
     Public ReadOnly Property CodeSelected As String
         Get
-            CodeSelected = mCodeSelected
+            Return mCodeSelected
         End Get
     End Property
     Public ReadOnly Property VesselSelected As String
         Get
-            VesselSelected = mVesselSelected
+            Return mVesselSelected
         End Get
     End Property
     Public ReadOnly Property CostCentreSelected As String
         Get
-            CostCentreSelected = mCostCentreSelected
+            Return mCostCentreSelected
         End Get
     End Property
     Private Sub frmCostCentre_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -50,7 +61,7 @@
     Private Sub LoadCustomers()
 
         mobjCustomers = New CustomerCollection
-        mobjCustomers.Load("")
+        mobjCustomers.Load("", mintBackOffice)
         lstCustomers.Items.Clear()
         For Each pCustomer As CustomerItem In mobjCustomers.Values
             If SearchString = "" Or pCustomer.ToString.ToUpper.Contains(SearchString.ToUpper) Then
@@ -70,7 +81,7 @@
 
     Private Sub PopulateCustomerList(ByVal pSearchString As String)
 
-        mobjCustomers.Load(pSearchString)
+        mobjCustomers.Load(pSearchString, mintBackOffice)
 
         lstCustomers.Items.Clear()
         For Each pCustomer As CustomerItem In mobjCustomers.Values
@@ -83,7 +94,7 @@
             Try
                 mflgLoading = True
 
-                SelectCustomer(lstCustomers.Items(0))
+                SelectCustomer(CType(lstCustomers.Items(0), CustomerItem))
                 txtCustomer.Text = lstCustomers.Items(0).ToString
             Catch ex As Exception
                 MessageBox.Show(ex.Message)
@@ -99,7 +110,7 @@
         mobjCustomerSelected = pCustomer
         txtCustomer.Text = pCustomer.ToString
 
-        mobjCostCentres.LoadCustomer(mobjCustomerSelected.ID)
+        mobjCostCentres.LoadCustomer(mobjCustomerSelected.ID, mintBackOffice)
         PopulateCostCentres()
 
         SetEnabled()
@@ -139,6 +150,9 @@
 
         cmdAccept.Enabled = (mCodeSelected <> "") And (mVesselSelected <> "")
         cmdCancel.Enabled = True
+        If cmdAccept.Enabled Then
+            Me.AcceptButton = cmdAccept
+        End If
 
     End Sub
 
@@ -147,7 +161,7 @@
         Try
             If lstCustomers.SelectedIndex >= 0 Then
                 mflgLoading = True
-                SelectCustomer(lstCustomers.SelectedItem)
+                SelectCustomer(CType(lstCustomers.SelectedItem, CustomerItem))
                 txtCustomer.Text = lstCustomers.SelectedItem.ToString
             End If
         Catch ex As Exception
@@ -168,7 +182,7 @@
     Private Sub LoadCustomerGroups()
 
         mobjCustomerGroups = New CustomerGroupCollection
-        mobjCustomerGroups.Load(txtCustomerGroup.Text)
+        mobjCustomerGroups.Load(txtCustomerGroup.Text, mintBackOffice)
         lstCustomerGroup.Items.Clear()
         For Each pGroup As CustomerGroupItem In mobjCustomerGroups.Values
             If SearchString = "" Or pGroup.ToString.ToUpper.Contains(SearchString.ToUpper) Then
@@ -179,7 +193,7 @@
 
     Private Sub PopulateCustomerGroupList(ByVal pSearchString As String)
 
-        mobjCustomers.Load(pSearchString)
+        mobjCustomers.Load(pSearchString, mintBackOffice)
 
         lstCustomers.Items.Clear()
         For Each pCustomerGroup As CustomerGroupItem In mobjCustomerGroups.Values
@@ -192,7 +206,7 @@
             Try
                 mflgLoading = True
 
-                SelectCustomerGroup(lstCustomerGroup.Items(0))
+                SelectCustomerGroup(CType(lstCustomerGroup.Items(0), CustomerGroupItem))
                 txtCustomerGroup.Text = lstCustomerGroup.Items(0).ToString
             Catch ex As Exception
                 MessageBox.Show(ex.Message)
@@ -208,7 +222,7 @@
         mobjCustomerGroupSelected = pCustomerGroup
         txtCustomerGroup.Text = pCustomerGroup.ToString
 
-        mobjCostCentres.LoadCustomerGroup(mobjCustomerGroupSelected.ID)
+        mobjCostCentres.LoadCustomerGroup(mobjCustomerGroupSelected.ID, mintBackOffice)
         PopulateCostCentres()
 
         SetEnabled()
@@ -220,7 +234,7 @@
         Try
             If lstCustomerGroup.SelectedIndex >= 0 Then
                 mflgLoading = True
-                SelectCustomerGroup(lstCustomerGroup.SelectedItem)
+                SelectCustomerGroup(CType(lstCustomerGroup.SelectedItem, CustomerGroupItem))
                 txtCustomerGroup.Text = lstCustomerGroup.SelectedItem.ToString
             End If
         Catch ex As Exception
@@ -232,9 +246,9 @@
 
     Private Sub dgvCostCentres_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvCostCentres.CellContentClick
 
-        mCodeSelected = dgvCostCentres.Rows(e.RowIndex).Cells(2).Value
-        mVesselSelected = dgvCostCentres.Rows(e.RowIndex).Cells(1).Value
-        mCostCentreSelected = dgvCostCentres.Rows(e.RowIndex).Cells(0).Value
+        mCodeSelected = dgvCostCentres.Rows(e.RowIndex).Cells(2).Value.ToString
+        mVesselSelected = dgvCostCentres.Rows(e.RowIndex).Cells(1).Value.ToString
+        mCostCentreSelected = dgvCostCentres.Rows(e.RowIndex).Cells(0).Value.ToString
         SetEnabled()
 
     End Sub
@@ -242,23 +256,43 @@
     Private Sub txtSearch_TextChanged(sender As Object, e As EventArgs) Handles txtSearch.TextChanged
 
         mSearchString = txtSearch.Text.Trim
-        PopulateCostCentres()
+        If mSearchString <> "" Then
+            cmdSearch.BackColor = Color.Yellow
+            Me.AcceptButton = cmdSearch
+        Else
+            cmdSearch.BackColor = cmdAccept.BackColor
+        End If
+        If mSearchString.Length >= 3 Then
+            PopulateCostCentres()
+        End If
+
+    End Sub
+    Private Sub txtSearch_KeyUp(sender As Object, e As KeyEventArgs) Handles txtSearch.KeyUp
+
+        If e.KeyCode = Keys.Enter Or e.KeyCode = Keys.Tab Then
+            mSearchString = txtSearch.Text.Trim
+            PopulateCostCentres()
+        End If
 
     End Sub
 
     Private Sub mnuCostCentreExport_Click(sender As Object, e As EventArgs) Handles mnuCostCentreExport.Click
 
         Try
-            Dim mExport As New ExportDataGrid
+            Dim pResponse As String
 
-            Dim pResponse As String = mExport.Export(dgvCostCentres)
-
+            pResponse = ExportDataGrid.Export(dgvCostCentres)
             MessageBox.Show("Exported OK" & vbCrLf & "File: " & pResponse)
 
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
 
+    End Sub
+
+    Private Sub cmdSearch_Click(sender As Object, e As EventArgs) Handles cmdSearch.Click
+        mSearchString = txtSearch.Text.Trim
+        PopulateCostCentres()
     End Sub
 
 End Class

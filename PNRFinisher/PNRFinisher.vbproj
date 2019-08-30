@@ -14,7 +14,7 @@
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\Chris.Nicolatos\Documents\Click-Once Applications\PNR Finisher ATH\</PublishUrl>
+    <PublishUrl>\\gr-ath-fs1\PNR Finisher ATH\</PublishUrl>
     <Install>false</Install>
     <InstallFrom>Unc</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -24,8 +24,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>\\gr-ath-pc063\pnr finisher ath\</InstallUrl>
-    <ApplicationRevision>2</ApplicationRevision>
+    <InstallUrl>\\gr-ath-fs1\PNR Finisher ATH\</InstallUrl>
+    <ApplicationRevision>19</ApplicationRevision>
     <ApplicationVersion>3.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -41,6 +41,7 @@
     <DocumentationFile>PNRFinisher.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <CodeAnalysisRuleSet>PNRFinisher.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -118,7 +119,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AirlinePointsCollection.vb" />
+    <Compile Include="Classes\AirlinePointsCollection.vb" />
     <Compile Include="Classes\Airlines.vb" />
     <Compile Include="Classes\Airport.vb" />
     <Compile Include="Classes\AlertsCollection.vb" />
@@ -127,17 +128,18 @@
     <Compile Include="Classes\AirlineNotesCollection.vb" />
     <Compile Include="Classes\AirlineNotesItem.vb" />
     <Compile Include="Classes\ApisPaxCollection.vb" />
-    <Compile Include="Classes\AveragePriceCollection.vb" />
-    <Compile Include="Classes\AveragePriceItem.vb" />
+    <Compile Include="Classes\BaggageAllowanceCollection.vb" />
+    <Compile Include="Classes\BaggageAllowanceItem.vb" />
     <Compile Include="Classes\ClassOfServiceCollection.vb" />
     <Compile Include="Classes\ClassOfServiceItem.vb" />
     <Compile Include="Classes\CloseOffEntriesCollection.vb" />
     <Compile Include="Classes\CloseOffEntriesItem.vb" />
+    <Compile Include="Classes\CO2Item.vb" />
     <Compile Include="Classes\ConditionalGDSEntryCollection.vb" />
     <Compile Include="Classes\ConditionalGDSEntryItem.vb" />
     <Compile Include="Classes\Config.vb" />
-    <Compile Include="Classes\ConfigGDSReferenceCollection.vb" />
-    <Compile Include="Classes\ConfigGDSReferenceItem.vb" />
+    <Compile Include="Scenarios\GDS_BOReferenceCollection.vb" />
+    <Compile Include="Scenarios\GDS_BOReferenceItem.vb" />
     <Compile Include="Classes\CostCentreLookupCollection.vb" />
     <Compile Include="Classes\CostCentreLookupItem.vb" />
     <Compile Include="Classes\CRMCollection.vb" />
@@ -150,6 +152,7 @@
     <Compile Include="Classes\CustomerItem.vb" />
     <Compile Include="Classes\CustomPropertiesCollection.vb" />
     <Compile Include="Classes\CustomPropertiesItem.vb" />
+    <Compile Include="Classes\CustomPropertiesValues.vb" />
     <Compile Include="Classes\CustomPropertiesXMLValues.vb" />
     <Compile Include="Classes\DBUser.vb" />
     <Compile Include="Classes\DICollection.vb" />
@@ -181,6 +184,7 @@
     <Compile Include="Classes\GreekToLatin.vb" />
     <Compile Include="Classes\ItnRTBDoc.vb" />
     <Compile Include="Classes\ItnWebDoc.vb" />
+    <Compile Include="Classes\ItnWebDocElements.vb" />
     <Compile Include="Classes\OpenSegmentCollection.vb" />
     <Compile Include="Classes\OpenSegmentItem.vb" />
     <Compile Include="Classes\OptionQueueCollection.vb" />
@@ -213,7 +217,6 @@
     <Compile Include="Classes\SubDepartmentCollection.vb" />
     <Compile Include="Classes\SubDepartmentItem.vb" />
     <Compile Include="Classes\TicketElementItem.vb" />
-    <Compile Include="Classes\TQTItem.vb" />
     <Compile Include="Classes\UtilitiesDB.vb" />
     <Compile Include="Classes\VesselCollection.vb" />
     <Compile Include="Classes\VesselItem.vb" />
@@ -235,10 +238,28 @@
     <Compile Include="Forms\frmCostCentre.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmMain.Designer.vb">
-      <DependentUpon>frmMain.vb</DependentUpon>
+    <Compile Include="Forms\frmFormFinisher.Designer.vb">
+      <DependentUpon>frmFormFinisher.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frmMain.vb">
+    <Compile Include="Forms\frmFormFinisher.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmFormOSM.Designer.vb">
+      <DependentUpon>frmFormOSM.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmFormOSM.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmFormItinerary.Designer.vb">
+      <DependentUpon>frmFormItinerary.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmFormItinerary.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmFormMain.Designer.vb">
+      <DependentUpon>frmFormMain.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmFormMain.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmOSMAddVessel.Designer.vb">
@@ -265,11 +286,20 @@
     <Compile Include="Forms\frmOSMVessels.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmPNR.vb">
+    <Compile Include="PaxCTC\BackOfficeCollection.vb" />
+    <Compile Include="PaxCTC\BackOfficeItem.vb" />
+    <Compile Include="PaxCTC\CTCPax.vb" />
+    <Compile Include="PaxCTC\CTCPaxCollection.vb" />
+    <Compile Include="PaxCTC\frmPaxCTC.Designer.vb">
+      <DependentUpon>frmPaxCTC.vb</DependentUpon>
+    </Compile>
+    <Compile Include="PaxCTC\frmPaxCTC.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmPNR.Designer.vb">
       <DependentUpon>frmPNR.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmPNR.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmPriceOptimiser.Designer.vb">
@@ -296,6 +326,16 @@
     <Compile Include="Forms\frmVesselForPNR.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ItineraryHelper\frmItineraryHelper.designer.vb">
+      <DependentUpon>frmItineraryHelper.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ItineraryHelper\frmItineraryHelper.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ItineraryHelper\IHAirportCollection.vb" />
+    <Compile Include="ItineraryHelper\IHAirportItem.vb" />
+    <Compile Include="ItineraryHelper\IHItinCollection.vb" />
+    <Compile Include="ItineraryHelper\IHItinItem.vb" />
     <Compile Include="Modules\mod1A.vb" />
     <Compile Include="Modules\modAPIS.vb" />
     <Compile Include="Modules\modEnums.vb" />
@@ -316,6 +356,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Classes\OSMElements.vb" />
+    <Compile Include="PaxCTC\frmPaxCTCOnlyPax.Designer.vb">
+      <DependentUpon>frmPaxCTCOnlyPax.vb</DependentUpon>
+    </Compile>
+    <Compile Include="PaxCTC\frmPaxCTCOnlyPax.vb">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\frmAPISPax.resx">
@@ -327,8 +374,17 @@
     <EmbeddedResource Include="Forms\frmCostCentre.resx">
       <DependentUpon>frmCostCentre.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmMain.resx">
-      <DependentUpon>frmMain.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\frmFormFinisher.resx">
+      <DependentUpon>frmFormFinisher.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmFormItinerary.resx">
+      <DependentUpon>frmFormItinerary.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmFormOSM.resx">
+      <DependentUpon>frmFormOSM.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmFormMain.resx">
+      <DependentUpon>frmFormMain.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmOSMAddVessel.resx">
       <DependentUpon>frmOSMAddVessel.vb</DependentUpon>
@@ -341,6 +397,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmOSMVessels.resx">
       <DependentUpon>frmOSMVessels.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PaxCTC\frmPaxCTC.resx">
+      <DependentUpon>frmPaxCTC.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmPNR.resx">
       <DependentUpon>frmPNR.vb</DependentUpon>
@@ -357,11 +416,17 @@
     <EmbeddedResource Include="Forms\frmVesselForPNR.resx">
       <DependentUpon>frmVesselForPNR.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ItineraryHelper\frmItineraryHelper.resx">
+      <DependentUpon>frmItineraryHelper.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PaxCTC\frmPaxCTCOnlyPax.resx">
+      <DependentUpon>frmPaxCTCOnlyPax.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

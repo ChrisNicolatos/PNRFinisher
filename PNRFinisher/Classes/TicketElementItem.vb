@@ -36,12 +36,4 @@ Public Class TicketElementItem
             .Remark = pRemark
         End With
     End Sub
-    Friend Sub Clear()
-        With mudtProps
-            .ElementNo = 0
-            .PCC = ""
-            .ActionDateTime = Now
-            .Remark = ""
-        End With
-    End Sub
 End Class

@@ -41,6 +41,12 @@ Partial Class frmPriceOptimiser
         Me.cmdTopRight = New System.Windows.Forms.Button()
         Me.dgvPNRs = New System.Windows.Forms.DataGridView()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.txtAmadeusLastChecked = New System.Windows.Forms.TextBox()
+        Me.txtGalileoLastChecked = New System.Windows.Forms.TextBox()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Label3 = New System.Windows.Forms.Label()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.txtTimeChecked = New System.Windows.Forms.TextBox()
         Me.mnuOptimiser.SuspendLayout()
         CType(Me.dgvPNRs, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -190,11 +196,65 @@ Partial Class frmPriceOptimiser
         Me.Label1.TabIndex = 9
         Me.Label1.Text = "These PNRs can be optimised"
         '
+        'txtAmadeusLastChecked
+        '
+        Me.txtAmadeusLastChecked.Location = New System.Drawing.Point(755, 26)
+        Me.txtAmadeusLastChecked.Name = "txtAmadeusLastChecked"
+        Me.txtAmadeusLastChecked.Size = New System.Drawing.Size(246, 20)
+        Me.txtAmadeusLastChecked.TabIndex = 18
+        '
+        'txtGalileoLastChecked
+        '
+        Me.txtGalileoLastChecked.Location = New System.Drawing.Point(755, 46)
+        Me.txtGalileoLastChecked.Name = "txtGalileoLastChecked"
+        Me.txtGalileoLastChecked.Size = New System.Drawing.Size(246, 20)
+        Me.txtGalileoLastChecked.TabIndex = 19
+        '
+        'Label2
+        '
+        Me.Label2.AutoSize = True
+        Me.Label2.Location = New System.Drawing.Point(610, 30)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(115, 13)
+        Me.Label2.TabIndex = 20
+        Me.Label2.Text = "Amadeus last checked"
+        '
+        'Label3
+        '
+        Me.Label3.AutoSize = True
+        Me.Label3.Location = New System.Drawing.Point(610, 50)
+        Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(103, 13)
+        Me.Label3.TabIndex = 21
+        Me.Label3.Text = "Galileo last checked"
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.Location = New System.Drawing.Point(610, 10)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(53, 13)
+        Me.Label4.TabIndex = 23
+        Me.Label4.Text = "Time now"
+        '
+        'txtTimeChecked
+        '
+        Me.txtTimeChecked.Location = New System.Drawing.Point(755, 6)
+        Me.txtTimeChecked.Name = "txtTimeChecked"
+        Me.txtTimeChecked.Size = New System.Drawing.Size(246, 20)
+        Me.txtTimeChecked.TabIndex = 22
+        '
         'frmPriceOptimiser
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1474, 342)
+        Me.Controls.Add(Me.Label4)
+        Me.Controls.Add(Me.txtTimeChecked)
+        Me.Controls.Add(Me.Label3)
+        Me.Controls.Add(Me.Label2)
+        Me.Controls.Add(Me.txtGalileoLastChecked)
+        Me.Controls.Add(Me.txtAmadeusLastChecked)
         Me.Controls.Add(Me.cmdBottomRight)
         Me.Controls.Add(Me.cmdBottomLeft)
         Me.Controls.Add(Me.cmdTopLeft)
@@ -232,4 +292,10 @@ Partial Class frmPriceOptimiser
     Friend WithEvents cmdTopRight As Button
     Friend WithEvents dgvPNRs As DataGridView
     Friend WithEvents Label1 As Label
+    Friend WithEvents txtAmadeusLastChecked As TextBox
+    Friend WithEvents txtGalileoLastChecked As TextBox
+    Friend WithEvents Label2 As Label
+    Friend WithEvents Label3 As Label
+    Friend WithEvents Label4 As Label
+    Friend WithEvents txtTimeChecked As TextBox
 End Class

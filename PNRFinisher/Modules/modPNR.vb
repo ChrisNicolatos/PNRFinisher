@@ -60,12 +60,12 @@ Module modPNR
 
 
     End Sub
-    Public Sub InitSettings(ByVal mGDSUser As GDSUser)
+    Public Function InitSettings(ByVal mGDSUser As GDSUser, ByVal pBackOffice As Integer) As Integer
         Try
             mstrRequestedPCC = mGDSUser.PCC
             mstrRequestedUser = mGDSUser.User
 
-            mMySettings = New Config(mGDSUser)
+            mMySettings = New Config(mGDSUser, pBackOffice)
             If Not mHomeSettingsExist Then
                 mHomeSettings = mMySettings
                 mHomeSettingsExist = True
@@ -78,17 +78,13 @@ Module modPNR
             End If
         End Try
 
-    End Sub
+        Return mMySettings.PCCBackOffice
+    End Function
     Public ReadOnly Property MySettings As Config
         Get
             Return mMySettings
         End Get
 
-    End Property
-    Public ReadOnly Property MyHomeSettings As Config
-        Get
-            Return mHomeSettings
-        End Get
     End Property
     Public ReadOnly Property RequestedPCC As String
         Get
@@ -146,9 +142,10 @@ Module modPNR
         End If
 
     End Function
-    Public ReadOnly Property GetClassOfService(ByVal pCarrier As String, ByVal pOrigin As String, ByVal pDestination As String, ByVal pClassOfService As String) As ClassOfServiceItem
+    Public ReadOnly Property ReadClassOfService(ByVal pCarrier As String, ByVal pOrigin As String, ByVal pDestination As String, ByVal pClassOfService As String) As ClassOfServiceItem
         Get
             Return mClassOfService.Load(pCarrier, pOrigin, pDestination, pClassOfService)
         End Get
     End Property
+
 End Module

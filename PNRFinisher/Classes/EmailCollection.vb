@@ -8,7 +8,7 @@ Public Class EmailCollection
     End Sub
     Public ReadOnly Property FromAddress As String
         Get
-            FromAddress = mFromAddress
+            Return mFromAddress
         End Get
     End Property
     Public Sub AddItem(ByVal pElementNo As Integer, ByVal pEmailAddress As String, ByVal pEmailComment As String)

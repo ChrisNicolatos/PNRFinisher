@@ -1,17 +1,19 @@
-﻿Public Class frmVesselForPNR
+﻿Option Strict On
+Option Explicit On
+Public Class frmVesselForPNR
 
     Dim mstrVesselName As String
     Dim mstrRegistration As String
 
     Public ReadOnly Property VesselName() As String
         Get
-            VesselName = mstrVesselName
+            Return mstrVesselName
         End Get
     End Property
 
     Public ReadOnly Property Registration() As String
         Get
-            Registration = mstrRegistration
+            Return mstrRegistration
         End Get
     End Property
 

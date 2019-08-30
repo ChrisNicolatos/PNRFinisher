@@ -4,12 +4,12 @@ Public Class CustomerGroupCollection
     Inherits Collections.Generic.Dictionary(Of Integer, CustomerGroupItem)
     Private mAllCustomer As New CustomerGroupCollectionAll
 
-    Public Sub Load(ByVal SearchString As String)
+    Public Sub Load(ByVal SearchString As String, ByVal pBackOffice As Integer)
 
         Try
             If mAllCustomer.Count = 0 Then
                 Cursor.Current = Cursors.WaitCursor
-                mAllCustomer.Load()
+                mAllCustomer.Load(pBackOffice)
             End If
 
             MyBase.Clear()

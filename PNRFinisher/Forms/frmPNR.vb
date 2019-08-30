@@ -1,7 +1,7 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class frmPNR
-    Private Const VersionText As String = "Athens PNR Finisher (18/12/2018 12:54)"
+    Private Const VersionText As String = "V 3.17 (18/06/2019 16:45)"
     ' 08/11/2018 17:11
     ' 1. Show EMD Tickets and ancillary services description
     ' 2. Show RIR and *RI
@@ -41,7 +41,74 @@ Public Class frmPNR
     ' 1. Error in OSM LoG - When selecting office without a signee name (CYPRUS), the program should pick up the booked by name
     '    but it doesn't. It reads the booked by and displays it but doesn't store it in the Signed By field for the 
     '    PDF file. Now fixed (Agorastos)
-    ' 17/12/2018 15:05
+    ' 01/02/2019 10:07 (PNRFinisher_3_0_0_2)
+    ' 1. Itinerary helper replaces the Average Price module (I have not made public the option to enter ... as a city code specifying ANY AIRPORT)
+    ' 04/02/2019 14:49 (PNRFinisher_3_0_0_3)
+    ' 1. Urgent hotfix - Itinerary helper form crashes with disposed form when clicked a second time
+    ' 08/02/2019 10:57 (PNRFinisher_3_0_0_4)
+    ' 1. Added a new itinerary format for OSM Aimery/Moxie
+    ' 11/02/2019 10:42 (PNRFinisher_3_0_0_6)
+    ' 1. Added tickets info in itinerary format for OSM Aimery/Moxie
+    ' 2. In frmPriceOptimiser if the PCC is blank, could not set Status to Ignored/Actioned nor open PNR in GDS. This has now been fixed.
+    ' 19/02/2019 12:25 (PNRFinisher_3_0_0_7)
+    ' 1. Add new functionality in Alerts Collection to send particular clients PNRs to a queue at time of booking
+    '    When an alert that has client code, no finisher alert, no downsell alert then the Queue Numbers (1A and 1G)
+    '    are used to send all PNRs for the client  to the specified queues.
+    ' 05/03/2019
+    ' 1. Change the flow of the cost centre form to make it quicker
+    '    - search starts auomatically when 3 characters have been entered
+    '    - when entering search string, enter triggers the search
+    '    - there is also a button to trigger the search
+    ' 20/03/2019 15:00 (PNRFinisher_3_0_0_8)
+    ' 1. GDSReadPNR1G.GetTicketsHTEParser was crashing because of a short string. Changed the AND to ANDALSO
+    ' 2. Added a new itinerary option to show the equipment code per segment
+    ' 11/04/2019 12:00 (PNRFinisher_3_0_0_9)
+    ' 1. Itinerary Connection time in Amadeus is wrong when it is greater than 9:59 (DM command in Amadeus is a 3 digit number giving 1 digit hour and 2 digit minutes)
+    '    Instead of taking the connection time from the DM command in GDSReadPNR.GetSegs1A(), calculate the connection time from the previous arrival and the current departure times
+    ' 2. Terminal number when there are stopovers with terminals are wrong because the program reads the last DEPARTURE TERMINAL from DO command and this is
+    '    usually the stopover point's terminal and not the boarding point's terminal. Changed GDSSegItem.AnalyseSegDo1A() to look for airport code as well in the
+    '    lines containing the text "DEPARTURE" and "ARRIVAL" for the relevant terminals
+    ' 19/04/2019 12:37  (PNRFinisher_3_0_0_10)
+    ' 1. Price Optimiser
+    '    Added three new text boxes:
+    '       - Time now
+    '       - Amadeus last check
+    '       - Galileo last check
+    '    these show the time the downsell manager last wrote the START record to the log. If the time is more than 1 hour, the display is orange, else white
+    ' 2. Price Optimiser
+    '    The lookup for which PNRs are shown to the Team Leader has been enhanced and will select PNR depending on the client's Operations Group as well as the'
+    '    agent's sign. Therefore a PNR created for a client by an agent who doesn't belong to the client's ops group will now show in the team leader of the
+    '    group where the client belongs as well as the team leader of the agent who created it
+    ' 22/04/2019 14:55  (PNRFinisher_3_0_0_11)
+    ' 1. frmPriceOptimiser
+    '    Changed the format string for the time in the text boxes. It was hh instaed of HH and showed the time in 12-hour format instead of 24-hour format which is more legible
+    ' 07/05/2019 16:47  (PNRFinisher_3_0_0_12)
+    ' 1. In GDSReadPNR.GetSegs1A() added a check to ignore FLWN segments because they cause havoc with the calculation of flown segments
+    '    However, by leaving them out, problems arise when matching tickets to segments.
+    ' 13/05/2019 15:17  (PNRFinisher_3_0_0_13)
+    ' 1. GDSReadPNR1G.GetPassengers1G() added the line
+    '    pAllPax = pAllPax.Replace(".I/",".")
+    '    so as to bypass Infant Passenger which caused the passenger name parser to crash. This is a workaround and not a solution
+    ' 14/06/2019 11:00  (PNRFinisher_3_0_0_14)
+    ' 1. Hotfix - added Cost Centres (CC2) for Discovery database
+    ' 14/06/2019 15:13  (PNRFinisher_3_0_0_15)
+    ' 1. Added Pax contact information as per IATA Mandate 830D
+    ' 14/06/2019 15:45  (PNRFinisher_3_0_0_16)
+    ' URGENT Fix for baggage allowance
+    ' In Baggage AllowanceCollection.AddItem()
+    ' added a check that the key does not exist in the collection before adding it. For complex TQTs this could crash
+    ' REMEMBER TO REMOVE UNNECCESSARY COLUMNS FROM PaxApisInformation
+    ' ppQRFrequentFlyer
+    ' ppIDNumber
+    ' ppRank
+    ' ppEmail
+    ' ppMobile
+    ' AFTER THE NEW VERSION HAS BEEN INSTALLED 
+    ' 18/06/2019 16:46  (PNRFinisher_3_0_0_17)
+    ' 1. Added an option for CO2 allowance in the itineraries
+
+
+    ' TODO
     ' 1. start setting up the Finisher to handle scenarios (OSM/Takis)
     ' Scenarios will be set up depending on the type of booking:
     '   - ATH booking with ATH tickets - this is the normal everyday case all remarks pertain to one office
@@ -59,9 +126,11 @@ Public Class frmPNR
     '               - ATH back office will be updated automatically from the AIR/MIR file when the ticket is issued
     '               - QLI back office will require a manual BT/TKPDAD command to update the back office
     ' 2. OSM needs a facility to enter ranks as a DI field (OSM/Takis)
-
-    Private mSelectedPNRGDSCode As EnumGDSCode
-    Private mSelectedItnGDSCode As EnumGDSCode
+    ' 3. ID and RANK to be entered in the docs grid to be entered in the name field as (ID.....)
+    '    Give an option to the user to select which items should be entered - None, ID, ID-Rank, ID-Rank-Nationality, Rank only, etc
+    '    Possibly set up a field to specify the required format per client
+    ' 4. One time vessel is not working
+    Private mSelectedGDSCode As EnumGDSCode
     Private mflgLoading As Boolean
     Private mflgLoadingItin As Boolean
     Private mflgAPISUpdate As Boolean
@@ -70,23 +139,26 @@ Public Class frmPNR
     Private mOSMAgents As New OSMEmailCollection
 
     Private mfrmOptimiser As frmPriceOptimiser
-
+    Private mfrmItinHelper As frmItineraryHelper
+    Private mfrmCTC As New frmPaxCTC
+    Private mfrmCTCPax As New frmPaxCTCOnlyPax
     Private mobjCustomerSelected As CustomerItem
     Private mobjSubDepartmentSelected As SubDepartmentItem
     Private mobjCRMSelected As CRMItem
     Private mobjVesselSelected As VesselItem
     Private mobjGender As New ReferenceGenderCollection
+    Private mobjAirlinePoints As New AirlinePointsCollection
+    Private mobjCTC As New CTCPaxCollection
 
     Private mobjPNR As New GDSReadPNR
     Private mOSMPax As New OSMPaxCollection
     Private mflgReadPNR As Boolean
-    Private mintMaxString As Integer = 80
 
 #Region "Events"
     Private Sub frmPNR_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Try
             mflgLoading = True
-            Text = VersionText
+            SSVersion.Text = VersionText
             dgvApis.VirtualMode = False
             If Not MySettings Is Nothing AndAlso MySettings.PriceOptimiser Then
                 mfrmOptimiser = New frmPriceOptimiser
@@ -105,16 +177,30 @@ Public Class frmPNR
     End Sub
     Private Sub cmdPNRRead1APNR_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdPNRRead1APNR.Click
         Try
-            mSelectedPNRGDSCode = EnumGDSCode.Amadeus
+            mSelectedGDSCode = EnumGDSCode.Amadeus
+            PNRReadPNR()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub cmdPNRRead1GPNR_Click(sender As Object, e As EventArgs) Handles cmdPNRRead1GPNR.Click
+        Try
+            mSelectedGDSCode = EnumGDSCode.Galileo
+            PNRReadPNR()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub PNRReadPNR()
+        Try
             ClearForm()
-            ReadPNR(EnumGDSCode.Amadeus)
+            ReadPNR(mSelectedGDSCode)
             ShowPriceOptimiser()
             SetEnabled()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
     End Sub
-
     Private Sub txtCustomer_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtCustomer.TextChanged
 
         Try
@@ -289,11 +375,18 @@ Public Class frmPNR
             Dim pFrm As New frmVesselForPNR
 
             If pFrm.ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
-                With mobjPNR.NewElements
-                    .SetVesselForPNR(pFrm.VesselName, pFrm.Registration)
+                If Not MySettings Is Nothing Then
+                    mobjPNR.NewElements.SetVesselForPNR("", "")
+                    mobjPNR.NewElements.VesselName.SetText(pFrm.VesselName & If(pFrm.Registration <> "", " REG " & pFrm.Registration, ""))
                     mflgLoading = True
-                    txtVessel.Text = .VesselNameForPNR.TextRequested & If(.VesselFlagForPNR.TextRequested <> "", " REG " & .VesselFlagForPNR.TextRequested, "")
-                End With
+                    txtVessel.Text = pFrm.VesselName & If(pFrm.Registration <> "", " REG " & pFrm.Registration, "")
+                    'PopulateVesselsList()
+                End If
+                'With mobjPNR.NewElements
+                '    .SetVesselForPNR(pFrm.VesselName, pFrm.Registration)
+                '    mflgLoading = True
+                '    txtVessel.Text = .VesselNameForPNR.TextRequested & If(.VesselFlagForPNR.TextRequested <> "", " REG " & .VesselFlagForPNR.TextRequested, "")
+                'End With
             End If
             pFrm.Dispose()
             SetEnabled()
@@ -394,11 +487,11 @@ Public Class frmPNR
 
     Private Sub cmdItn1AReadPNR_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadPNR.Click
 
-        mSelectedItnGDSCode = EnumGDSCode.Amadeus
+        mSelectedGDSCode = EnumGDSCode.Amadeus
         Try
             Cursor = System.Windows.Forms.Cursors.WaitCursor
             Dim mGDSUser As New GDSUser(EnumGDSCode.Amadeus)
-            InitSettings(mGDSUser)
+            InitSettings(mGDSUser, 0)
             SetupPCCOptions()
             lblItnPNRCounter.Text = ""
             ProcessRequestedPNRs(txtItnPNR)
@@ -420,9 +513,9 @@ Public Class frmPNR
             lblItnPNRCounter.Text = ""
             Cursor = System.Windows.Forms.Cursors.WaitCursor
             txtItnPNR.Text = mobjPNR.RetrievePNRsFromQueue(txtItnPNR.Text)
-            mSelectedItnGDSCode = EnumGDSCode.Amadeus
-            Dim mGDSUser As New GDSUser(mSelectedItnGDSCode)
-            InitSettings(mGDSUser)
+            mSelectedGDSCode = EnumGDSCode.Amadeus
+            Dim mGDSUser As New GDSUser(mSelectedGDSCode)
+            InitSettings(mGDSUser, 0)
             SetupPCCOptions()
             ProcessRequestedPNRs(txtItnPNR)
             CopyItinToClipboard()
@@ -437,9 +530,8 @@ Public Class frmPNR
     End Sub
     Private Sub cmdItnRead1ACurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadCurrent.Click
         Try
-            mSelectedItnGDSCode = EnumGDSCode.Amadeus
-            ItnReadCurrentPNR()
-            ShowPriceOptimiser()
+            mSelectedGDSCode = EnumGDSCode.Amadeus
+            ITNReadCurrent()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
@@ -447,13 +539,20 @@ Public Class frmPNR
     End Sub
     Private Sub cmdItnRead1GCurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1GReadCurrent.Click
         Try
-            mSelectedItnGDSCode = EnumGDSCode.Galileo
+            mSelectedGDSCode = EnumGDSCode.Galileo
+            ITNReadCurrent()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+    Private Sub ITNReadCurrent()
+        Try
             ItnReadCurrentPNR()
             ShowPriceOptimiser()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
-
     End Sub
     Private Sub cmdItnRefresh_Click(sender As Object, e As EventArgs) Handles cmdItnRefresh.Click
 
@@ -776,6 +875,36 @@ Public Class frmPNR
             MessageBox.Show(ex.Message)
         End Try
     End Sub
+    Private Sub chkItnEquipmentCode_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnEquipmentCode.CheckedChanged
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowEquipmentCode = chkItnEquipmentCode.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub chkItnCO2_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnCO2.CheckedChanged
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowCO2 = chkItnCO2.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
     Private Sub txtPNR_TextChanged(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles txtItnPNR.TextChanged
 
         Try
@@ -795,7 +924,7 @@ Public Class frmPNR
     Private Sub cmdCostCentre_Click(sender As Object, e As EventArgs) Handles cmdCostCentre.Click
 
         Try
-            Dim pfrmcostCentre As New frmCostCentre
+            Dim pfrmcostCentre As New frmCostCentre(MySettings.PCCBackOffice)
             Dim pResult As System.Windows.Forms.DialogResult
             mflgLoading = False
             pResult = pfrmcostCentre.ShowDialog()
@@ -813,28 +942,42 @@ Public Class frmPNR
 
     End Sub
 
-    Private Sub cmdAveragePrice_Click(sender As Object, e As EventArgs) Handles cmdAveragePrice.Click
+    Private Sub cmdItineraryHelper_Click(sender As Object, e As EventArgs) Handles cmdItineraryHelper.Click
 
         Try
-            Dim pAveragePrice As New AveragePriceCollection
-            Dim pFromDate As Date = DateAdd(DateInterval.Month, -3, Today)
-            pFromDate = DateSerial(Year(pFromDate), Month(pFromDate), 1)
-            With pAveragePrice
-                .SetValues(pFromDate, mobjPNR.Itinerary)
-                If .Load() Then
-                    lblAvPriceDetails.Text = MySettings.OfficeCityCode & " office:From: " & DateToIATA(.FromDate) & "  " & .Itinerary
-                    lblAveragePrice.Text = .TicketCount & " tkts - Avge Price (incl taxes): " & Format(.AveragePrice, "#,##0 EUR")
-                Else
-                    lblAvPriceDetails.Text = "Cannot calculate round trip"
-                    lblAveragePrice.Text = ""
-                End If
-            End With
+            If mfrmItinHelper.IsDisposed Then
+                mfrmItinHelper = New frmItineraryHelper(MySettings.PCCBackOffice)
+            End If
+            mfrmItinHelper.Location = Me.Location
+            mfrmItinHelper.DisplayItinerary(mobjPNR.Itinerary)
+            mfrmItinHelper.Show()
+            mfrmItinHelper.BringToFront()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
 
     End Sub
+    'Private Sub cmdAveragePrice_Click(sender As Object, e As EventArgs)
 
+    '    Try
+    '        Dim pAveragePrice As New AveragePriceCollection
+    '        Dim pFromDate As Date = DateAdd(DateInterval.Month, -3, Today)
+    '        pFromDate = DateSerial(Year(pFromDate), Month(pFromDate), 1)
+    '        With pAveragePrice
+    '            .SetValues(pFromDate, mobjPNR.Itinerary)
+    '            If .Load() Then
+    '                lblAvPriceDetails.Text = MySettings.OfficeCityCode & " office:From: " & DateToIATA(.FromDate) & "  " & .Itinerary
+    '                lblAveragePrice.Text = .TicketCount & " tkts - Avge Price (incl taxes): " & Format(.AveragePrice, "#,##0 EUR")
+    '            Else
+    '                lblAvPriceDetails.Text = "Cannot calculate round trip"
+    '                lblAveragePrice.Text = ""
+    '            End If
+    '        End With
+    '    Catch ex As Exception
+    '        MessageBox.Show(ex.Message)
+    '    End Try
+
+    'End Sub
 #Region "OSM"
 
     Private Sub cmdOSMRefresh_Click(sender As Object, e As EventArgs) Handles cmdOSMRefresh.Click
@@ -964,8 +1107,7 @@ Public Class frmPNR
     End Sub
     Private Sub cmdOSMPrepareDoc_Click(sender As Object, e As EventArgs) Handles cmdOSMPrepareDoc.Click
         Try
-            Dim pWebDoc As New OSMWebDoc
-            webOSMDoc.DocumentText = pWebDoc.OSMWebHeader(chkOSMFullPaxSDetails.Checked, lstOSMAgents, lstOSMToEmail, lstOSMCCEmail, lstOSMVessels, dgvOSMPax, mOSMPax)
+            webOSMDoc.DocumentText = OSMWebDoc.OSMWebHeader(chkOSMFullPaxSDetails.Checked, lstOSMAgents, lstOSMToEmail, lstOSMCCEmail, lstOSMVessels, dgvOSMPax, mOSMPax)
             cmdOSMCopyDocument.Enabled = True
         Catch ex As Exception
             MessageBox.Show("cmdOSMPrepareDoc_Click()" & vbCrLf & ex.Message)
@@ -1035,9 +1177,11 @@ Public Class frmPNR
     End Sub
     Private Sub optItnFormatDefaultAndPlain_CheckedChanged(sender As Object, e As EventArgs) Handles optItnFormatDefault.CheckedChanged, optItnFormatPlain.CheckedChanged
         Try
-            If Not mflgLoading Or Not mflgLoadingItin Then
-                If Not MySettings Is Nothing Then
-                    ChangeItinFormat(True)
+            If CType(sender, RadioButton).Checked Then
+                If Not mflgLoading Or Not mflgLoadingItin Then
+                    If Not MySettings Is Nothing Then
+                        ChangeItinFormat(True)
+                    End If
                 End If
             End If
         Catch ex As Exception
@@ -1045,11 +1189,13 @@ Public Class frmPNR
         End Try
     End Sub
 
-    Private Sub optItnFormat_CheckedChanged(sender As Object, e As EventArgs) Handles optItnFormatSeaChefs.CheckedChanged, optItnFormatSeaChefsWith3LetterCode.CheckedChanged, optItnFormatEuronav.CheckedChanged, optItnFormatFleet.CheckedChanged
+    Private Sub optItnFormat_CheckedChanged(sender As Object, e As EventArgs) Handles optItnFormatSeaChefs.CheckedChanged, optItnFormatSeaChefsWith3LetterCode.CheckedChanged, optItnFormatEuronav.CheckedChanged, optItnFormatFleet.CheckedChanged, optItnFormatAimeryMoxie.CheckedChanged
         Try
-            If Not mflgLoading Or Not mflgLoadingItin Then
-                If Not MySettings Is Nothing Then
-                    ChangeItinFormat(False)
+            If CType(sender, RadioButton).Checked Then
+                If Not mflgLoading Or Not mflgLoadingItin Then
+                    If Not MySettings Is Nothing Then
+                        ChangeItinFormat(False)
+                    End If
                 End If
             End If
         Catch ex As Exception
@@ -1060,11 +1206,6 @@ Public Class frmPNR
         Try
             If Not mflgLoading Or Not mflgLoadingItin Then
                 If Not MySettings Is Nothing Then
-                    ' optItnFormatDefault = 0
-                    ' optItnFormatPlain = 1
-                    ' optItnFormatSeaChefs = 2
-                    ' chkItnSeaChefsWithCode = 3
-                    ' optItnFormatEuronav = 4
                     If optItnFormatDefault.Checked Then
                         MySettings.FormatStyle = EnumItnFormat.DefaultFormat
                     ElseIf optItnFormatPlain.Checked Then
@@ -1077,6 +1218,8 @@ Public Class frmPNR
                         MySettings.FormatStyle = EnumItnFormat.Euronav
                     ElseIf optItnFormatFleet.Checked Then
                         MySettings.FormatStyle = EnumItnFormat.Fleet
+                    ElseIf optItnFormatAimeryMoxie.Checked Then
+                        MySettings.FormatStyle = EnumItnFormat.AimeryMoxie
                     End If
                     MySettings.Save()
 
@@ -1096,7 +1239,7 @@ Public Class frmPNR
         Try
             If mobjPNR.Segments.Count > 0 And mobjPNR.Passengers.Count > 0 Then
                 Dim pOSMLoG = New OSMLog
-                pOSMLoG.CreatePDF(MySettings.AgentName, mobjPNR)
+                pOSMLoG.CreatePDF(mobjPNR)
             Else
                 MessageBox.Show("PNR must have passengers and segments to produce a Letter of Guarantee")
             End If
@@ -1231,16 +1374,7 @@ Public Class frmPNR
 
     End Sub
 
-    Private Sub cmdPNRRead1GPNR_Click(sender As Object, e As EventArgs) Handles cmdPNRRead1GPNR.Click
-        Try
-            mSelectedPNRGDSCode = EnumGDSCode.Galileo
-            ClearForm()
-            ReadPNR(EnumGDSCode.Galileo)
-            SetEnabled()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
+
 
     Private Sub cmdAPISEditPax_Click(sender As Object, e As EventArgs) Handles cmdAPISEditPax.Click
 
@@ -1385,7 +1519,10 @@ Public Class frmPNR
             mobjSubDepartmentSelected = New SubDepartmentItem
             mobjCRMSelected = New CRMItem
             mobjVesselSelected = New VesselItem
-
+            mobjAirlinePoints = New AirlinePointsCollection
+            mobjCTC = New CTCPaxCollection
+            mfrmCTC.Dispose()
+            mfrmCTCPax.Dispose()
             lblPNR.Text = ""
             lblPax.Text = ""
             lblSegs.Text = ""
@@ -1505,8 +1642,8 @@ Public Class frmPNR
 
     End Sub
     Private Sub ItnReadCurrentPNR()
-        Dim mGDSUser As New GDSUser(mSelectedItnGDSCode)
-        InitSettings(mGDSUser)
+        Dim mGDSUser As New GDSUser(mSelectedGDSCode)
+        InitSettings(mGDSUser, 0)
         SetupPCCOptions()
         lblItnPNRCounter.Text = ""
         ReadPNRandCreateItn(False)
@@ -1576,7 +1713,7 @@ Public Class frmPNR
 
         Try
             PNRWrite = UpdatePNR(WritePNR, WriteDocs)
-            If mSelectedPNRGDSCode = EnumGDSCode.Galileo And PNRWrite.Length > 6 Then
+            If mSelectedGDSCode = EnumGDSCode.Galileo And PNRWrite.Length > 6 Then
                 MessageBox.Show("Please enter *R or *ALL in Galileo to show the PNR" & If(PNRWrite <> "", vbCrLf & vbCrLf & "PNR: " & PNRWrite, ""), "Galileo Information for PNR")
             End If
             mflgReadPNR = False
@@ -1594,12 +1731,12 @@ Public Class frmPNR
 
             If SearchString = "" Then
                 mobjCRMSelected = Nothing
-                mobjPNR.NewElements.SetItem(mobjCRMSelected)
+                mobjPNR.NewElements.SetCRM(0, "", "")
             End If
             lstCRM.Items.Clear()
 
             If Not mobjCustomerSelected Is Nothing Then
-                pobjCRM.Load(mobjCustomerSelected.ID)
+                pobjCRM.Load(mobjCustomerSelected.ID, MySettings.PCCBackOffice)
 
                 For Each pCRM As CRMItem In pobjCRM.Values
                     If SearchString = "" Or pCRM.ToString.ToUpper.Contains(SearchString.ToUpper) Then
@@ -1630,7 +1767,7 @@ Public Class frmPNR
         Try
             Dim pCustomers As New CustomerCollection
 
-            pCustomers.Load(SearchString)
+            pCustomers.Load(SearchString, MySettings.PCCBackOffice)
 
             lstCustomers.Items.Clear()
             For Each pItem As CustomerItem In pCustomers.Values
@@ -1663,12 +1800,12 @@ Public Class frmPNR
 
             If SearchString = "" Then
                 mobjSubDepartmentSelected = Nothing
-                mobjPNR.NewElements.SetItem(mobjSubDepartmentSelected)
+                mobjPNR.NewElements.SetSubDepartment(0, "", "")
             End If
             lstSubDepartments.Items.Clear()
 
             If Not mobjCustomerSelected Is Nothing Then
-                pobjSubDepartments.Load(mobjCustomerSelected.ID)
+                pobjSubDepartments.Load(mobjCustomerSelected.ID, MySettings.PCCBackOffice)
 
                 For Each pSubDepartment As SubDepartmentItem In pobjSubDepartments.Values
                     If SearchString = "" Or pSubDepartment.ToString.ToUpper.Contains(SearchString.ToUpper) Then
@@ -1704,7 +1841,7 @@ Public Class frmPNR
 
             If Not mobjCustomerSelected Is Nothing Then
 
-                pobjVessels.Load(mobjCustomerSelected.ID)
+                pobjVessels.Load(mobjCustomerSelected.ID, MySettings.PCCBackOffice)
 
                 For Each pVessel As VesselItem In pobjVessels.Values
                     If mobjPNR.NewElements.VesselName.TextRequested = "" Or pVessel.ToString.ToUpper.Contains(mobjPNR.NewElements.VesselName.TextRequested.ToUpper) Then
@@ -1746,7 +1883,7 @@ Public Class frmPNR
                 webItnDoc.Top = rtbItnDoc.Top
                 webItnDoc.Visible = True
                 webItnDoc.BringToFront()
-                webItnDoc.DocumentText = pWebDoc.WebHead & pWebDoc.WebDoc & pWebDoc.WebClose
+                webItnDoc.DocumentText = ItnWebDocElements.WebHead & pWebDoc.WebDoc & ItnWebDocElements.WebClose
             Else
                 webItnDoc.Visible = False
                 rtbItnDoc.Visible = True
@@ -1773,7 +1910,7 @@ Public Class frmPNR
                 webItnDoc.Top = rtbItnDoc.Top
                 webItnDoc.Visible = True
                 rtbItnDoc.Visible = False
-                pWebItn = pWebDoc.WebHead
+                pWebItn = ItnWebDocElements.WebHead
             Else
                 webItnDoc.Visible = False
                 rtbItnDoc.Visible = True
@@ -1791,7 +1928,7 @@ Public Class frmPNR
                 End If
             Next
             If optItnFormatEuronav.Checked Then
-                pWebItn &= pWebDoc.WebClose()
+                pWebItn &= ItnWebDocElements.WebClose()
                 webItnDoc.DocumentText = pWebItn
             End If
         Catch ex As Exception
@@ -1801,20 +1938,24 @@ Public Class frmPNR
     End Sub
     Private Sub makeRTBDoc()
 
-        Dim pItnRTBDoc As New ItnRTBDoc(mobjPNR, mintMaxString, lstItnRemarks)
+        Dim pItnRTBDoc As New ItnRTBDoc(mobjPNR, lstItnRemarks)
         Dim pFont As Font = rtbItnDoc.SelectionFont
         Dim pStart As Integer = rtbItnDoc.Text.Length + 1
-        If MySettings.FormatStyle = EnumItnFormat.Fleet Then
-            rtbItnDoc.Text &= pItnRTBDoc.ATPIRef & vbCrLf
+        If MySettings.FormatStyle = EnumItnFormat.AimeryMoxie Then
+            rtbItnDoc.Text &= pItnRTBDoc.makeRTBDocAimeryMoxie
+        Else
+            If MySettings.FormatStyle = EnumItnFormat.Fleet Then
+                rtbItnDoc.Text &= pItnRTBDoc.ATPIRef & vbCrLf
+            End If
+
+            rtbItnDoc.Text &= pItnRTBDoc.RTBDocPassengers
+
+            Dim pEnd As Integer = rtbItnDoc.Text.Length
+
+            rtbItnDoc.Select(pStart, pEnd)
+            rtbItnDoc.SelectionFont = New Font(pFont, FontStyle.Bold)
+            rtbItnDoc.Text &= pItnRTBDoc.makeRTBDoc
         End If
-
-        rtbItnDoc.Text &= pItnRTBDoc.RTBDocPassengers
-
-        Dim pEnd As Integer = rtbItnDoc.Text.Length
-
-        rtbItnDoc.Select(pStart, pEnd)
-        rtbItnDoc.SelectionFont = New Font(pFont, FontStyle.Bold)
-        rtbItnDoc.Text &= pItnRTBDoc.makeRTBDoc
 
     End Sub
     Private Sub readGDS(ByVal RecordLocator As String)
@@ -1825,7 +1966,7 @@ Public Class frmPNR
             Else
                 mobjPNR.CancelError = False
             End If
-            mobjPNR.Read(mSelectedItnGDSCode, RecordLocator)
+            mobjPNR.Read(mSelectedGDSCode, RecordLocator)
         Catch ex As Exception
             Throw New Exception("readGDS()" & vbCrLf & ex.Message)
         End Try
@@ -1837,7 +1978,7 @@ Public Class frmPNR
             With mobjPNR
                 mflgReadPNR = False
                 Dim mGDSUser As New GDSUser(GDSCode)
-                InitSettings(mGDSUser)
+                InitSettings(mGDSUser, 0)
                 SetupPCCOptions()
                 pDMI = .Read(GDSCode)
                 If .NumberOfPax = 0 And Not .IsGroup Then
@@ -1863,7 +2004,7 @@ Public Class frmPNR
                     MessageBox.Show(.Segments.AirlineAlert, "AIRLINE ALERT", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End If
 
-                PrepareAirlinePoints()
+                PrepareAdditionalEntries()
             End With
             DisplayCustomer()
             APISDisplayPax()
@@ -1902,22 +2043,22 @@ Public Class frmPNR
 
             If pstrCustomerCode <> "" Then
                 Dim pCustomer As New CustomerItem
-                pCustomer.Load(pstrCustomerCode)
+                pCustomer.Load(pstrCustomerCode, MySettings.PCCBackOffice)
                 txtCustomer.Text = pCustomer.Code
                 If pintSubDepartment <> 0 Then
                     Dim pSub As New SubDepartmentItem
-                    pSub.Load(pintSubDepartment)
+                    pSub.Load(pintSubDepartment, MySettings.PCCBackOffice)
                     txtSubdepartment.Text = pSub.Code & " " & pSub.Name
                 End If
                 If Not pstrCRM Is Nothing AndAlso pstrCRM.Length > 0 Then
                     Dim pSub As New CRMItem
-                    pSub.Load(pstrCRM)
+                    pSub.Load(pstrCRM, MySettings.PCCBackOffice)
                     txtCRM.Text = pSub.Code & " " & pSub.Name
                 End If
 
                 If pstrVesselName <> "" Then
                     Dim pVessel As New VesselItem
-                    If pVessel.Load(pstrCustomerCode, pstrVesselName) Then
+                    If pVessel.Load(pstrCustomerCode, pstrVesselName, MySettings.PCCBackOffice) Then
                         mobjPNR.NewElements.VesselNameForPNR.Clear()
                         mobjPNR.NewElements.VesselFlagForPNR.Clear()
                         txtVessel.Text = pVessel.Name
@@ -1934,23 +2075,117 @@ Public Class frmPNR
                 DisplayOldCustomProperty(txtTrId, mobjPNR.ExistingElements.TRId)
 
                 txtReference.Text = mobjPNR.ExistingElements.Reference.Key
-                PrepareAirlinePoints()
+                PrepareAdditionalEntries()
             End If
         Catch ex As Exception
             Throw New Exception("DisplayCustomer()" & vbCrLf & ex.Message)
         End Try
 
     End Sub
+    Private Sub PrepareAdditionalEntries()
+        lstAirlineEntries.Items.Clear()
+        PrepareAirlinePoints()
+        If Not mobjPNR.SSRCTCExists Then
+            PrepareCTC()
+        End If
+    End Sub
+    Private Sub PrepareCTC()
+        Try
+            Dim pFound As String = ""
+            Dim pNotFound As String = ""
+            mobjCTC.Load(MySettings.PCCBackOffice, mobjCustomerSelected.ID)
+            For Each pPax As GDSPaxItem In mobjPNR.Passengers.Values
+                Dim pCTCCommand() As String = {""}
+                Dim pCTCFound As Boolean = False
+                For Each pCTC As CTCPax In mobjCTC.Values
+                    If pPax.FirstName = pCTC.FirstName And pPax.LastName = pCTC.Lastname Then
+                        pCTCCommand = PrepareCTCCommand(pPax.ElementNo, pCTC)
+                        pCTCFound = (pCTCCommand(0) <> "")
+                        Exit For
+                    End If
+                Next
+                If Not pCTCFound Then
+                    For Each pCTC As CTCPax In mobjCTC.Values
+                        If pCTC.Vesselname = mobjPNR.VesselName And pCTC.FirstName = "" And pCTC.Lastname = "" Then
+                            pCTCCommand = PrepareCTCCommand(pPax.ElementNo, pCTC)
+                            pCTCFound = (pCTCCommand(0) <> "")
+                            Exit For
+                        End If
+                    Next
+                End If
+                If Not pCTCFound Then
+                    For Each pCTC As CTCPax In mobjCTC.Values
+                        If pCTC.Vesselname = "" And pCTC.FirstName = "" And pCTC.Lastname = "" Then
+                            pCTCCommand = PrepareCTCCommand(pPax.ElementNo, pCTC)
+                            pCTCFound = (pCTCCommand(0) <> "")
+                            Exit For
+                        End If
+                    Next
+                End If
+                If pCTCFound Then
+                    For i As Integer = 0 To pCTCCommand.GetUpperBound(0)
+                        If pCTCCommand(i) <> "" Then
+                            lstAirlineEntries.Items.Add(pCTCCommand(i), True)
+                        End If
+                    Next
+                    pFound &= pPax.ElementNo & " "
+                Else
+                    pNotFound &= pPax.ElementNo & " "
+                End If
+            Next
+
+            Dim pSSR As Boolean = False
+            If mflgReadPNR AndAlso mobjPNR.SSRCTCExists Then
+                pSSR = True
+            End If
+            SetCTCExists(pSSR, pFound, pNotFound)
+
+        Catch ex As Exception
+            Throw New Exception("PrepareCTC()" & vbCrLf & ex.Message)
+        End Try
+    End Sub
+    Private Function PrepareCTCCommand(ByVal pPaxNumber As Integer, ByVal pCTC As CTCPax) As String()
+        Dim pCommand() As String = {""}
+        Dim pCommandCounter As Integer = 0
+        If pCTC.Refused Then
+            pCommandCounter += 1
+            ReDim Preserve pCommand(pCommandCounter - 1)
+            If mobjPNR.GDSCode = EnumGDSCode.Galileo Then
+                pCommand(pCommandCounter - 1) = "SI.P" & pPaxNumber & "/SSRCTCRYYHK1/PASSENGER REFUSED TO PROVIDE INFORMATION"
+            Else
+                pCommand(pCommandCounter - 1) = "SRCTCR-PASSENGER REFUSED TO PROVIDE INFORMATION/P" & pPaxNumber
+            End If
+        Else
+            If pCTC.Email <> "" Then
+                pCommandCounter += 1
+                ReDim Preserve pCommand(pCommandCounter - 1)
+                If mobjPNR.GDSCode = EnumGDSCode.Galileo Then
+                    pCommand(pCommandCounter - 1) = "SI.P" & pPaxNumber & "/SSRCTCEYYHK1/" & pCTC.Email.Replace("@", "//").Replace("_", "..").Replace("-", "./")
+                Else
+                    pCommand(pCommandCounter - 1) = "SRCTCE-" & pCTC.Email.Replace("@", "//").Replace("_", "..").Replace("-", "./") & "/P" & pPaxNumber
+                End If
+            End If
+            If pCTC.Mobile <> "" Then
+                pCommandCounter += 1
+                ReDim Preserve pCommand(pCommandCounter - 1)
+                If mobjPNR.GDSCode = EnumGDSCode.Galileo Then
+                    pCommand(pCommandCounter - 1) = "SI.P" & pPaxNumber & "/SSRCTCMYYHK1/" & pCTC.Mobile
+                Else
+                    pCommand(pCommandCounter - 1) = "SRCTCM-" & pCTC.Mobile & "/P" & pPaxNumber
+                End If
+            End If
+        End If
+        Return pCommand
+    End Function
     Private Sub PrepareAirlinePoints()
         Try
             Dim pFound As Boolean = False
-            lstAirlineEntries.Items.Clear()
 
             If mobjCustomerSelected.ID <> 0 Then
-                Dim pAirlinePoints As New AirlinePointsCollection
+                'Dim pAirlinePoints As New AirlinePointsCollection
                 For Each pSeg As GDSSegItem In mobjPNR.Segments.Values
-                    pAirlinePoints.Load(mobjCustomerSelected.ID, pSeg.Airline, mobjPNR.GDSCode)
-                    For Each pItem As String In pAirlinePoints
+                    mobjAirlinePoints.Load(mobjCustomerSelected.ID, pSeg.Airline, mobjPNR.GDSCode, MySettings.PCCBackOffice)
+                    For Each pItem As String In mobjAirlinePoints
                         pFound = False
                         For i As Integer = 0 To lstAirlineEntries.Items.Count - 1
                             If lstAirlineEntries.Items(i).ToString = pItem.ToString Then
@@ -2024,9 +2259,9 @@ Public Class frmPNR
                     pConditionalEntry.Load(MySettings.PCCBackOffice, mobjCustomerSelected.ID, mobjVesselSelected.Name)
                     For Each pItem As ConditionalGDSEntryItem In pConditionalEntry.Values
                         Dim pGDSCommand As String = ""
-                        If mSelectedPNRGDSCode = EnumGDSCode.Amadeus Then
+                        If mSelectedGDSCode = EnumGDSCode.Amadeus Then
                             pGDSCommand = pItem.ConditionalEntry1A
-                        ElseIf mSelectedPNRGDSCode = EnumGDSCode.Galileo Then
+                        ElseIf mSelectedGDSCode = EnumGDSCode.Galileo Then
                             pGDSCommand = pItem.ConditionalEntry1G
                         Else
                             pGDSCommand = ""
@@ -2048,7 +2283,8 @@ Public Class frmPNR
                     Next
                 End If
             End If
-
+        Catch aex As System.ArgumentOutOfRangeException
+            MessageBox.Show(aex.Message)
         Catch ex As Exception
             Throw New Exception("PrepareAirlinePoints()" & vbCrLf & ex.Message)
         End Try
@@ -2075,7 +2311,7 @@ Public Class frmPNR
         Try
             mobjCRMSelected = pCRM
             txtCRM.Text = pCRM.ToString
-            mobjPNR.NewElements.SetItem(mobjCRMSelected)
+            mobjPNR.NewElements.SetCRM(mobjCRMSelected.ID, mobjCRMSelected.Code, mobjCRMSelected.Name)
 
             SetEnabled()
             If pCRM.Alert <> "" Then
@@ -2092,7 +2328,7 @@ Public Class frmPNR
             mobjPNR.NewElements.ClearCustomerElements()
             mobjCustomerSelected = pCustomer
             txtCustomer.Text = pCustomer.ToString
-            mobjPNR.NewElements.SetItem(mobjCustomerSelected)
+            mobjPNR.NewElements.SetItem(mobjCustomerSelected, MySettings.PCCBackOffice)
 
             txtSubdepartment.Clear()
             lstSubDepartments.Items.Clear()
@@ -2122,7 +2358,7 @@ Public Class frmPNR
 
             PopulateCRMList("")
             PopulateCustomProperties()
-            PrepareAirlinePoints()
+            PrepareAdditionalEntries()
 
             SetEnabled()
 
@@ -2185,9 +2421,12 @@ Public Class frmPNR
             If pProp.RequiredType = CustomPropertyRequiredType.PropertyOptional Then
                 cmbCombo.Items.Add("")
             End If
-            For i As Integer = 0 To pProp.ValuesCount - 1
-                cmbCombo.Items.Add(pProp.Value(i))
+            For Each pItem As CustomPropertiesValues In pProp.Value.Values
+                cmbCombo.Items.Add(pItem.Value)
             Next
+            'For i As Integer = 0 To pProp.ValuesCount - 1
+            '    cmbCombo.Items.Add(pProp.Value(i))
+            'Next
         Catch ex As Exception
             Throw New Exception("PrepareCustomProperty()" & vbCrLf & ex.Message)
         End Try
@@ -2208,7 +2447,7 @@ Public Class frmPNR
         Try
             mobjSubDepartmentSelected = pSubDepartment
             txtSubdepartment.Text = pSubDepartment.ToString
-            mobjPNR.NewElements.SetItem(mobjSubDepartmentSelected)
+            mobjPNR.NewElements.SetSubDepartment(mobjSubDepartmentSelected.ID, mobjSubDepartmentSelected.Code, mobjSubDepartmentSelected.Name)
 
             SetEnabled()
         Catch ex As Exception
@@ -2222,7 +2461,7 @@ Public Class frmPNR
             mobjVesselSelected = pVessel
             txtVessel.Text = pVessel.ToString
             mobjPNR.NewElements.SetItem(mobjVesselSelected)
-            PrepareAirlinePoints()
+            PrepareAdditionalEntries()
             SetEnabled()
         Catch ex As Exception
             Throw New Exception("SelectVessel()" & vbCrLf & ex.Message)
@@ -2371,8 +2610,26 @@ Public Class frmPNR
             SetLabelColor(lblCostCentreHighlight, CType(cmbCostCentre.Tag, CustomPropertiesItem))
             SetLabelColor(lblTRIDHighLight, CType(txtTrId.Tag, CustomPropertiesItem))
 
+
         Catch ex As Exception
             Throw New Exception("SetEnabled()" & vbCrLf & ex.Message)
+        End Try
+
+    End Sub
+    Private Sub SetCTCExists(ByVal pSSRExists As Boolean, ByVal pPaxFound As String, ByVal pPaxNotFound As String)
+        Try
+            If pSSRExists Then
+                lblCTC.BackColor = Color.Cyan
+                lblCTC.Text = "CTC in PNR"
+            ElseIf pPaxFound <> "" And pPaxNotFound = "" Then
+                lblCTC.BackColor = Color.LightGreen
+                lblCTC.Text = "CTC exists"
+            Else
+                lblCTC.BackColor = Color.Red
+                lblCTC.Text = "CTC Missing"
+            End If
+        Catch ex As Exception
+
         End Try
 
     End Sub
@@ -2398,11 +2655,13 @@ Public Class frmPNR
                     Dim pPCC As String = MySettings.GDSPcc
                     Dim pUserId As String = MySettings.GDSUser
                     ' for testing only
-                    'pPCC = "ATHG42100"
-                    'pUserId = "1011KZ"
+#If DEBUG Then
+                    'pPCC = "750B"
+                    'pUserId = "038981"
+#End If
                     'pPCC = "750B"
                     'pUserId = "051244"
-                    Dim pDownsell As New DownsellCollection
+                    'Dim pDownsell As New DownsellCollection
                     'If pDownsell.CountNonVerified(pPCC, pUserId) > 0 Then
                     If mfrmOptimiser Is Nothing OrElse mfrmOptimiser.IsDisposed Then
                         mfrmOptimiser = New frmPriceOptimiser
@@ -2423,26 +2682,15 @@ Public Class frmPNR
         lstItnRemarks.Enabled = AllowOptions
     End Sub
     Private Sub SetupPCCOptions()
-
         Try
-
             mflgLoading = True
             Dim pText As String = ""
-            Text = VersionText
+            SSVersion.Text = VersionText
             If MySettings.GDSPcc <> "" And MySettings.GDSUser <> "" Then
                 pText &= MySettings.GDSPcc & " " & MySettings.GDSUser
-                If mSelectedPNRGDSCode = EnumGDSCode.Amadeus Then
-                    lblPNRAmadeus.Text = pText
-                ElseIf mSelectedPNRGDSCode = EnumGDSCode.Galileo Then
-                    lblPNRGalileo.Text = pText
-                End If
-                If MySettings.GDSPcc <> RequestedPCC Or MySettings.GDSUser <> RequestedUser Then
-                    pText &= " (Jump in to " & RequestedPCC & " as user " & RequestedUser & ")"
-                End If
-                If MySettings.GDSPcc <> MyHomeSettings.GDSPcc Or MySettings.GDSUser <> MyHomeSettings.GDSUser Then
-                    pText &= " (Jump in from " & MyHomeSettings.GDSPcc & " user " & MyHomeSettings.GDSUser & ")"
-                End If
-
+                SSGDS.Text = MySettings.GDSAbbreviation
+                SSPCC.Text = MySettings.GDSPcc
+                SSUser.Text = MySettings.GDSUser
             Else
                 Throw New Exception("No GDS signed in")
             End If
@@ -2498,7 +2746,8 @@ Public Class frmPNR
                 chkItnCostCentre.Checked = MySettings.ShowCostCentre
                 chkItnCabinDescription.Checked = MySettings.ShowCabinDescription
                 chkItnItinRemarks.Checked = MySettings.ShowItinRemarks
-
+                chkItnEquipmentCode.Checked = MySettings.ShowEquipmentCode
+                chkItnCO2.Checked = MySettings.ShowCO2
                 cmdItn1AReadPNR.Enabled = False
                 cmdItn1AReadQueue.Enabled = False
                 cmdItn1GReadPNR.Enabled = False
@@ -2588,14 +2837,50 @@ Public Class frmPNR
                 pClient = mobjPNR.NewElements.CustomerCode.TextRequested
             End If
             If pPNR <> "" Then
-                Dim pTrans As New PNRFinisherTransactions
-                pTrans.UpdateTransactions(pPNR, MySettings.GDSAbbreviation, MySettings.GDSPcc, MySettings.GDSUser, Now, mobjPNR.Passengers.AllPassengers, mobjPNR.Segments.FullItinerary, "", pClient, pNewEntry)
+                PNRFinisherTransactions.UpdateTransactions(pPNR, MySettings.GDSAbbreviation, MySettings.GDSPcc, MySettings.GDSUser, Now, mobjPNR.Passengers.AllPassengers, mobjPNR.Segments.FullItinerary, "", pClient, pNewEntry)
             End If
         Catch ex As Exception
             Throw New Exception("UpdatePNR()" & vbCrLf & ex.Message)
         End Try
 
     End Function
+    Private Sub cmdCTCForm_Click(sender As Object, e As EventArgs) Handles cmdCTCForm.Click
+
+        Try
+            Dim pClientId As Integer = 0
+            Dim pClientCode As String = ""
+            Dim pClientName As String = ""
+            Dim pVessel As String = ""
+            If Not mobjCustomerSelected Is Nothing AndAlso mobjCustomerSelected.ID > 0 Then
+                pClientId = mobjCustomerSelected.ID
+                pClientCode = mobjCustomerSelected.Code
+                pClientName = mobjCustomerSelected.Name
+            End If
+            If Not mobjVesselSelected Is Nothing Then
+                pVessel = mobjVesselSelected.Name
+            End If
+
+            If pClientCode = "" Or mobjPNR.Passengers.Count = 0 Then
+                If mfrmCTC.IsDisposed Then
+                    mfrmCTC = New frmPaxCTC
+                End If
+                mfrmCTC.Location = Me.Location
+                mfrmCTC.ShowPaxInformation()
+                mfrmCTC.ShowDialog()
+            Else
+                If mfrmCTCPax.IsDisposed Then
+                    mfrmCTCPax = New frmPaxCTCOnlyPax
+                End If
+                mfrmCTCPax.Location = Me.Location
+                mfrmCTCPax.ShowPaxInformation(mobjPNR, MySettings.PCCBackOffice, pClientId, pClientCode, pClientName, pVessel)
+                mfrmCTCPax.ShowDialog()
+                PrepareAdditionalEntries()
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
 
 #End Region
 

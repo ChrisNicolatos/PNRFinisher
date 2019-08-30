@@ -20,20 +20,18 @@ Public Class GDSSegCollection
         mAmadeusQueue = ""
         mGalileoQueue = ""
     End Sub
-    Friend Function AddItem(ByVal pAirline As String, ByVal pBoardPoint As String, ByVal pClass As String, ByVal pDepartureDate As Date, ByVal pArrivalDate As Date, ByVal pElementNo As Integer, ByVal pFlightNo As String, ByVal pOffPoint As String, ByVal pStatus As String, ByVal pDepartTime As Date, ByVal pArriveTime As Date, ByVal pEquipment As String, ByVal pText As String, ByVal SegDo As String, ByVal pConnectTimeFromPrevious As String) As GDSSegItem
+    Friend Sub AddItem(ByVal pAirline As String, ByVal pBoardPoint As String, ByVal pClass As String, ByVal pDepartureDate As Date, ByVal pArrivalDate As Date, ByVal pElementNo As Integer, ByVal pFlightNo As String, ByVal pOffPoint As String, ByVal pStatus As String, ByVal pDepartTime As Date, ByVal pArriveTime As Date, ByVal pEquipment As String, ByVal pMealFlight As String, ByVal pMealSSR As String, ByVal pText As String, ByVal SegDo As String, ByVal pConnectTimeFromPrevious As String)
         ' For Amadeus
         Dim pobjClass As GDSSegItem
 
         pobjClass = New GDSSegItem
 
-        pobjClass.SetValues(pAirline, pBoardPoint, pClass, pDepartureDate, pArrivalDate, pElementNo, pFlightNo, pOffPoint, pStatus, pDepartTime, pArriveTime, pEquipment, pText, SegDo, pConnectTimeFromPrevious)
+        pobjClass.SetValues(pAirline, pBoardPoint, pClass, pDepartureDate, pArrivalDate, pElementNo, pFlightNo, pOffPoint, pStatus, pDepartTime, pArriveTime, pEquipment, pMealFlight, pMealSSR, pText, SegDo, pConnectTimeFromPrevious)
         MyBase.Add(pElementNo, pobjClass)
 
         SetItinValues(pobjClass)
 
-        Return pobjClass
-
-    End Function
+    End Sub
     Friend Function AddSurfaceSegment(ByVal pElementNo As Integer) As GDSSegItem
         Dim pobjClass As GDSSegItem
         pobjClass = New GDSSegItem
@@ -41,13 +39,13 @@ Public Class GDSSegCollection
         MyBase.Add(pElementNo, pobjClass)
         Return pobjClass
     End Function
-    Friend Function AddItem(ByVal pAirline As String, ByVal pBoardPoint As String, ByVal pClass As String, ByVal pDepartureDate As Date, ByVal pArrivalDate As Date, ByVal pElementNo As Integer, ByVal pFlightNo As String, ByVal pOffPoint As String, ByVal pStatus As String, ByVal pDepartTime As Date, ByVal pArriveTime As Date, ByVal pEquipment As String, ByVal pVL() As String, ByVal pText As String, ByVal pOperatedBy As String, ByVal SVC() As String, ByVal pConnectTimeFromPrevious As String) As GDSSegItem
+    Friend Function AddItem(ByVal pAirline As String, ByVal pBoardPoint As String, ByVal pClass As String, ByVal pDepartureDate As Date, ByVal pArrivalDate As Date, ByVal pElementNo As Integer, ByVal pFlightNo As String, ByVal pOffPoint As String, ByVal pStatus As String, ByVal pDepartTime As Date, ByVal pArriveTime As Date, ByVal pEquipment As String, ByVal pMealFlight As String, ByVal pMealSSR As String, ByVal pVL() As String, ByVal pText As String, ByVal pOperatedBy As String, ByVal SVC() As String, ByVal pConnectTimeFromPrevious As String) As GDSSegItem
         ' For Galileo
         Dim pobjClass As GDSSegItem
 
         pobjClass = New GDSSegItem
 
-        pobjClass.SetValues(pAirline, pBoardPoint, pClass, pDepartureDate, pArrivalDate, pElementNo, pFlightNo, pOffPoint, pStatus, pDepartTime, pArriveTime, pEquipment, pVL, pText, pOperatedBy, SVC, pConnectTimeFromPrevious)
+        pobjClass.SetValues(pAirline, pBoardPoint, pClass, pDepartureDate, pArrivalDate, pElementNo, pFlightNo, pOffPoint, pStatus, pDepartTime, pArriveTime, pEquipment, pMealFlight, pMealSSR, pVL, pText, pOperatedBy, SVC, pConnectTimeFromPrevious)
         MyBase.Add(pElementNo, pobjClass)
 
         SetItinValues(pobjClass)
@@ -72,23 +70,23 @@ Public Class GDSSegCollection
         If pAirlineAlert <> "" And mAirlineAlert.IndexOf(pAirlineAlert) = -1 Then
             mAirlineAlert &= pAirlineAlert & vbCrLf
         End If
-        mAmadeusQueue = mAirlineAlerts.AmadeusQueue(pobjClass.Airline)
-        mGalileoQueue = mAirlineAlerts.GalileoQueue(pobjClass.Airline)
+        mAmadeusQueue = mAirlineAlerts.AmadeusQueueForAirline(pobjClass.Airline)
+        mGalileoQueue = mAirlineAlerts.GalileoQueueForAirline(pobjClass.Airline)
 
     End Sub
     Friend ReadOnly Property MaxAirportNameLength As Integer
         Get
-            MaxAirportNameLength = mMaxAirportNameLength
+            Return mMaxAirportNameLength
         End Get
     End Property
     Friend ReadOnly Property MaxCityNameLength As Integer
         Get
-            MaxCityNameLength = mMaxCityNameLength
+            Return mMaxCityNameLength
         End Get
     End Property
     Friend ReadOnly Property MaxAirportShortNameLength As Integer
         Get
-            MaxAirportShortNameLength = mMaxAirportShortNameLength
+            Return mMaxAirportShortNameLength
         End Get
     End Property
     Friend ReadOnly Property Itinerary As String
@@ -134,7 +132,7 @@ Public Class GDSSegCollection
                     pFlights &= .Airline & .FlightNo & " "
                 End With
             Next
-            FullItinerary = pItin.Trim & "|" & pClasses.Trim & "|" & pDates.Trim & "|" & pFlights.Trim
+            Return pItin.Trim & "|" & pClasses.Trim & "|" & pDates.Trim & "|" & pFlights.Trim
         End Get
     End Property
     Friend ReadOnly Property AirlineAlert As String

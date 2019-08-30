@@ -5,7 +5,7 @@ Public Class OSMVesselGroupCollection
 
     Public Sub Load(ByVal pVesselGroupID As Integer)
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
         Dim pobjClass As OSMVesselGroupItem
@@ -16,11 +16,11 @@ Public Class OSMVesselGroupCollection
         With pobjComm
             .CommandType = CommandType.Text
             .Parameters.Add("@VesselgroupId", SqlDbType.BigInt).Value = pVesselGroupID
-            .CommandText = "SELECT osmvrId " &
-                           "      ,osmvrGroupName " &
-                           "  FROM AmadeusReports.dbo.osmVesselGroup " &
-                           "  WHERE osmvrId = @VesselgroupId " &
-                           "  ORDER BY osmvrGroupName"
+            .CommandText = "SELECT osmvrId 
+                            ,osmvrGroupName 
+                            FROM AmadeusReports.dbo.osmVesselGroup 
+                            WHERE osmvrId = @VesselgroupId 
+                            ORDER BY osmvrGroupName"
             pobjReader = .ExecuteReader
         End With
 
@@ -38,7 +38,7 @@ Public Class OSMVesselGroupCollection
     End Sub
     Public Sub Load()
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
         Dim pobjClass As OSMVesselGroupItem
@@ -48,10 +48,10 @@ Public Class OSMVesselGroupCollection
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = "SELECT osmvrId " &
-                           "      ,osmvrGroupName " &
-                           "  FROM AmadeusReports.dbo.osmVesselGroup " &
-                           "  ORDER BY osmvrGroupName"
+            .CommandText = "SELECT osmvrId 
+                            ,osmvrGroupName 
+                            FROM AmadeusReports.dbo.osmVesselGroup 
+                            ORDER BY osmvrGroupName"
             pobjReader = .ExecuteReader
         End With
 

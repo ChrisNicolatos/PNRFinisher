@@ -8,6 +8,7 @@ Public Class ClassOfServiceItem
         Dim ClassOfService As String
         Dim CabinDescription As String
         Dim ClassDescription As String
+        Dim CabinClass As String
     End Structure
     Private mudtProps As ClassProps
     Public ReadOnly Property Key As String
@@ -45,7 +46,12 @@ Public Class ClassOfServiceItem
             Return mudtProps.ClassDescription
         End Get
     End Property
-    Public Sub SetValues(ByVal pCarrier As String, ByVal pOrigin As String, ByVal pDestination As String, ByVal pClassOfService As String, ByVal pCabinDescription As String, ByVal pClassDescription As String)
+    Public ReadOnly Property CabinClass As String
+        Get
+            Return mudtProps.CabinClass
+        End Get
+    End Property
+    Public Sub SetValues(ByVal pCarrier As String, ByVal pOrigin As String, ByVal pDestination As String, ByVal pClassOfService As String, ByVal pCabinDescription As String, ByVal pClassDescription As String, ByVal pcabinClass As String)
         With mudtProps
             .Carrier = pCarrier
             .Origin = pOrigin
@@ -53,6 +59,7 @@ Public Class ClassOfServiceItem
             .ClassOfService = pClassOfService
             .CabinDescription = pCabinDescription
             .ClassDescription = pClassDescription
+            .CabinClass = pcabinClass
         End With
     End Sub
 End Class

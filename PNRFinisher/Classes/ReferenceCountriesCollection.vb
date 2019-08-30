@@ -4,7 +4,7 @@ Public Class ReferenceCountriesCollection
     Inherits Collections.Generic.Dictionary(Of String, ReferenceItem)
     Public Sub New()
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
         Dim pobjClass As ReferenceItem
@@ -14,11 +14,11 @@ Public Class ReferenceCountriesCollection
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = "SELECT countryISO3Code " &
-                                "      ,countryName " &
-                                " FROM AmadeusReports.dbo.zzCountries " &
-                                " WHERE LEN(CountryCode) = 2 AND countryISO3Code IS NOT NULL " &
-                                " ORDER BY countryname "
+            .CommandText = "SELECT countryISO3Code  
+                                       ,countryName  
+                                  FROM AmadeusReports.dbo.zzCountries  
+                                  WHERE LEN(CountryCode) = 2 AND countryISO3Code IS NOT NULL  
+                                  ORDER BY countryname "
             pobjReader = .ExecuteReader
         End With
 

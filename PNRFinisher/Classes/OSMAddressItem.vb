@@ -153,8 +153,8 @@ Public Class OSMAddressItem
         End With
 
     End Sub
-    Private Function LoadImage(ByVal pImage_FK As Integer) As Byte()
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+    Private Shared Function LoadImage(ByVal pImage_FK As Integer) As Byte()
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
 
         pobjConn.Open()
@@ -162,7 +162,9 @@ Public Class OSMAddressItem
         With pobjComm
             .CommandType = CommandType.Text
             .Parameters.Add("@Id", SqlDbType.Int).Value = pImage_FK
-            .CommandText = "SELECT imageData FROM [AmadeusReports].[dbo].[Images] WHERE imageId = @Id"
+            .CommandText = "SELECT imageData 
+                            FROM [AmadeusReports].[dbo].[Images] 
+                            WHERE imageId = @Id"
             LoadImage = .ExecuteScalar
         End With
 

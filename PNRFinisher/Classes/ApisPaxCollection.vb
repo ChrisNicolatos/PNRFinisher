@@ -13,10 +13,18 @@ Public Class ApisPaxCollection
         pobjComm = pobjConn.CreateCommand
 
         With pobjComm
-            .CommandType = CommandType.StoredProcedure
-            .CommandText = "PaxApisInformationAllSelect"
+            .CommandType = CommandType.Text
             .Parameters.Add("@ppSurname", SqlDbType.NVarChar, 30).Value = Surname
             .Parameters.Add("@ppFirstName", SqlDbType.NVarChar, 30).Value = FirstName
+            .CommandText = "SELECT ppID
+                                 , ppBirthDate
+                                 , ppGender
+                                 , ISNULL(ppDocIssuingCountry, '') AS ppDocIssuingCountry
+                                 , ISNULL(ppDocnumber, '') AS ppDocnumber
+                                 , ISNULL(ppNationality, '') AS ppNationality
+                                 , ppDocExpiryDate
+                            FROM PaxApisInformation
+                            WHERE ppSurname=@ppSurname AND ppFirstName = @ppFirstName"
             pobjReader = .ExecuteReader
         End With
 
@@ -38,7 +46,6 @@ Public Class ApisPaxCollection
         Dim pItem As New ApisPaxItem(Id, pSSRDocs)
         If pItem.Id > 0 AndAlso Not MyBase.ContainsKey(pItem.Id) Then
             MyBase.Add(pItem.Id, pItem)
-
         End If
     End Sub
 

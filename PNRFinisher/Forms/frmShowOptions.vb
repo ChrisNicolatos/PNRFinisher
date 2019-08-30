@@ -1,4 +1,6 @@
-﻿Public Class frmShowOptions
+﻿Option Strict On
+Option Explicit On
+Public Class frmShowOptions
 
     Private Sub frmOptions_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         DisplayOptions()
@@ -24,7 +26,7 @@
                 txtAgentEmail.Text = .AgentEmail
 
                 txtDBConnectionFile.Text = UtilitiesDB.DBConnectionsFile
-                txtSQLServer.Text = "DataSource:" & UtilitiesDB.PNRDataSource & " DataCatalog:" & UtilitiesDB.PNRDataCatalog & " UserName:" & UtilitiesDB.PNRUserName
+                txtSQLServer.Text = "DataSource:" & UtilitiesDB.PNRDataSource & " DataCatalog:" & UtilitiesDB.PNRInitialCatalog & " UserName:" & UtilitiesDB.PNRUserID
             End With
 
         End If

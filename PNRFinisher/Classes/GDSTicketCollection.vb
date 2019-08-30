@@ -68,13 +68,13 @@ Public Class GDSTicketCollection
     End Sub
     Public ReadOnly Property GetUpperBound As Integer
         Get
-            GetUpperBound = mobjTickets.GetUpperBound(0)
+            Return mobjTickets.GetUpperBound(0)
         End Get
     End Property
     Public ReadOnly Property Tickets(ByVal Index As Integer) As GDSTicketItem
         Get
             If Index >= 1 And Index <= mobjTickets.GetUpperBound(0) Then
-                Tickets = mobjTickets(Index)
+                Return mobjTickets(Index)
             Else
                 Throw New Exception("Invalid Index")
             End If
@@ -98,7 +98,7 @@ Public Class GDSTicketCollection
 
     End Function
 
-    Private Function MakePaxNameString(ByVal Pax As s1aPNR.NameElement) As String
+    Private Shared Function MakePaxNameString(ByVal Pax As s1aPNR.NameElement) As String
 
         MakePaxNameString = Pax.ElementNo & ". " & Pax.LastName & "/" & Pax.Initial
         If Pax.PassengerType <> "" Then

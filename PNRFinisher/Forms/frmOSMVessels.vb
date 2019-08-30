@@ -1,4 +1,6 @@
-﻿Public Class frmOSMVessels
+﻿Option Strict On
+Option Explicit On
+Public Class frmOSMVessels
     Private mOSMSelectedVessel As OSMVesselItem
     Private mOSMSelectedEmail As OSMEmailItem
 
@@ -34,14 +36,14 @@
 
     Private Sub lstOSMEditVessels_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstOSMEditVessels.DrawItem
 
-        OSMListBox_DrawItem(sender, e)
+        OSMListBox_DrawItem(CType(sender, ListBox), e)
 
     End Sub
 
     Private Sub lstOSMEditVessels_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstOSMEditVessels.SelectedIndexChanged
 
         If Not lstOSMEditVessels.SelectedItem Is Nothing Then
-            mOSMSelectedVessel = lstOSMEditVessels.SelectedItem
+            mOSMSelectedVessel = CType(lstOSMEditVessels.SelectedItem, OSMVesselItem)
             txtOSMEditVessel.Text = mOSMSelectedVessel.ToString
             chkOSMVesselInUse.Checked = mOSMSelectedVessel.InUse
             OSMDisplayVesselGroups(lstVesselGroup, mOSMSelectedVessel.Vessel_VesselGroup)
@@ -53,7 +55,7 @@
     Private Sub lstOSMEditToEmail_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstOSMEditToEmail.SelectedIndexChanged
 
         If Not lstOSMEditToEmail.SelectedItem Is Nothing Then
-            mOSMSelectedEmail = lstOSMEditToEmail.SelectedItem
+            mOSMSelectedEmail = CType(lstOSMEditToEmail.SelectedItem, OSMEmailItem)
             DisplaySelectedEmail()
             CheckValid()
         End If
@@ -121,7 +123,7 @@
     Private Sub lstOSMEditCCEmail_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstOSMEditCCEmail.SelectedIndexChanged
 
         If Not lstOSMEditCCEmail.SelectedItem Is Nothing Then
-            mOSMSelectedEmail = lstOSMEditCCEmail.SelectedItem
+            mOSMSelectedEmail = CType(lstOSMEditCCEmail.SelectedItem, OSMEmailItem)
             DisplaySelectedEmail()
             CheckValid()
         End If
@@ -183,8 +185,8 @@
 
     Private Sub lstVesselGroup_ItemCheck(sender As Object, e As ItemCheckEventArgs) Handles lstVesselGroup.ItemCheck
 
-        Dim pItem As OSMVessel_VesselGroupItem = lstVesselGroup.Items(e.Index)
-        pItem.Exists = e.NewValue
+        Dim pItem As OSMVessel_VesselGroupItem = CType(lstVesselGroup.Items(e.Index), OSMVessel_VesselGroupItem)
+        pItem.Exists = CBool(e.NewValue)
 
     End Sub
 

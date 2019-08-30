@@ -5,7 +5,7 @@ Public Class OSMVessel_VesselGroupCollection
 
     Public Sub Load(ByVal pVesselId As Integer)
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
         Dim pobjClass As OSMVessel_VesselGroupItem
@@ -15,15 +15,15 @@ Public Class OSMVessel_VesselGroupCollection
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = " SELECT [osmvrId] " &
-                           "       ,[osmvrGroupName] " &
-                           " 	  ,ISNULL(osmvVesselName, '') AS osmvVesselName " &
-                           " 	  ," & pVesselId & " AS osmvId " &
-                           " 	  ,ISNULL((SELECT osmvId_fkey FROM osmVesselGroup_Vessels WHERE osmvrId = osmvrId_fkey AND osmvId_fkey=" & pVesselId & "),0) AS osmvId_fkey " &
-                           "   FROM [AmadeusReports].[dbo].[osmVesselGroup] " &
-                           "   LEFT JOIN osmVessels " &
-                           "   ON osmvID = " & pVesselId
-
+            .Parameters.Add("@VesselID", SqlDbType.Int).Value = pVesselId
+            .CommandText = " SELECT  osmvrId
+                                   , osmvrGroupName
+                             	   , ISNULL(osmvVesselName, '') AS osmvVesselName  
+                             	   , @VesselID AS osmvId  
+                             	   , ISNULL((SELECT osmvId_fkey FROM osmVesselGroup_Vessels WHERE osmvrId = osmvrId_fkey AND osmvId_fkey=@VesselID),0) AS osmvId_fkey  
+                               FROM AmadeusReports.dbo.osmVesselGroup
+                               LEFT JOIN osmVessels  
+                               ON osmvID = @VesselID"
             pobjReader = .ExecuteReader
         End With
 
@@ -43,7 +43,7 @@ Public Class OSMVessel_VesselGroupCollection
     End Sub
     Public Sub Update()
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjClass As OSMVessel_VesselGroupItem
 
@@ -52,11 +52,17 @@ Public Class OSMVessel_VesselGroupCollection
 
         For Each pobjClass In MyBase.Values
             pobjComm.CommandType = CommandType.Text
+            pobjComm.Parameters.Add("@VesselGroupId", SqlDbType.Int).Value = pobjClass.VesselGroupId
+            pobjComm.Parameters.Add("@VesselId", SqlDbType.Int).Value = pobjClass.VesselId
             If pobjClass.Exists Then
-                pobjComm.CommandText = "IF (SELECT COUNT(*) FROM AmadeusReports.dbo.osmVesselGroup_Vessels WHERE osmvrId_fkey = " & pobjClass.VesselGroupId & " AND osmvId_fkey = " & pobjClass.VesselId & ")=0" &
-                    "INSERT INTO AmadeusReports.dbo.osmVesselGroup_Vessels (osmvrId_fkey ,osmvId_fkey) VALUES (" & pobjClass.VesselGroupId & "," & pobjClass.VesselId & ")"
+                pobjComm.CommandText = "IF (SELECT COUNT(*) 
+                                            FROM AmadeusReports.dbo.osmVesselGroup_Vessels 
+                                            WHERE osmvrId_fkey = @VesselGroupId AND osmvId_fkey = @VesselId)=0 
+                                        INSERT INTO AmadeusReports.dbo.osmVesselGroup_Vessels (osmvrId_fkey ,osmvId_fkey) 
+                                        VALUES (@VesselGroupId,@VesselId)"
             Else
-                pobjComm.CommandText = "DELETE FROM AmadeusReports.dbo.osmVesselGroup_Vessels WHERE osmvrId_fkey = " & pobjClass.VesselGroupId & " AND osmvId_fkey = " & pobjClass.VesselId
+                pobjComm.CommandText = "DELETE FROM AmadeusReports.dbo.osmVesselGroup_Vessels 
+                                        WHERE osmvrId_fkey = @VesselGroupId AND osmvId_fkey = @VesselId"
             End If
             pobjComm.ExecuteNonQuery()
         Next

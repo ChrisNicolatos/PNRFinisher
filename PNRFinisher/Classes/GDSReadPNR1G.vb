@@ -11,7 +11,7 @@ Public Class GDSReadPNR1G
         Dim Books As Integer
         Property TicketNumber As String
             Get
-                TicketNumber = _TicketNumber
+                Return _TicketNumber
             End Get
             Set(value As String)
                 value = value.Trim
@@ -80,8 +80,9 @@ Public Class GDSReadPNR1G
     Private mstrItinerary As String
     Private mSegsFirstElement As Integer
     Private mSegsLastElement As Integer
-    Private mudtAllowance() As TQTItem
+    Private mobjBaggageAllowance As BaggageAllowanceCollection
     Private mstrSeats As String
+    Private mflgExistsSSRCTC As Boolean
     Public Sub New()
         ClearElements()
     End Sub
@@ -106,6 +107,7 @@ Public Class GDSReadPNR1G
         mSegsFirstElement = 0
         mSegsLastElement = 0
         mstrSeats = ""
+        mflgExistsSSRCTC = False
 
     End Sub
     Public Sub ReadRaw(ByVal RequestedPNR As String)
@@ -189,9 +191,14 @@ Public Class GDSReadPNR1G
             Return mobjTickets
         End Get
     End Property
-    Public ReadOnly Property Allowance As TQTItem()
+    'Public ReadOnly Property Allowance As TQTCollection
+    '    Get
+    '        Return mudtAllowance
+    '    End Get
+    'End Property
+    Public ReadOnly Property BaggageAllowance As BaggageAllowanceCollection
         Get
-            Return mudtAllowance
+            Return mobjBaggageAllowance
         End Get
     End Property
     Public ReadOnly Property OfficeOfResponsibility As String
@@ -235,7 +242,7 @@ Public Class GDSReadPNR1G
                 pAllPax &= pPax(i) & " "
             End If
         Next
-
+        pAllPax = pAllPax.Replace(".I/",".")
         pPax = pAllPax.Split("/"c)
         For i As Integer = 0 To pPax.GetUpperBound(0) - 1
             Dim iStart As Integer = 0
@@ -300,6 +307,8 @@ Public Class GDSReadPNR1G
             Dim pStatus As String
             Dim pOperatedBy As String
             Dim pEquipment As String = ""
+            Dim pMealFlight As String = ""
+            Dim pMealSSR As String = ""
             Dim pArrivalDays As Integer = 0
             Dim pobjSeg As GDSSegItem
             Dim pConnectTimeFromPrevious As String
@@ -342,7 +351,7 @@ Public Class GDSReadPNR1G
                         pConnectTimeFromPrevious = (100 + pConnHours).ToString.Substring(1) & ":" & (100 + pConnMins).ToString.Substring(1)
                     End If
                     pPrevArrDateTime = pArrivalDate.AddHours(pArrivalTime.Hour).AddMinutes(pArrivalTime.Minute)
-                    pobjSeg = mobjSegments.AddItem(pCarrier, pOrigin, pClassOfService, pDepartureDate, pArrivalDate, pElementNo, pFlightNumber, pDestination, pStatus, pDepartureTime, pArrivalTime, pEquipment, pVL, pSegs(i), pOperatedBy, ReadSVC(pElementNo), pConnectTimeFromPrevious)
+                    pobjSeg = mobjSegments.AddItem(pCarrier, pOrigin, pClassOfService, pDepartureDate, pArrivalDate, pElementNo, pFlightNumber, pDestination, pStatus, pDepartureTime, pArrivalTime, pEquipment, pMealFlight, pMealSSR, pVL, pSegs(i), pOperatedBy, ReadSVC(pElementNo), pConnectTimeFromPrevious)
                     If mSegsFirstElement = -1 Then
                         mSegsFirstElement = pElementNo
                     End If
@@ -611,7 +620,9 @@ Public Class GDSReadPNR1G
     End Sub
     Private Sub GetTickets()
         Dim pFF() As String = SendTerminalCommand("*FF")
-        ReDim mudtAllowance(0)
+
+        'mudtAllowance = New TQTCollection
+        mobjBaggageAllowance = New BaggageAllowanceCollection
         mobjTickets.Clear()
 
         For i = 0 To pFF.GetUpperBound(0)
@@ -696,30 +707,17 @@ Public Class GDSReadPNR1G
                 For i1 As Integer = 1 To pPax(0).PaxNumber
                     Dim pTktSeg As String = ""
                     For j1 As Integer = 1 To pSeg(0).SegNo
-                        ReDim Preserve mudtAllowance(mudtAllowance.GetUpperBound(0) + 1)
-                        mudtAllowance(mudtAllowance.GetUpperBound(0)) = New TQTItem
-                        With mudtAllowance(mudtAllowance.GetUpperBound(0))
-                            .TQTElement = pFFid
-                            .Pax = pPax(i1).PaxNumber.ToString
-                            .TicketNumber = pPax(i1).TicketNumber
-                            .Segment = pSeg(j1).SegNo
-                            .Allowance = pSeg(j1).BaggageAllowance
-                            Try
-                                .Itin = mobjSegments(.Segment).BoardPoint & " " & mobjSegments(.Segment).Airline & " " & mobjSegments(.Segment).OffPoint
-                                .Status = mobjSegments(.Segment).Status
-                                If pTktSeg <> "" Then
-                                    pTktSeg &= vbCrLf
-                                End If
-                                pTktSeg &= .Itin
-                            Catch ex As Exception
-                                .Itin = ""
-                                .Status = ""
-                            End Try
-                        End With
+                        Try
+                            If pTktSeg <> "" Then
+                                pTktSeg &= vbCrLf
+                            End If
+                            pTktSeg &= mobjSegments(pSeg(j1).SegNo).BoardPoint & " " & mobjSegments(pSeg(j1).SegNo).Airline & " " & mobjSegments(pSeg(j1).SegNo).OffPoint
+                            mobjBaggageAllowance.AddItem(mobjSegments(pSeg(j1).SegNo), pSeg(j1).BaggageAllowance)
+                        Catch ex As Exception
+
+                        End Try
                     Next
                     mobjTickets.addTicket("FA", 1, CDec("0" & pPax(i1).DocumentNumber), pPax(i1).Books, pPax(i1).Airline, Airlines.AirlineCode(pPax(i1).Airline), True, pTktSeg, pPax(i1).Paxname, "PAX", "")
-
-
                 Next
             End If
         Next
@@ -761,7 +759,7 @@ Public Class GDSReadPNR1G
                 pPax(pPax(0).PaxNumber).PaxNumber = pPax(0).PaxNumber
                 pPax(pPax(0).PaxNumber).Paxname = pTE(i1).Substring(31).Trim
                 pPax(pPax(0).PaxNumber).TicketNumber = pTE(i1).Substring(5, 20).Replace(" ", "")
-            ElseIf pTE(i1).Length > 32 And pTE(i1).Substring(3, 4) <> "VOID" And pTE(i1).Substring(3, 4) <> "RFND" And pTE(i1).StartsWith(Space(3)) And Not pTE(i1).StartsWith("   USE  CR FLT") And Not pTE(i1).StartsWith(Space(10)) Then
+            ElseIf pTE(i1).Length > 32 AndAlso pTE(i1).Substring(3, 4) <> "VOID" AndAlso pTE(i1).Substring(3, 4) <> "RFND" AndAlso pTE(i1).StartsWith(Space(3)) And Not pTE(i1).StartsWith("   USE  CR FLT") And Not pTE(i1).StartsWith(Space(10)) Then
                 pItin = pTE(i1).Substring(26, 3) & " " & pTE(i1).Substring(8, 2) & " " & pTE(i1).Substring(29, 3)
                 If pTktSeg <> "" Then
                     pTktSeg &= vbCrLf
@@ -895,6 +893,8 @@ Public Class GDSReadPNR1G
                         pDateOfBirth = DateFromIATA(pTextItems(5))
                         pLastName = pTextItems(8)
                         pFirstName = pTextItems(9).Split("-"c)(0)
+                    ElseIf pSSRCode.StartsWith("CTC") Then
+                        mflgExistsSSRCTC = True
                     End If
                     mobjSSR.AddItem(pElementNo, pSSRType, pSSRCode, pCarrierCode, pStatusCode, pText, pLastName, pFirstName, pDateOfBirth, pPassportNumber)
                 End If
@@ -904,6 +904,11 @@ Public Class GDSReadPNR1G
     Public ReadOnly Property SSR As SSRCollection
         Get
             Return mobjSSR
+        End Get
+    End Property
+    Public ReadOnly Property HasCTC As Boolean
+        Get
+            Return mflgExistsSSRCTC
         End Get
     End Property
     Private Sub GetOpenSegment1G()

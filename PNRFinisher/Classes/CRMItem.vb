@@ -43,9 +43,9 @@ Public Class CRMItem
         End With
     End Sub
 
-    Public Sub Load(ByVal pSubCode As String)
+    Public Sub Load(ByVal pSubCode As String, ByVal pBackOffice As Integer)
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringACC) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(pBackOffice))
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
 
@@ -56,12 +56,13 @@ Public Class CRMItem
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = " SELECT [Id] " &
-                           " ,[Code] " &
-                           " ,[Name] " &
-                           " FROM [TravelForceCosmos].[dbo].[TFEntities] " &
-                           " WHERE Code = '" & pSubCode & "'  " &
-                           " ORDER BY Name "
+            .Parameters.Add("@SubCode", SqlDbType.NVarChar, 20).Value = pSubCode
+            .CommandText = " SELECT [Id]  
+                             ,[Code]  
+                             ,[Name]  
+                             FROM [TravelForceCosmos].[dbo].[TFEntities]  
+                             WHERE Code = @SubCode  
+                             ORDER BY Name "
 
 
             pobjReader = .ExecuteReader
@@ -69,7 +70,7 @@ Public Class CRMItem
 
         With pobjReader
             Do While .Read
-                SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")), mobjAlerts.AlertForFinisher(MySettings.PCCBackOffice, CStr(.Item("Code"))))
+                SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")), mobjAlerts.AlertForFinisher(pBackOffice, CStr(.Item("Code"))))
             Loop
             .Close()
         End With

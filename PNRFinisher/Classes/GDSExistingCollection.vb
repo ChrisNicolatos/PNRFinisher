@@ -31,52 +31,52 @@ Public Class GDSExistingCollection
 
     Public ReadOnly Property OpenSegment As GDSExistingItem
         Get
-            OpenSegment = mobjOpenSegment
+            Return mobjOpenSegment
         End Get
     End Property
     Public ReadOnly Property PhoneElement As GDSExistingItem
         Get
-            PhoneElement = mobjPhoneElement
+            Return mobjPhoneElement
         End Get
     End Property
     Public ReadOnly Property AgentElement As GDSExistingItem
         Get
-            AgentElement = mobjAgentElement
+            Return mobjAgentElement
         End Get
     End Property
     Public ReadOnly Property EmailElement As GDSExistingItem
         Get
-            EmailElement = mobjEmailElement
+            Return mobjEmailElement
         End Get
     End Property
     Public ReadOnly Property TicketElement As GDSExistingItem
         Get
-            TicketElement = mobjTicketElement
+            Return mobjTicketElement
         End Get
     End Property
     Public ReadOnly Property OptionQueueElement As GDSExistingItem
         Get
-            OptionQueueElement = mobjOptionQueueElement
+            Return mobjOptionQueueElement
         End Get
     End Property
     Public ReadOnly Property AOH As GDSExistingItem
         Get
-            AOH = mobjAOH
+            Return mobjAOH
         End Get
     End Property
     Public ReadOnly Property AgentID As GDSExistingItem
         Get
-            AgentID = mobjAgentID
+            Return mobjAgentID
         End Get
     End Property
     Public ReadOnly Property SavingsElement As GDSExistingItem
         Get
-            SavingsElement = mobjSavingsElement
+            Return mobjSavingsElement
         End Get
     End Property
     Public ReadOnly Property LossElement As GDSExistingItem
         Get
-            LossElement = mobjLossElement
+            Return mobjLossElement
         End Get
     End Property
     Public ReadOnly Property CustomerCodeAI As GDSExistingItem
@@ -86,77 +86,77 @@ Public Class GDSExistingCollection
     End Property
     Public ReadOnly Property CustomerCode As GDSExistingItem
         Get
-            CustomerCode = mobjCustomerCode
+            Return mobjCustomerCode
         End Get
     End Property
     Public ReadOnly Property CustomerName As GDSExistingItem
         Get
-            CustomerName = mobjCustomerName
+            Return mobjCustomerName
         End Get
     End Property
     Public ReadOnly Property SubDepartmentCode As GDSExistingItem
         Get
-            SubDepartmentCode = mobjSubDepartmentCode
+            Return mobjSubDepartmentCode
         End Get
     End Property
     Public ReadOnly Property SubDepartmentName As GDSExistingItem
         Get
-            SubDepartmentName = mobjSubDepartmentName
+            Return mobjSubDepartmentName
         End Get
     End Property
     Public ReadOnly Property CRMCode As GDSExistingItem
         Get
-            CRMCode = mobjCRMCode
+            Return mobjCRMCode
         End Get
     End Property
     Public ReadOnly Property CRMName As GDSExistingItem
         Get
-            CRMName = mobjCRMName
+            Return mobjCRMName
         End Get
     End Property
     Public ReadOnly Property VesselName As GDSExistingItem
         Get
-            VesselName = mobjVesselName
+            Return mobjVesselName
         End Get
     End Property
     Public ReadOnly Property VesselFlag As GDSExistingItem
         Get
-            VesselFlag = mobjVesselFlag
+            Return mobjVesselFlag
         End Get
     End Property
     Public ReadOnly Property VesselOSI As GDSExistingItem
         Get
-            VesselOSI = mobjVesselOSI
+            Return mobjVesselOSI
         End Get
     End Property
     Public ReadOnly Property Reference As GDSExistingItem
         Get
-            Reference = mobjReference
+            Return mobjReference
         End Get
     End Property
     Public ReadOnly Property BookedBy As GDSExistingItem
         Get
-            BookedBy = mobjBookedBy
+            Return mobjBookedBy
         End Get
     End Property
     Public ReadOnly Property Department As GDSExistingItem
         Get
-            Department = mobjDepartment
+            Return mobjDepartment
         End Get
     End Property
     Public ReadOnly Property ReasonForTravel As GDSExistingItem
         Get
-            ReasonForTravel = mobjReasonForTravel
+            Return mobjReasonForTravel
         End Get
     End Property
     Public ReadOnly Property CostCentre As GDSExistingItem
         Get
-            CostCentre = mobjCostCentre
+            Return mobjCostCentre
         End Get
     End Property
     Public ReadOnly Property TRId As GDSExistingItem
         Get
-            TRId = mobjTRId
+            Return mobjTRId
         End Get
     End Property
     Public Sub Clear()

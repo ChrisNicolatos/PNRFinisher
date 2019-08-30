@@ -1,7 +1,7 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class ApisPaxItem
-    Event Valid(IsValid As Boolean)
+    Friend Event Valid(IsValid As Boolean)
     Private Structure ClassProps
         Friend Id As Integer
         Friend Surname As String
@@ -186,7 +186,6 @@ Public Class ApisPaxItem
             SetValid()
         End Set
     End Property
-
     Public Sub Update(ByVal ExpiryDateOK As Boolean)
 
         SetValid()
@@ -199,8 +198,7 @@ Public Class ApisPaxItem
             pobjComm = pobjConn.CreateCommand
 
             With pobjComm
-                .CommandType = CommandType.StoredProcedure
-                .CommandText = "PaxApisInformationUpdate"
+                .CommandType = CommandType.Text
                 .Parameters.Add("@ppId", SqlDbType.Int).Value = mudtProps.Id
                 .Parameters.Add("@ppSurname", SqlDbType.NVarChar, 30).Value = mudtProps.Surname
                 .Parameters.Add("@ppFirstName", SqlDbType.NVarChar, 30).Value = mudtProps.FirstName
@@ -214,7 +212,26 @@ Public Class ApisPaxItem
                 Else
                     .Parameters.Add("@ppDocExpiryDate", SqlDbType.DateTime).Value = DateSerial(1902, 12, 31)
                 End If
-                '.Parameters.Add("@ppQRFreqFlyer", SqlDbType.NChar, 30).Value = False
+                .CommandText = "IF @ppDocExpiryDate < '12/30/1902'
+	                                SET @ppDocExpiryDate = '12/31/1902'
+
+                                IF (SELECT COUNT(ppID) FROM PaxApisInformation WHERE ppSurname = @ppSurname AND ppFirstName = @ppFirstName AND ppBirthDate = @ppBirthDate) = 0
+
+	                                INSERT INTO PaxApisInformation
+	                                (ppSurname, ppFirstName, ppBirthDate, ppGender, ppDocIssuingCountry, ppDocnumber, ppNationality, ppDocExpiryDate)
+	                                VALUES(@ppSurname, @ppFirstName, @ppBirthDate, @ppGender, @ppDocIssuingCountry, @ppDocnumber, @ppNationality, @ppDocExpiryDate)
+
+                                ELSE
+
+	                                UPDATE PaxApisInformation
+	                                SET 
+	                                ppBirthDate=@ppBirthDate, 
+	                                ppGender=@ppGender,
+	                                ppDocIssuingCountry=@ppDocIssuingCountry,
+	                                ppDocnumber=@ppDocnumber,
+	                                ppNationality=@ppNationality,
+	                                ppDocExpiryDate=@ppDocExpiryDate
+	                                WHERE ppSurname = @ppSurname AND ppFirstName = @ppFirstName AND ppBirthDate = @ppBirthDate"
                 .ExecuteNonQuery()
             End With
         Else
@@ -232,8 +249,7 @@ Public Class ApisPaxItem
             pobjComm = pobjConn.CreateCommand
 
             With pobjComm
-                .CommandType = CommandType.StoredProcedure
-                .CommandText = "PaxApisInformation_Insert"
+                .CommandType = CommandType.Text
                 .Parameters.Add("@ppSurname", SqlDbType.NVarChar, 30).Value = mudtProps.Surname
                 .Parameters.Add("@ppFirstName", SqlDbType.NVarChar, 30).Value = mudtProps.FirstName
                 .Parameters.Add("@ppBirthDate", SqlDbType.DateTime).Value = mudtProps.Birthdate
@@ -246,7 +262,13 @@ Public Class ApisPaxItem
                 Else
                     .Parameters.Add("@ppDocExpiryDate", SqlDbType.DateTime).Value = DateSerial(1902, 12, 31)
                 End If
-                '.Parameters.Add("@ppQRFreqFlyer", SqlDbType.NChar, 30).Value = False
+                .CommandText = "	SET NOCOUNT ON;
+                                    IF @ppDocExpiryDate < '12/30/1902'
+                                    SET @ppDocExpiryDate = '12/31/1902'
+
+	                                INSERT INTO PaxApisInformation
+	                                (ppSurname, ppFirstName, ppBirthDate, ppGender, ppDocIssuingCountry, ppDocnumber, ppNationality, ppDocExpiryDate)
+	                                VALUES(@ppSurname, @ppFirstName, @ppBirthDate, @ppGender, @ppDocIssuingCountry, @ppDocnumber, @ppNationality, @ppDocExpiryDate)"
                 .ExecuteNonQuery()
             End With
         Else

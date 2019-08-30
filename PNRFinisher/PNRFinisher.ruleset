@@ -87,6 +87,7 @@
     <Rule Id="CA2230" Action="Warning" />
     <Rule Id="CA2231" Action="Warning" />
     <Rule Id="CA2234" Action="Warning" />
+    <Rule Id="CA2237" Action="None" />
     <Rule Id="CA2239" Action="Warning" />
   </Rules>
 </RuleSet>

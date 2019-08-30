@@ -5,7 +5,7 @@ Public Class CloseOffEntriesCollection
 
     Public Sub Load(ByVal GDSPcc As String, ByVal OwnPCC As Boolean)
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
 
@@ -16,10 +16,10 @@ Public Class CloseOffEntriesCollection
             .CommandType = CommandType.Text
             .Parameters.Add("@PCC", SqlDbType.NChar, 9).Value = GDSPcc
             .Parameters.Add("@OwnPCC", SqlDbType.Bit).Value = IIf(OwnPCC, 1, 0)
-            .CommandText = "SELECT pfcEntry " &
-            "  FROM AmadeusReports.dbo.PNRFinisherCloseOff " &
-            "  WHERE pfcPCC = @PCC AND pfcOwnPCC = @OwnPCC " &
-            "  ORDER BY pfcSeqNo "
+            .CommandText = "SELECT pfcEntry 
+                            FROM AmadeusReports.dbo.PNRFinisherCloseOff 
+                            WHERE pfcPCC = @PCC AND pfcOwnPCC = @OwnPCC 
+                            ORDER BY pfcSeqNo "
             pobjReader = .ExecuteReader
         End With
 

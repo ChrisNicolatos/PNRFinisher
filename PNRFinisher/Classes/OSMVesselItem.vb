@@ -100,7 +100,7 @@ Public Class OSMVesselItem
         Try
             If mudtProps.isValid Then
 
-                Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+                Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
                 Dim pobjComm As New SqlClient.SqlCommand
 
                 pobjConn.Open()
@@ -108,13 +108,16 @@ Public Class OSMVesselItem
 
                 With pobjComm
                     .CommandType = CommandType.Text
+                    .Parameters.Add("@Id", SqlDbType.Int).Value = mudtProps.Id
+                    .Parameters.Add("@VesselName", SqlDbType.NVarChar, 50).Value = mudtProps.VesselName
+                    .Parameters.Add("@InUse", SqlDbType.Bit).Value = If(mudtProps.InUse, 1, 0)
                     If mudtProps.isNew Then
-                        .CommandText = "IF (SELECT COUNT(*) FROM [AmadeusReports].[dbo].[osmVessels] WHERE osmvVesselName = '" & mudtProps.VesselName & "') = 0 " &
-                                       " INSERT INTO AmadeusReports.dbo.osmVessels " &
-                                       " (osmvVesselName, osmvVesselGroup, osmvInUse) " &
-                                       " VALUES " &
-                                       " ( '" & mudtProps.VesselName & "', '', " & If(mudtProps.InUse, 1, 0) & ") " &
-                                       " select scope_identity() as Id"
+                        .CommandText = "IF (SELECT COUNT(*) FROM [AmadeusReports].[dbo].[osmVessels] WHERE osmvVesselName = @VesselName) = 0 
+                                        INSERT INTO AmadeusReports.dbo.osmVessels 
+                                        (osmvVesselName, osmvVesselGroup, osmvInUse) 
+                                        VALUES 
+                                        ( @VesselName, '', @InUse) 
+                                        select scope_identity() as Id"
                         Dim pTemp As Integer = CInt(.ExecuteScalar)
                         If IsDBNull(pTemp) Then
                             Throw New Exception("Vessel Already exists")
@@ -123,11 +126,10 @@ Public Class OSMVesselItem
                             mudtProps.isNew = False
                         End If
                     Else
-                        .CommandText = "UPDATE AmadeusReports.dbo.osmVessels " &
-                                       " SET osmvVesselName = '" & mudtProps.VesselName & "', " &
-                                       "     osmvVesselGroup = '', " &
-                                       "     osmvInUse = " & If(mudtProps.InUse, 1, 0) & " " &
-                                       " WHERE osmvId = " & mudtProps.Id
+                        .CommandText = "UPDATE AmadeusReports.dbo.osmVessels 
+                                        SET osmvVesselName = @VesselName, 
+                                            osmvInUse = @InUse 
+                                        WHERE osmvId = @Id"
                         .ExecuteNonQuery()
                     End If
                 End With

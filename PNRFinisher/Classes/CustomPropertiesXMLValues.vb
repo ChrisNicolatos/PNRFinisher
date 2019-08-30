@@ -6,9 +6,9 @@ Public Class CustomPropertiesXMLValues
 
     Private mstrID As String
 
-    Public Sub ReadValues(ByVal pCustomPropertyID As Integer, ByVal pTfEntityID As Integer)
+    Public Sub ReadValues(ByVal pCustomPropertyID As Integer, ByVal pTfEntityID As Integer, ByVal pBackOffice As Integer)
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringACC) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(pBackOffice))
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
 
@@ -18,16 +18,18 @@ Public Class CustomPropertiesXMLValues
         MyBase.Clear()
         mstrID = ""
 
-        If MySettings.PCCBackOffice = 1 Then
+        If pBackOffice = 1 Then
 
             Do While pTfEntityID <> 0 And mstrID.IndexOf("," & pTfEntityID & ",") < 0
                 With pobjComm
                     .CommandType = CommandType.Text
-                    .CommandText = "SELECT LookUpValues, ISNULL(RelatedEntityID, 0) AS RelatedEntityID " &
-                               " FROM TravelForceCosmos.dbo.ClientCustomProperties " &
-                               " LEFT JOIN TravelForceCosmos.dbo.TFEntities " &
-                               " 	ON TFEntityID=TFEntities.Id " &
-                               " WHERE CustomPropertyID = " & pCustomPropertyID & " And TFEntityID = " & pTfEntityID
+                    .Parameters.Add("@CustomPropertyId", SqlDbType.Int).Value = pCustomPropertyID
+                    .Parameters.Add("@TFEntityId", SqlDbType.Int).Value = pTfEntityID
+                    .CommandText = "SELECT LookUpValues, ISNULL(RelatedEntityID, 0) AS RelatedEntityID 
+                                    FROM TravelForceCosmos.dbo.ClientCustomProperties 
+                                    LEFT JOIN TravelForceCosmos.dbo.TFEntities 
+                                	    ON TFEntityID=TFEntities.Id 
+                                    WHERE CustomPropertyID = @CustomPropertyId And TFEntityID = @TFEntityId"
                     pobjReader = .ExecuteReader
                 End With
                 With pobjReader
@@ -40,34 +42,43 @@ Public Class CustomPropertiesXMLValues
                 pobjReader.Close()
             Loop
             MyBase.Sort()
-        ElseIf MySettings.PCCBackOffice = 2 Then
+        ElseIf pBackOffice = 2 Then
             With pobjComm
                 .CommandType = CommandType.Text
+                .Parameters.Add("@EntityID", SqlDbType.Int).Value = pTfEntityID
+                .CommandText = ""
                 Select Case pCustomPropertyID
                     Case 1 ' booked by
-                        .CommandText = "SELECT Child_Value AS Name " &
-                                       " From Disco_Instone_EU.dbo.Costcen " &
-                                       "  LEFT JOIN Company " &
-                                       "  ON Costcen.Account_Id=Company.Account_Id " &
-                                       "  WHERE CostCen.Account_id = " & pTfEntityID & " AND Child_Name = 'BBY' " &
-                                       " ORDER BY Child_Value"
+                        .CommandText = "SELECT Child_Value AS Name  
+                                        From Disco_Instone_EU.dbo.Costcen  
+                                        LEFT JOIN Company  
+                                        ON Costcen.Account_Id=Company.Account_Id  
+                                        WHERE CostCen.Account_id = @EntityID AND Child_Name = 'BBY'  
+                                        ORDER BY Child_Value"
                     Case 4 ' reason for travel
-                        .CommandText = "SELECT Child_Value AS Name " &
-                                      " From Disco_Instone_EU.dbo.Costcen " &
-                                      "  LEFT JOIN Company " &
-                                      "  ON Costcen.Account_Id=Company.Account_Id " &
-                                      "  WHERE CostCen.Account_id = " & pTfEntityID & " AND Child_Name = 'REF2' " &
-                                      " ORDER BY Child_Value"
+                        .CommandText = "SELECT Child_Value AS Name  
+                                        From Disco_Instone_EU.dbo.Costcen  
+                                        LEFT JOIN Company  
+                                        ON Costcen.Account_Id=Company.Account_Id  
+                                        WHERE CostCen.Account_id = @EntityID AND Child_Name = 'REF2'  
+                                        ORDER BY Child_Value"
+                    Case 5 ' cost centre
+                        .CommandText = "SELECT Child_Value AS Name  
+                                        From Disco_Instone_EU.dbo.Costcen  
+                                        LEFT JOIN Company  
+                                        ON Costcen.Account_Id=Company.Account_Id  
+                                        WHERE CostCen.Account_id = @EntityID AND Child_Name = 'CC2'  
+                                        ORDER BY Child_Value"
                 End Select
 
-                pobjReader = .ExecuteReader
-            End With
-            With pobjReader
-                Do While .Read
-                    If Not MyBase.Contains(CStr(.Item("Name"))) Then
-                        MyBase.Add(CStr(.Item("Name")))
-                    End If
-                Loop
+                If .CommandText <> "" Then
+                    pobjReader = .ExecuteReader
+                    Do While pobjReader.Read
+                        If Not MyBase.Contains(CStr(pobjReader.Item("Name"))) Then
+                            MyBase.Add(CStr(pobjReader.Item("Name")))
+                        End If
+                    Loop
+                End If
             End With
         End If
 

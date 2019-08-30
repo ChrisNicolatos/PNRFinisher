@@ -1,4 +1,6 @@
-﻿Public Class frmUser
+﻿Option Strict On
+Option Explicit On
+Public Class frmUser
     Private WithEvents mobjDBUser As DBUser
     Friend Sub New(ByVal pGDS As EnumGDSCode, ByVal pPCC As String, pUserID As String)
 
@@ -74,7 +76,7 @@
             cmdSave.Enabled = .isValid
         End With
     End Sub
-    Private Sub ColourTextBox(ByRef txtBox As TextBox, ByRef IsValid As Boolean)
+    Private Shared Sub ColourTextBox(ByRef txtBox As TextBox, ByRef IsValid As Boolean)
         If IsValid Then
             txtBox.BackColor = Color.White
         Else

@@ -1,4 +1,6 @@
-﻿Public Class frmOSMLoG
+﻿Option Strict On
+Option Explicit On
+Public Class frmOSMLoG
     Private mflgLoading As Boolean
     Private mobjAddresses As New OSMAddressCollection
     Private mobjAddressSelected As OSMAddressItem
@@ -63,7 +65,8 @@
     End Sub
     Private Sub LoadAddresses()
         lstOfficeAddress.Items.Clear()
-        mobjAddresses.Load
+        mobjAddresses.Load()
+
         For Each pItem As OSMAddressItem In mobjAddresses.Values
             lstOfficeAddress.Items.Add(pItem)
         Next
@@ -84,7 +87,7 @@
             lblSegs.Text = ""
             For Each pSeg As GDSSegItem In .Segments.Values
                 With pSeg
-                    lblSegs.Text &= .Airline & " " & .FlightNo.PadLeft(5) & " " & .DepartureDateIATA.PadLeft(6) & " " & .BoardPoint & " " & .OffPoint & " " & Format(.DepartTime, "HHmm") & vbCrLf
+                    lblSegs.Text &= .Airline & " " & .FlightNo.PadLeft(5) & " " & .DepartureDateIATA.PadLeft(6) & " " & .BoardPoint & " " & .OffPoint & " " & .DepartTimeShort & vbCrLf
                 End With
             Next
             If .BookedBy.IndexOf("-") > 0 Then
@@ -107,7 +110,7 @@
     Private Sub lstPortAgent_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstPortAgent.SelectedIndexChanged
 
         If Not lstPortAgent.SelectedItem Is Nothing Then
-            mobjAgent = lstPortAgent.SelectedItem
+            mobjAgent = CType(lstPortAgent.SelectedItem, OSMEmailItem)
         End If
         EnableSelection()
     End Sub
@@ -192,7 +195,7 @@
 
     Private Sub lstOfficeAddress_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstOfficeAddress.SelectedIndexChanged
         If Not lstOfficeAddress Is Nothing Then
-            mobjAddressSelected = lstOfficeAddress.SelectedItem
+            mobjAddressSelected = CType(lstOfficeAddress.SelectedItem, OSMAddressItem)
             If mobjAddressSelected.SignedByName = "" Then
                 If mobjPNR.BookedBy.IndexOf("-") > 0 Then
                     mobjAddressSelected.SignedByName = mobjPNR.BookedBy.Substring(0, mobjPNR.BookedBy.IndexOf("-"))

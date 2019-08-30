@@ -6,7 +6,7 @@ Public Class CloseOffEntriesItem
 
     Public ReadOnly Property CloseOffEntry As String
         Get
-            CloseOffEntry = MySettings.ConvertGDSValue(mEntry)
+            Return MySettings.ConvertGDSValue(mEntry)
         End Get
     End Property
     Friend Sub SetValues(ByVal CloseOffEntry As String)

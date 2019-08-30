@@ -7,7 +7,7 @@ Friend Class GreekToLatin
     Private Const Latin As String = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     Private Const GreekForY As String = "βγδζλμνραεηιουωάέήίόύώϊϋΐΰΒΓΔΖΛΜΝΡΑΕΗΙΟΥΩΆΈΉΊΌΎΏΪΫ"
 
-    Public Function Convert(ByVal Source As String) As String
+    Public Shared Function Convert(ByVal Source As String) As String
 
         ' Aντιστοιχία γραμμάτων Ελληνικής και Λατινικής γραφής
         '
@@ -130,7 +130,7 @@ Friend Class GreekToLatin
 
     End Function
 
-    Private Function ReplaceMP(ByVal Text As String) As String
+    Private Shared Function ReplaceMP(ByVal Text As String) As String
 
         Dim pstrResult As String
         Dim i As Integer
@@ -169,7 +169,7 @@ Friend Class GreekToLatin
 
     End Function
 
-    Function ReplacexY(ByVal Text As String, ByVal Diph As String, ByVal DiphLat As String) As String
+    Private Shared Function ReplacexY(ByVal Text As String, ByVal Diph As String, ByVal DiphLat As String) As String
 
         ' AY --> AV (*), AF (**)
         ' EY --> EV (*), EF (**)

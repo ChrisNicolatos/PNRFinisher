@@ -1,4 +1,6 @@
-﻿Public Class frmAPISPaxSelect
+﻿Option Strict On
+Option Explicit On
+Public Class frmAPISPaxSelect
     Dim mobjPaxApis As New ApisPaxCollection
     Dim mobjPaxItem As ApisPaxItem
 
@@ -8,7 +10,7 @@
         InitializeComponent()
 
         ' Add any initialization after the InitializeComponent() call.
-        txtNumber.Text = PaxId
+        txtNumber.Text = PaxId.ToString
         txtSurname.Text = PaxSurname
         txtFirstName.Text = PaxFirstName
         mobjPaxApis = PaxCollection
@@ -27,13 +29,13 @@
     End Sub
     Public ReadOnly Property SelectedPassenger As ApisPaxItem
         Get
-            SelectedPassenger = mobjPaxItem
+            Return mobjPaxItem
         End Get
     End Property
     Private Sub dgvPax_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPax.CellContentClick, dgvPax.RowEnter
         Try
             Dim Id As Integer = e.RowIndex
-            mobjPaxItem = mobjPaxApis.Item(dgvPax.Rows(Id).Cells(0).Value)
+            mobjPaxItem = mobjPaxApis.Item(CInt(dgvPax.Rows(Id).Cells(0).Value))
         Catch ex As Exception
             mobjPaxItem = Nothing
         End Try

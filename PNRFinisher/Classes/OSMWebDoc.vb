@@ -1,5 +1,7 @@
-﻿Public Class OSMWebDoc
-    Public Function OSMWebHeader(ByVal ShowFullPaxDetails As Boolean, ByRef lstOSMAgents As ListBox, ByRef lstOSMToEmail As ListBox, ByRef lstOSMCCEmail As ListBox, ByRef lstOSMVessels As ListBox, ByRef dgvOSMPax As DataGridView, ByRef mOSMPax As OSMPaxCollection) As String
+﻿Option Strict On
+Option Explicit On
+Public Class OSMWebDoc
+    Public Shared Function OSMWebHeader(ByVal ShowFullPaxDetails As Boolean, ByRef lstOSMAgents As ListBox, ByRef lstOSMToEmail As ListBox, ByRef lstOSMCCEmail As ListBox, ByRef lstOSMVessels As ListBox, ByRef dgvOSMPax As DataGridView, ByRef mOSMPax As OSMPaxCollection) As String
 
         Try
             Dim xDoctext As String = "<html><head></head><body>"

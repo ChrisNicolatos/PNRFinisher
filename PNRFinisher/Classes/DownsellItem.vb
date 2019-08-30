@@ -11,6 +11,7 @@ Public Class DownsellItem
         Dim DownsellDecision As String
         Dim ClientCode As String
         Dim ClientName As String
+        Dim OpsGroup As String
         Dim AlertForDownsell As String
         Dim PaxName As String
         Dim Itinerary As String
@@ -66,6 +67,11 @@ Public Class DownsellItem
             Return mudtProps.ClientName
         End Get
     End Property
+    Public ReadOnly Property OpsGroup As String
+        Get
+            Return mudtProps.OpsGroup
+        End Get
+    End Property
     Public ReadOnly Property AlertForDownsell As String
         Get
             Return mudtProps.AlertForDownsell
@@ -110,7 +116,7 @@ Public Class DownsellItem
                           , ByVal pUserGdsId As String, ByVal pDateLogged As Date, ByVal pDownsellDecision As String _
                           , ByVal pClientCode As String, ByVal pClientName As String, ByVal pAlertForDownsell As String, ByVal pPaxName As String, ByVal pItinerary As String _
                           , ByVal pTotal As Decimal, ByVal pDownsellTotal As Decimal, ByVal pFareBasis As String, ByVal pDownsellFareBasis As String _
-                          , ByVal pGDSCommand As String)
+                          , ByVal pGDSCommand As String, ByVal pOpsGroup As String)
         With mudtProps
             .OwnPNR = pOwnPNR
             .PCC = pPCC
@@ -129,6 +135,7 @@ Public Class DownsellItem
             .FareBasis = pFareBasis
             .DownsellFareBasis = pDownsellFareBasis
             .GDSCommand = pGDSCommand
+            .OpsGroup = pOpsGroup
         End With
     End Sub
 

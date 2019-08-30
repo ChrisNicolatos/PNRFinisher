@@ -35,14 +35,62 @@ Public Class GDSSegItem
         Dim Stopovers As String
         Dim DepartTerminal As String
         Dim ArriveTerminal As String
+        Dim DepartTerminalShort As String
+        Dim ArriveTerminalShort As String
         Dim Status As String
         Dim Equipment As String
+        Dim MealFlight As String
+        Dim MealSSR As String
         Dim ConnectTimeFromPrevious As String
         Dim SurfaceSegment As Boolean
+        Dim CO2 As Collections.Generic.List(Of CO2Item)
+        Dim ClassOfServiceDescription As ClassOfServiceItem
     End Structure
 
     Private mudtProps As ClassProps
     Private mobjAirlineDate As New s1aAirlineDate.clsAirlineDate
+    Public Sub New()
+        With mudtProps
+            .ElementNo = 0
+            .Airline = ""
+            .AirlineName = ""
+            .FlightNo = ""
+            .ClassOfService = ""
+            .DepartureDate = Date.MinValue
+            .DepartureDateIATA = ""
+            .ArrivalDate = Date.MinValue
+            .ArrivalDateIATA = ""
+            .BoardPoint = ""
+            .BoardAirportName = ""
+            .BoardCityName = ""
+            .BoardAirportShortName = ""
+            .BoardCountryName = ""
+            .BoardCountryCode = ""
+            .OffPoint = ""
+            .OffPointAirportName = ""
+            .OffPointCityName = ""
+            .OffPointAirportShortName = ""
+            .OffPointCountryName = ""
+            .OffPointCountryCode = ""
+            .DepartTime = Date.MinValue
+            .ArriveTime = Date.MinValue
+            .EstimatedFlyingTime = ""
+            .AirlineLocator = ""
+            .Text = ""
+            .OperatedBy = ""
+            .Stopovers = ""
+            .DepartTerminal = ""
+            .ArriveTerminal = ""
+            .Status = ""
+            .Equipment = ""
+            .MealFlight = ""
+            .MealSSR = ""
+            .ConnectTimeFromPrevious = ""
+            .SurfaceSegment = False
+            .CO2 = New Collections.Generic.List(Of CO2Item)
+            .ClassOfServiceDescription = New ClassOfServiceItem
+        End With
+    End Sub
     Public ReadOnly Property ElementNo As Integer
         Get
             Return mudtProps.ElementNo
@@ -153,7 +201,7 @@ Public Class GDSSegItem
             Return WeekDaySeg(mudtProps.ArrivalDate)
         End Get
     End Property
-    Private Function WeekDaySeg(ByVal InputDate As Date) As String
+    Private Shared Function WeekDaySeg(ByVal InputDate As Date) As String
 
         Try
             Select Case Weekday(InputDate)
@@ -181,7 +229,17 @@ Public Class GDSSegItem
     End Function
     Public ReadOnly Property Equipment As String
         Get
-            Return mudtProps.Equipment.Trim
+            Return mudtProps.Equipment.Trim.PadRight(3)
+        End Get
+    End Property
+    Public ReadOnly Property MealFlight As String
+        Get
+            Return mudtProps.MealFlight
+        End Get
+    End Property
+    Public ReadOnly Property MealSSR As String
+        Get
+            Return mudtProps.MealSSR
         End Get
     End Property
     Public ReadOnly Property FlightNo() As String
@@ -203,9 +261,29 @@ Public Class GDSSegItem
             Return mudtProps.DepartTime
         End Get
     End Property
+    Public ReadOnly Property DepartTimeShort As String
+        Get
+            Return Format(mudtProps.DepartTime, "HHmm")
+        End Get
+    End Property
+    Public ReadOnly Property DepartTimeShort(ByVal Separator As String) As String
+        Get
+            Return Format(mudtProps.DepartTime, "HH") & Separator & Format(mudtProps.DepartTime, "mm")
+        End Get
+    End Property
     Public ReadOnly Property ArriveTime() As Date
         Get
             Return mudtProps.ArriveTime
+        End Get
+    End Property
+    Public ReadOnly Property ArriveTimeShort As String
+        Get
+            Return Format(mudtProps.ArriveTime, "HHmm")
+        End Get
+    End Property
+    Public ReadOnly Property ArriveTimeShort(ByVal Separator As String) As String
+        Get
+            Return Format(mudtProps.ArriveTime, "HH") & Separator & Format(mudtProps.ArriveTime, "mm")
         End Get
     End Property
     Public ReadOnly Property EstimatedFlyingTime As String
@@ -221,9 +299,7 @@ Public Class GDSSegItem
 
     Public ReadOnly Property Text() As String
         Get
-
             Return mudtProps.Text.Trim
-
         End Get
     End Property
 
@@ -232,9 +308,32 @@ Public Class GDSSegItem
             Return mudtProps.Stopovers
         End Get
     End Property
+    Public ReadOnly Property ArriveTerminal As String
+        Get
+            Return mudtProps.ArriveTerminal
+        End Get
+    End Property
     Public ReadOnly Property DepartTerminal As String
         Get
             Return mudtProps.DepartTerminal
+        End Get
+    End Property
+    Public ReadOnly Property ArriveTerminalShort As String
+        Get
+            If mudtProps.ArriveTerminalShort = "" Then
+                Return "."
+            Else
+                Return mudtProps.ArriveTerminalShort
+            End If
+        End Get
+    End Property
+    Public ReadOnly Property DepartTerminalShort As String
+        Get
+            If mudtProps.DepartTerminalShort = "" Then
+                Return "."
+            Else
+                Return mudtProps.DepartTerminalShort
+            End If
         End Get
     End Property
     Public ReadOnly Property OperatedBy As String
@@ -264,11 +363,20 @@ Public Class GDSSegItem
             Return mudtProps.SurfaceSegment
         End Get
     End Property
+    Public ReadOnly Property CO2 As Collections.Generic.List(Of CO2Item)
+        Get
+            Return mudtProps.CO2
+        End Get
+    End Property
+    Public ReadOnly Property ClassOfServiceDescription As ClassOfServiceItem
+        Get
+            Return mudtProps.ClassOfServiceDescription
+        End Get
+    End Property
     Friend Sub SetSurfaceSegment(ByVal pElementNo As Integer)
         With mudtProps
             .ElementNo = pElementNo
             .SurfaceSegment = True
-
             .Airline = ""
             .AirlineName = ""
             .FlightNo = ""
@@ -292,17 +400,20 @@ Public Class GDSSegItem
             .ArriveTime = Date.MinValue
             .AirlineLocator = ""
             .Equipment = ""
+            .MealFlight = ""
+            .MealSSR = ""
             .AirlineLocator = ""
             .Text = ""
             .OperatedBy = ""
             .DepartureDateIATA = Date.MinValue.ToString
             .ArrivalDateIATA = Date.MinValue.ToString
-            mudtProps.Stopovers = ""
-            mudtProps.ArriveTerminal = ""
-            mudtProps.DepartTerminal = ""
-            mudtProps.EstimatedFlyingTime = ""
-            mudtProps.Equipment = ""
-            mudtProps.ConnectTimeFromPrevious = ""
+            .Stopovers = ""
+            .ArriveTerminal = ""
+            .DepartTerminal = ""
+            .EstimatedFlyingTime = ""
+            .ConnectTimeFromPrevious = ""
+            .CO2 = New List(Of CO2Item)
+            .ClassOfServiceDescription = New ClassOfServiceItem
         End With
     End Sub
     Friend Sub SetValues(ByVal pAirline As String _
@@ -317,6 +428,8 @@ Public Class GDSSegItem
                        , ByVal pDepartTime As Date _
                        , ByVal pArriveTime As Date _
                        , ByVal pEquipment As String _
+                       , ByVal pMealFlight As String _
+                       , ByVal pMealSSR As String _
                        , ByVal pVL() As String _
                        , ByVal pText As String _
                        , ByVal pOperatedBy As String _
@@ -348,6 +461,8 @@ Public Class GDSSegItem
             .ArriveTime = pArriveTime
             .AirlineLocator = ""
             .Equipment = pEquipment
+            .MealFlight = pMealFlight
+            .MealSSR = pMealSSR
             If pVL.GetUpperBound(0) = 1 Then
                 If pVL(1).IndexOf("/") > 0 Then
                     .AirlineLocator = pVL(1).Substring(5, pVL(1).IndexOf("/") - 5)
@@ -397,13 +512,31 @@ Public Class GDSSegItem
             mudtProps.ArriveTerminal = ""
             mudtProps.DepartTerminal = ""
             mudtProps.EstimatedFlyingTime = ""
+            .CO2 = New List(Of CO2Item)
             AnalyzeSVC1G(SVC)
             mudtProps.ConnectTimeFromPrevious = pConnectTimeFromPrevious
             mudtProps.SurfaceSegment = False
+            .ClassOfServiceDescription = ReadClassOfService(Airline, BoardPoint, OffPoint, ClassOfService)
         End With
     End Sub
 
-    Friend Sub SetValues(ByVal pAirline As String, ByVal pBoardPoint As String, ByVal pClass As String, ByVal pDepartureDate As Date, ByVal pArrivalDate As Date, ByVal pElementNo As Integer, ByVal pFlightNo As String, ByVal pOffPoint As String, ByVal pStatus As String, ByVal pDepartTime As Date, ByVal pArriveTime As Date, ByVal pEquipment As String, ByVal pText As String, ByVal SegDo As String, ByVal pConnectTimeFromPrevious As String)
+    Friend Sub SetValues(ByVal pAirline As String _
+                         , ByVal pBoardPoint As String _
+                         , ByVal pClass As String _
+                         , ByVal pDepartureDate As Date _
+                         , ByVal pArrivalDate As Date _
+                         , ByVal pElementNo As Integer _
+                         , ByVal pFlightNo As String _
+                         , ByVal pOffPoint As String _
+                         , ByVal pStatus As String _
+                         , ByVal pDepartTime As Date _
+                         , ByVal pArriveTime As Date _
+                         , ByVal pEquipment As String _
+                         , ByVal pMealFlight As String _
+                         , ByVal pMealSSR As String _
+                         , ByVal pText As String _
+                         , ByVal SegDo As String _
+                         , ByVal pConnectTimeFromPrevious As String)
         ' Amadeus
         With mudtProps
             .ElementNo = pElementNo
@@ -431,6 +564,8 @@ Public Class GDSSegItem
             .DepartTime = pDepartTime
             .ArriveTime = pArriveTime
             .Equipment = pEquipment
+            .MealFlight = pMealFlight
+            .MealSSR = pMealSSR
             If pText.Length > 63 Then
                 .AirlineLocator = pText.Substring(53, 10).Trim
             ElseIf pText.Length > 53 Then
@@ -463,9 +598,11 @@ Public Class GDSSegItem
             mudtProps.ArriveTerminal = ""
             mudtProps.DepartTerminal = ""
             mudtProps.EstimatedFlyingTime = ""
+            .CO2 = New List(Of CO2Item)
             AnalyseSegDo1A(SegDo)
             .ConnectTimeFromPrevious = pConnectTimeFromPrevious
             .SurfaceSegment = False
+            .ClassOfServiceDescription = ReadClassOfService(Airline, BoardPoint, OffPoint, ClassOfService)
         End With
 
     End Sub
@@ -485,6 +622,10 @@ Public Class GDSSegItem
             For i As Integer = pItinStarts To pSegDo.GetUpperBound(0)
                 If pSegDo(i).Length > 3 AndAlso pSegDo(i).Substring(0, 3) = mudtProps.BoardPoint Then
                     pBoardStarts = i
+                    If pSegDo(i).Length >= 44 Then
+                        mudtProps.Equipment = pSegDo(i).Substring(42, 3)
+                        ' TODO -Find And Decode Meal Codes also from SSR
+                    End If
                     Exit For
                 End If
             Next
@@ -511,10 +652,19 @@ Public Class GDSSegItem
                 mudtProps.EstimatedFlyingTime = ""
             End If
             For i As Integer = pOffStarts To pSegDo.GetUpperBound(0)
-                If pSegDo(i).IndexOf("- DEPARTS") > 0 Then
+                If pSegDo(i).Length > 16 AndAlso pSegDo(i).Substring(3, 3) = BoardPoint AndAlso pSegDo(i).IndexOf("- DEPARTS") > 0 Then
                     mudtProps.DepartTerminal = pSegDo(i).Substring(pSegDo(i).IndexOf("- DEPARTS") + 2)
-                ElseIf pSegDo(i).IndexOf("- ARRIVES") > 0 Then
+                    mudtProps.DepartTerminalShort = mudtProps.DepartTerminal.Replace("DEPARTS TERMINAL ", "").Trim
+                ElseIf pSegDo(i).Length > 16 AndAlso pSegDo(i).Substring(7, 3) = OffPoint AndAlso pSegDo(i).IndexOf("- ARRIVES") > 0 Then
                     mudtProps.ArriveTerminal = pSegDo(i).Substring(pSegDo(i).IndexOf("- ARRIVES") + 2)
+                    mudtProps.ArriveTerminalShort = mudtProps.ArriveTerminal.Replace("ARRIVES TERMINAL ", "").Trim
+                ElseIf pSegDo(i).Length > 22 AndAlso pSegDo(i).Substring(15, 8) = " CO2/PAX" Then
+                    Dim pCO2Item As New CO2Item
+                    pCO2Item.SetValue(pSegDo(i))
+                    If Not mudtProps.CO2.Contains(pCO2Item) Then
+                        mudtProps.CO2.Add(pCO2Item)
+                    End If
+
                 End If
             Next
         End If
@@ -526,8 +676,12 @@ Public Class GDSSegItem
         mudtProps.Stopovers = ""
         mudtProps.ArriveTerminal = ""
         mudtProps.DepartTerminal = ""
+        mudtProps.ArriveTerminalShort = ""
+        mudtProps.DepartTerminalShort = ""
         mudtProps.EstimatedFlyingTime = ""
         mudtProps.Equipment = ""
+        mudtProps.MealFlight = ""
+        mudtProps.MealSSR = ""
 
         Dim pSeg As Integer = 0
         Dim pOffPoint As String = ""
@@ -547,6 +701,13 @@ Public Class GDSSegItem
                 pOffPoint = pSVC(iSVC).Substring(17, 3)
                 pFlyingTime = TimeSerial(CInt(mudtProps.EstimatedFlyingTime.Substring(0, mudtProps.EstimatedFlyingTime.IndexOf(":"))), CInt(mudtProps.EstimatedFlyingTime.Substring(mudtProps.EstimatedFlyingTime.IndexOf(":") + 1, 2)), 0)
                 mudtProps.Equipment = pSVC(iSVC).Substring(21, 5).Trim
+                ' TODO -Find Equipment Code And Meal Code And dcecode meal - Also From SSR
+            ElseIf pSVC(iSVC).Length > 14 AndAlso pSVC(iSVC).Substring(3, 5) = " CO2 " AndAlso pSVC(iSVC).Substring(7, 7) <> " TOTAL " Then
+                Dim pCO2Item As New CO2Item
+                pCO2Item.SetValue(pSVC(iSVC))
+                If Not mudtProps.CO2.Contains(pCO2Item) Then
+                    mudtProps.CO2.Add(pCO2Item)
+                End If
             ElseIf pSeg > 0 Then
                 If pSVC(iSVC).StartsWith(Space(14)) And pSVC(iSVC).Substring(14, 6).Replace(" ", "").Length = 6 And pSVC(iSVC).Substring(20, 1) = Space(1) Then
                     If mudtProps.Stopovers <> "" Then
@@ -559,19 +720,22 @@ Public Class GDSSegItem
                     pFlyingTime = DateAdd(DateInterval.Minute, CDbl(pTime.Substring(pTime.IndexOf(":") + 1, 2)), pFlyingTime)
                     mudtProps.EstimatedFlyingTime = Format(pFlyingTime, "HH:mm")
                 End If
-                If pSVC(iSVC).IndexOf("DEPARTS") >= 0 Then
-                    If pSVC(iSVC).IndexOf("-") > 0 Then
-                        mudtProps.DepartTerminal = pSVC(iSVC).Substring(0, pSVC(iSVC).IndexOf("-")).Trim
-                    Else
-                        mudtProps.DepartTerminal = pSVC(iSVC).Trim
-                    End If
-                End If
-                If pSVC(iSVC).IndexOf("ARRIVES") >= 0 Then
-                    If pSVC(iSVC).IndexOf("-") > 0 Then
-                        mudtProps.ArriveTerminal = pSVC(iSVC).Substring(pSVC(iSVC).IndexOf("-") + 1).Trim
-                    Else
-                        mudtProps.ArriveTerminal = pSVC(iSVC).Trim
-                    End If
+                If pSVC(iSVC).IndexOf("DEPARTS") > 0 Or pSVC(iSVC).IndexOf("ARRIVES") > 0 Then
+                    Dim pTerm() As String = pSVC(iSVC).Split({"-"}, StringSplitOptions.RemoveEmptyEntries)
+                    For i As Integer = 0 To pTerm.GetUpperBound(0)
+                        Dim pElem() As String = pTerm(i).Split({" "}, StringSplitOptions.RemoveEmptyEntries)
+                        For j = 0 To pElem.GetUpperBound(0) - 1
+                            If pElem(j) = "TERMINAL" Then
+                                If pElem(0) = "DEPARTS" Then
+                                    mudtProps.DepartTerminal = pTerm(i).Trim
+                                    mudtProps.DepartTerminalShort = pElem(j + 1).Trim
+                                ElseIf pElem(0) = "ARRIVES" Then
+                                    mudtProps.ArriveTerminal = pTerm(i).Trim
+                                    mudtProps.ArriveTerminalShort = pElem(j + 1).Trim
+                                End If
+                            End If
+                        Next
+                    Next
                 End If
             ElseIf pSVC(iSVC).Substring(0, 1) <> " " Then
                 Exit For

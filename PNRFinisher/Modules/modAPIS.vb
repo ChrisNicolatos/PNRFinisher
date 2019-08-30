@@ -37,6 +37,7 @@ Module modAPIS
         If PaxItem.ExpiryDate > Date.MinValue Then
             dgvRow.Cells(8).Value = DateToIATA(PaxItem.ExpiryDate) ' Expiry Date
         End If
+
         dgvApis.Rows.Add(dgvRow)
     End Sub
     Public Sub APISAddRow(ByRef dgvApis As DataGridView, ByVal ElementNo As Integer, ByVal LastName As String, ByVal Initial As String, ByVal IssuingCountry As String, ByVal PassportNumber As String, ByVal Nationality As String,

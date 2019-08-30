@@ -1,7 +1,7 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class ExportDataGrid
-    Public Function Export(ByVal dGrid As DataGridView) As String
+    Public Shared Function Export(ByVal dGrid As DataGridView) As String
 
         Try
             Dim pFileName As String = "C:\Users\Chris.Nicolatos\Desktop\xxx.csv"

@@ -159,7 +159,7 @@ Public Class OSMEmailItem
     End Sub
     Public Sub Update()
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
 
         pobjConn.Open()
@@ -167,36 +167,42 @@ Public Class OSMEmailItem
 
         With pobjComm
             .CommandType = CommandType.Text
+            .Parameters.Add("@Id", SqlDbType.Int).Value = mudtprops.Id
+            .Parameters.Add("@Vessel_FK", SqlDbType.Int).Value = mudtprops.Vessel_FK
+            .Parameters.Add("@Name", SqlDbType.NVarChar, 255).Value = mudtprops.Name
+            .Parameters.Add("@Details", SqlDbType.NVarChar, 255).Value = mudtprops.Details
+            .Parameters.Add("@EmailType", SqlDbType.NVarChar, 5).Value = mudtprops.EmailType
+            .Parameters.Add("@Email", SqlDbType.NVarChar, 255).Value = mudtprops.Email
             If mudtprops.isNew Then
                 If mudtprops.EmailType = "AGENT" Then
-                    .CommandText = "INSERT INTO [AmadeusReports].[dbo].[osmEmailDetails] " &
-                                   " (osmeName, osmeDetails, osmeType, osmeEmail) " &
-                                   " VALUES " &
-                                   " ( '" & mudtprops.Name & "', '" & mudtprops.Details & "', '" & mudtprops.EmailType & "', '" & mudtprops.Email & "') " &
-                                   " select scope_identity() as Id"
+                    .CommandText = "INSERT INTO [AmadeusReports].[dbo].[osmEmailDetails] 
+                                    (osmeName, osmeDetails, osmeType, osmeEmail) 
+                                    VALUES 
+                                    ( @Name, @Details, @EmailType, @Email) 
+                                    select scope_identity() as Id"
                 Else
-                    .CommandText = "INSERT INTO [AmadeusReports].[dbo].[osmEmailDetails] " &
-                                   " (osmeVessel_FK, osmeName, osmeDetails, osmeType, osmeEmail) " &
-                                   " VALUES " &
-                                   " ( " & mudtprops.Vessel_FK & ", '" & mudtprops.Name & "', '" & mudtprops.Details & "', '" & mudtprops.EmailType & "', '" & mudtprops.Email & "') " &
-                                   " select scope_identity() as Id"
+                    .CommandText = "INSERT INTO [AmadeusReports].[dbo].[osmEmailDetails] 
+                                    (osmeVessel_FK, osmeName, osmeDetails, osmeType, osmeEmail) 
+                                    VALUES 
+                                    ( @Vessel_FK, @Name, @Details, @EmailType, @Email) 
+                                    select scope_identity() as Id"
 
                 End If
                 mudtprops.Id = CInt(.ExecuteScalar)
                 mudtprops.isNew = False
             Else
-                .CommandText = "UPDATE AmadeusReports.dbo.osmEmailDetails " &
-                               " SET osmeName = '" & mudtprops.Name & "', " &
-                               "     osmeDetails = '" & mudtprops.Details & "', " &
-                               "     osmeType    = '" & mudtprops.EmailType & "' ," &
-                               "     osmeEmail   = '" & mudtprops.Email & "' " &
-                               " WHERE osmeId = " & mudtprops.Id
+                .CommandText = "UPDATE AmadeusReports.dbo.osmEmailDetails 
+                                SET osmeName = @Name, 
+                                    osmeDetails = @Details, 
+                                    osmeType    = @EmailType ,
+                                    osmeEmail   = @Email 
+                                WHERE osmeId = @Id"
                 .ExecuteNonQuery()
             End If
         End With
     End Sub
     Public Sub Delete()
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
 
         pobjConn.Open()
@@ -205,8 +211,9 @@ Public Class OSMEmailItem
         With pobjComm
             .CommandType = CommandType.Text
             If Not mudtprops.isNew Then
-                .CommandText = "DELETE FROM AmadeusReports.dbo.osmEmailDetails " &
-                               " WHERE osmeId = " & mudtprops.Id
+                .Parameters.Add("@Id", SqlDbType.Int).Value = mudtprops.Id
+                .CommandText = "DELETE FROM AmadeusReports.dbo.osmEmailDetails 
+                                WHERE osmeId = @Id"
                 .ExecuteNonQuery()
             End If
         End With

@@ -1,4 +1,6 @@
-﻿Public Class frmAPISPax
+﻿Option Strict On
+Option Explicit On
+Public Class frmAPISPax
     Private WithEvents mobjPax As New ApisPaxItem
     Private mobjCountries As New ReferenceCountriesCollection
     Private Sub cmdSave_Click(sender As Object, e As EventArgs) Handles cmdSave.Click
@@ -44,7 +46,7 @@
     End Sub
     Private Sub cmbGender_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbGender.SelectedIndexChanged
         If Not cmbGender.SelectedItem Is Nothing Then
-            Dim pItem As ReferenceItem = cmbGender.SelectedItem
+            Dim pItem As ReferenceItem = CType(cmbGender.SelectedItem, ReferenceItem)
             mobjPax.Gender = pItem.Code
         End If
     End Sub
@@ -80,7 +82,7 @@
     End Sub
 
     Private Sub txtDateOfBirth_LostFocus(sender As Object, e As EventArgs) Handles txtDateOfBirth.LostFocus
-        txtDateOfBirth.Text = mobjPax.BirthDate
+        txtDateOfBirth.Text = mobjPax.BirthDate.ToString
     End Sub
 
     Private Sub txtPassportNumber_LostFocus(sender As Object, e As EventArgs) Handles txtPassportNumber.LostFocus
@@ -88,7 +90,7 @@
     End Sub
 
     Private Sub txtPassportExpiryDate_LostFocus(sender As Object, e As EventArgs) Handles txtPassportExpiryDate.LostFocus
-        txtPassportExpiryDate.Text = mobjPax.ExpiryDate
+        txtPassportExpiryDate.Text = mobjPax.ExpiryDate.ToString
     End Sub
     Private Sub txtPassportIssuingCountry_TextChanged(sender As Object, e As EventArgs) Handles txtPassportIssuingCountry.TextChanged
         mobjPax.IssuingCountry = (txtPassportIssuingCountry.Text & "   ").Substring(0, 3)

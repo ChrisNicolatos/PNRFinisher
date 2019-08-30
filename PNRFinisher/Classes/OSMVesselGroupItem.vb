@@ -64,7 +64,7 @@ Public Class OSMVesselGroupItem
     End Sub
     Public Sub Update()
 
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
 
         pobjConn.Open()
@@ -72,17 +72,18 @@ Public Class OSMVesselGroupItem
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = "INSERT INTO [AmadeusReports].[dbo].[osmVesselGroup] " &
-                           " (osmvrGroupName) " &
-                           " VALUES " &
-                           " ( '" & GroupName & ", ') " &
-                           " select scope_identity() as Id"
+            .Parameters.Add("@GroupName", SqlDbType.NVarChar, 254).Value = GroupName
+            .CommandText = "INSERT INTO [AmadeusReports].[dbo].[osmVesselGroup] 
+                            (osmvrGroupName) 
+                            VALUES 
+                            ( @GroupName ) 
+                            select scope_identity() as Id"
             mudtProps.Id = CInt(.ExecuteScalar)
             mudtProps.isNew = False
         End With
     End Sub
     Public Sub Delete()
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
 
         pobjConn.Open()
@@ -91,8 +92,9 @@ Public Class OSMVesselGroupItem
         With pobjComm
             .CommandType = CommandType.Text
             If Not mudtProps.isNew Then
-                .CommandText = "DELETE FROM AmadeusReports.dbo.osmVesselGroup " &
-                               " WHERE osmvrId = " & mudtProps.Id
+                .Parameters.Add("@Id", SqlDbType.Int).Value = mudtProps.Id
+                .CommandText = "DELETE FROM AmadeusReports.dbo.osmVesselGroup 
+                                WHERE osmvrId = @Id"
                 .ExecuteNonQuery()
             End If
         End With

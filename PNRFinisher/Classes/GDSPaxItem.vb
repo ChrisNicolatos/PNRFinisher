@@ -4,6 +4,7 @@ Public Class GDSPaxItem
     Private Structure ClassProps
         Dim ElementNo As Integer
         Dim Initial As String
+        Dim FirstName As String
         Dim LastName As String
         Dim PaxID As String
         Dim IDNo As String
@@ -18,6 +19,11 @@ Public Class GDSPaxItem
             Return mudtProps.ElementNo
         End Get
     End Property
+    Public ReadOnly Property FirstName As String
+        Get
+            Return mudtProps.FirstName
+        End Get
+    End Property
     Public ReadOnly Property Initial() As String
         Get
             If mudtProps.Initial Is Nothing Then
@@ -25,7 +31,6 @@ Public Class GDSPaxItem
             Else
                 Return mudtProps.Initial.Trim
             End If
-
         End Get
     End Property
     Public ReadOnly Property LastName() As String
@@ -63,6 +68,7 @@ Public Class GDSPaxItem
         With mudtProps
             .ElementNo = pElementNo
             .Initial = pInitial
+            .FirstName = ModifyFirstName(.Initial)
             .LastName = pLastName
             .PaxID = pID
             If pID.StartsWith("(") Then
@@ -78,6 +84,20 @@ Public Class GDSPaxItem
                 End If
             End If
         End With
-
     End Sub
+    Private Function ModifyFirstName(ByVal FirstName As String) As String
+        Dim pSalutations As New ReferenceSalutationsCollection
+        Dim pintFindPos As Integer
+        If FirstName Is Nothing Then
+            FirstName = ""
+        End If
+        FirstName = FirstName.Trim
+        For Each pItem As ReferenceItem In pSalutations.Values
+            pintFindPos = FirstName.IndexOf(pItem.Code)
+            If pintFindPos > 0 And pintFindPos = FirstName.Length - pItem.Code.Length Then
+                FirstName = FirstName.Substring(0, pintFindPos).Trim
+            End If
+        Next
+        Return FirstName
+    End Function
 End Class

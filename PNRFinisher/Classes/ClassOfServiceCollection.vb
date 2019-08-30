@@ -7,12 +7,11 @@ Public Class ClassOfServiceCollection
     Public Function Load(ByVal pCarrier As String, ByVal pOrigin As String, ByVal pDestination As String, ByVal pClassOfService As String) As ClassOfServiceItem
 
         Dim pItem As New ClassOfServiceItem
-        pItem.SetValues(pCarrier, pOrigin, pDestination, pClassOfService, "", "")
+        pItem.SetValues(pCarrier, pOrigin, pDestination, pClassOfService, "", "", "")
         If mClassCollection.ContainsKey(pItem.Key) Then
             pItem = mClassCollection.Item(pItem.Key)
-
         Else
-            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringTWS_MIS) ' ActiveConnection)
+            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString("TWS_MIS"))
             Dim pobjComm As New SqlClient.SqlCommand
             Dim pobjReader As SqlClient.SqlDataReader
 
@@ -26,26 +25,27 @@ Public Class ClassOfServiceCollection
                 .Parameters.Add("@OriginCode", SqlDbType.VarChar, 3).Value = pOrigin
                 .Parameters.Add("@DestinationCode", SqlDbType.VarChar, 3).Value = pDestination
 
-                .CommandText = "SELECT TOP 1 ISNULL(rtrim(cabinDescription), '') AS CabinDescription
-		   , ISNULL(twref_Air_Classes.Description, '') AS classDescription
- from TWS_MIS.mis.twref_Air_Classes
- left join TWS_MIS.mis.twref_City_Code oCity
- on oCity.Code = @OriginCode
- left join TWS_MIS.mis.twref_City_Code dCity
- on dCity.Code = @DestinationCode
- left join TWS_MIS.mis.twref_Airline_Code
- on twref_Airline_Code.Code = @Carrier
- where @ClassCode = classcode 
-      and (carrier = '*' or carrier = @Carrier)                     
-	  and (dep = '*' or dep = @OriginCode or dep = '*' + oCity.CountryCode or dep = oCity.ContinentCode)                     
-	  and (arr = '*' or arr = @DestinationCode or arr = '*' + dCity.CountryCode or arr = dCity.ContinentCode)
- order by carrier desc, dep desc, arr desc"
+                .CommandText = "SELECT TOP 1 ISNULL(RTRIM(cabinDescription), '') AS CabinDescription
+                                , ISNULL(twref_Air_Classes.Description, '') AS classDescription
+                                , ISNULL(twref_Air_Classes.cabinClass, '') AS cabinClass
+                                FROM TWS_MIS.mis.twref_Air_Classes
+                                LEFT JOIN TWS_MIS.mis.twref_City_Code oCity
+                                ON oCity.Code = @OriginCode
+                                LEFT JOIN TWS_MIS.mis.twref_City_Code dCity
+                                ON dCity.Code = @DestinationCode
+                                LEFT JOIN TWS_MIS.mis.twref_Airline_Code
+                                ON twref_Airline_Code.Code = @Carrier
+                                WHERE @ClassCode = classcode 
+                                AND (carrier = '*' OR carrier = @Carrier)                     
+                                AND (dep = '*' OR dep = @OriginCode OR dep = '*' + oCity.CountryCode OR dep = oCity.ContinentCode)                     
+                                AND (arr = '*' OR arr = @DestinationCode OR arr = '*' + dCity.CountryCode OR arr = dCity.ContinentCode)
+                                ORDER BY carrier DESC, dep DESC, arr DESC"
                 pobjReader = .ExecuteReader
             End With
 
             With pobjReader
                 If .Read Then
-                    pItem.SetValues(pCarrier, pOrigin, pDestination, pClassOfService, CStr(.Item("CabinDescription")), CStr(.Item("classDescription")))
+                    pItem.SetValues(pCarrier, pOrigin, pDestination, pClassOfService, CStr(.Item("CabinDescription")), CStr(.Item("classDescription")), CStr(.Item("cabinClass")))
                     mClassCollection.Add(pItem.Key, pItem)
                 End If
                 .Close()

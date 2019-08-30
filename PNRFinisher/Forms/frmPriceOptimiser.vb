@@ -1,4 +1,6 @@
-﻿Imports System.Runtime.InteropServices
+﻿Option Strict On
+Option Explicit On
+Imports System.Runtime.InteropServices
 Public Class frmPriceOptimiser
 
     Private WithEvents mobjSession1A As k1aHostToolKit.HostSession
@@ -119,6 +121,11 @@ Public Class frmPriceOptimiser
                 .HeaderText = "Client"
             }
             .Columns.Add(pClient)
+            Dim pOpsGroup As New DataGridViewTextBoxColumn With {
+                .Name = "OpsGroup",
+                .HeaderText = "Ops Group"
+            }
+            .Columns.Add(pOpsGroup)
             Dim pAlert As New DataGridViewTextBoxColumn With {
                 .Name = "Alert",
                 .HeaderText = "Alert"
@@ -142,13 +149,13 @@ Public Class frmPriceOptimiser
         lblPCCUser.Text = mstrPCC & "-" & mstrUserID
         LoadDGV()
         mintDisplayedContracted += 1
-        If dgvPNRs.RowCount = 0 Then
-            mflgExpanded = False
-            ExpandContractWindows()
-        ElseIf mintDisplayedContracted > 10 Then
+        If mintDisplayedContracted > 10 Or txtAmadeusLastChecked.BackColor = Color.Orange Or txtGalileoLastChecked.BackColor = Color.Orange Then
             mflgExpanded = True
             ExpandContractWindows()
             mintDisplayedContracted = 0
+        ElseIf dgvPNRs.RowCount = 0 Then
+            mflgExpanded = False
+            ExpandContractWindows()
         End If
     End Sub
     Private Sub DisplayItems(ByVal pPCC As String, ByVal pUserId As String)
@@ -161,6 +168,19 @@ Public Class frmPriceOptimiser
     End Sub
     Private Sub LoadDGV()
         Dim pCurrPNR As String = ""
+        txtTimeChecked.Text = Format(Now, "dd/MM/yyyy HH:mm")
+        txtAmadeusLastChecked.Text = Format(mobjDownsell.AmadeusLastCheck, "dd/MM/yyyy HH:mm") & " (" & DateDiff(DateInterval.Minute, mobjDownsell.AmadeusLastCheck, Now).ToString & " minutes ago)"
+        If DateDiff(DateInterval.Hour, mobjDownsell.AmadeusLastCheck, Now) > 1 Then
+            txtAmadeusLastChecked.BackColor = Color.Orange
+        Else
+            txtAmadeusLastChecked.BackColor = Color.White
+        End If
+        txtGalileoLastChecked.Text = Format(mobjDownsell.GalileoLastCheck, "dd/MM/yyyy HH:mm") & " (" & DateDiff(DateInterval.Minute, mobjDownsell.GalileoLastCheck, Now).ToString & " minutes ago)"
+        If DateDiff(DateInterval.Minute, mobjDownsell.GalileoLastCheck, Now) > 60 Then
+            txtGalileoLastChecked.BackColor = Color.Orange
+        Else
+            txtGalileoLastChecked.BackColor = Color.White
+        End If
         If dgvPNRs.ColumnCount = 0 Then
             PrepareDataGrid()
         End If
@@ -205,6 +225,9 @@ Public Class frmPriceOptimiser
             Dim pClient As New DataGridViewTextBoxCell With {
                 .Value = pItem.ClientCode & " " & pItem.ClientName
             }
+            Dim pOpsGroup As New DataGridViewTextBoxCell With {
+                .Value = pItem.OpsGroup
+            }
             Dim pAlert As New DataGridViewTextBoxCell With {
                 .Value = pItem.AlertForDownsell
             }
@@ -222,6 +245,7 @@ Public Class frmPriceOptimiser
             pRow.Cells.Add(pNewFareBasis)
             pRow.Cells.Add(pGDSCommand)
             pRow.Cells.Add(pClient)
+            pRow.Cells.Add(pOpsGroup)
             pRow.Cells.Add(pAlert)
             If pItem.AlertForDownsell <> "" Then
                 pRow.DefaultCellStyle.BackColor = Color.OrangeRed
@@ -236,30 +260,27 @@ Public Class frmPriceOptimiser
             mflgExpanded = True
             mstrPrevPNRs = pCurrPNR
         End If
-        lblPCCUser.Text = mstrPCC & "-" & mstrUserID & " : " & dgvPNRs.RowCount & " entries"
+        lblPCCUser.Text = mstrPCC & "-" & mstrUserID & " : " & dgvPNRs.RowCount.ToString & " entries"
         ExpandContractWindows()
 
     End Sub
-    Private Sub dgvPNRs_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvPNRs.CellDoubleClick
-        MessageBox.Show(e.RowIndex & "-" & e.ColumnIndex & ":" & dgvPNRs.Rows(e.RowIndex).Cells.Item(e.ColumnIndex).Value & ":" & dgvPNRs.Rows(e.RowIndex).Cells.Item(0).Value)
-    End Sub
     Private Sub mnuOptimiserIgnore_Click(sender As Object, e As EventArgs) Handles mnuOptimiserIgnore.Click
-        Dim pText() As String = mnuOptimiserPNR.Text.Split({"-"}, StringSplitOptions.RemoveEmptyEntries)
-        If pText.GetUpperBound(0) = 2 Then
+        Dim pText() As String = mnuOptimiserPNR.Text.Split("-".ToCharArray)
+        If pText.GetUpperBound(0) = 2 AndAlso pText(2) <> "" Then
             mobjDownsell.IgnorePNR(pText(1), pText(2), "IGNORE")
         End If
         LoadDGV()
     End Sub
     Private Sub mnuOptimiserActioned_Click(sender As Object, e As EventArgs) Handles mnuOptimiserActioned.Click
-        Dim pText() As String = mnuOptimiserPNR.Text.Split({"-"}, StringSplitOptions.RemoveEmptyEntries)
-        If pText.GetUpperBound(0) = 2 Then
+        Dim pText() As String = mnuOptimiserPNR.Text.Split("-".ToCharArray)
+        If pText.GetUpperBound(0) = 2 AndAlso pText(2) <> "" Then
             mobjDownsell.IgnorePNR(pText(1), pText(2), "ACTIONED")
         End If
         LoadDGV()
     End Sub
     Private Sub mnuOptimiserOpenInGDS_Click(sender As Object, e As EventArgs) Handles mnuOptimiserOpenInGDS.Click
-        Dim pText() As String = mnuOptimiserPNR.Text.Split({"-"}, StringSplitOptions.RemoveEmptyEntries)
-        If pText.GetUpperBound(0) = 2 Then
+        Dim pText() As String = mnuOptimiserPNR.Text.Split("-".ToCharArray)
+        If pText.GetUpperBound(0) = 2 AndAlso pText(2) <> "" Then
             If pText(0) = "1A" Then
                 Dim pResponse As String = OpenPNR1A(pText(2))
                 If pResponse.Length > 0 Then
@@ -291,9 +312,10 @@ Public Class frmPriceOptimiser
     Private Sub SetSelectedPNR()
         Dim pText As String = ""
         If Not dgvPNRs.SelectedRows Is Nothing AndAlso dgvPNRs.SelectedRows.Count > 0 Then
-            pText = dgvPNRs.SelectedRows(0).Cells("PCC").Value & "-" & dgvPNRs.SelectedRows(0).Cells("PNR").Value
+            pText = dgvPNRs.SelectedRows(0).Cells("PCC").Value.ToString & "-" & dgvPNRs.SelectedRows(0).Cells("PNR").Value.ToString
         ElseIf Not dgvPNRs.SelectedCells Is Nothing AndAlso dgvPNRs.SelectedCells.Count > 0 Then
-            pText = dgvPNRs.Rows(dgvPNRs.SelectedCells("Id").RowIndex).Cells("PNR").Value
+            '            pText = dgvPNRs.Rows(dgvPNRs.SelectedCells("Id").RowIndex).Cells("PNR").Value
+            pText = dgvPNRs.Rows(dgvPNRs.SelectedCells(0).RowIndex).Cells("PNR").Value.ToString
         Else
             pText = ""
         End If
@@ -336,7 +358,7 @@ Public Class frmPriceOptimiser
             OpenPNR1A = ex.Message
         End Try
     End Function
-    Private Function OpenPNR1G(ByVal pPNR As String) As String
+    Private Shared Function OpenPNR1G(ByVal pPNR As String) As String
 
         OpenPNR1G = ""
         Dim pSession1G As New Travelport.TravelData.Factory.GalileoDesktopFactory("SPG720", "MYCONNECTION", False, True, "SMRT")
@@ -410,14 +432,12 @@ Public Class frmPriceOptimiser
             Else
                 Me.BackColor = Color.Red
             End If
-
             Me.TopMost = True
             cmdMinMax.Text = "Price Optimiser Expand " & dgvPNRs.Rows.Count & " entries"
             cmdTopLeft.Visible = True
             cmdTopRight.Visible = True
             cmdBottomLeft.Visible = True
             cmdBottomRight.Visible = True
-
         End If
     End Sub
 

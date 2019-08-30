@@ -12,82 +12,81 @@ Public NotInheritable Class UtilitiesDB
     ' 
 
     Private Const mstrDBConnectionsFileGT As String = "\\192.168.102.223\Common\Click-Once Applications\PNR Finisher ATH V2\Config\PNRFinisher.txt"
-    Private Const mstrDBConnectionsFile As String = "\\ath2-svrdc1\PNR Finisher ATH Config\PNRFinisher.txt"
+    Private Const mstrDBConnectionsFile As String = "\\192.168.102.223\Common\Click-Once Applications\PNR Finisher ATH V2\Config\PNRFinisher.txt"
     Private Const msrtConfigFolder As String = "\\192.168.102.223\Common\Click-Once Applications\PNR Finisher ATH V2\Config"
     Private Shared mstrDBConnectionFileActual As String
 
-    Private Shared mPnrDataSource As String = ""
-    Private Shared mPnrDataCatalog As String = ""
-    Private Shared mPnrUserName As String = ""
-    Private Shared mPnrPassword As String = ""
-
-    Private Shared mTWS_MISDataSource As String = ""
-    Private Shared mTWS_MISDataCatalog As String = ""
-    Private Shared mTWS_MISUserName As String = ""
-    Private Shared mTWS_MISPassword As String = ""
+    Private Shared mobjPNRConnection As New BackOfficeItem
+    Private Shared mobjBackOffice As New BackOfficeCollection
     Private Sub New()
     End Sub
     Public Shared ReadOnly Property PNRDataSource As String
         Get
-            PNRDataSource = mPnrDataSource
+            Return mobjPNRConnection.DataSource
+        End Get
+    End Property
+    Public Shared ReadOnly Property PNRInitialCatalog As String
+        Get
+            Return mobjPNRConnection.InitialCatalog
+        End Get
+    End Property
+    Public Shared ReadOnly Property PNRUserID As String
+        Get
+            Return mobjPNRConnection.UserId
         End Get
     End Property
     Public Shared ReadOnly Property MyConfigPath As String
         Get
-            MyConfigPath = msrtConfigFolder
-        End Get
-    End Property
-    Public Shared ReadOnly Property PNRDataCatalog As String
-        Get
-            PNRDataCatalog = mPnrDataCatalog
-        End Get
-    End Property
-    Public Shared ReadOnly Property PNRUserName As String
-        Get
-            PNRUserName = mPnrUserName
+            Return msrtConfigFolder
         End Get
     End Property
     Public Shared ReadOnly Property DBConnectionsFile As String
         Get
-            DBConnectionsFile = mstrDBConnectionFileActual
-        End Get
-    End Property
-    Public Shared ReadOnly Property ConnectionStringACC() As String
-        Get
-            If MySettings.PCCDBDataSource = "" Then
-                ReadDBConnections()
-            End If
-            ConnectionStringACC = "Data Source=" & MySettings.PCCDBDataSource &
-                                  ";Initial Catalog=" & MySettings.PCCDBInitialCatalog &
-                                  ";User ID=" & MySettings.PCCDBUserId &
-                                  ";Password=" & MySettings.PCCDBUserPassword
-
+            Return mstrDBConnectionFileActual
         End Get
     End Property
     Public Shared ReadOnly Property ConnectionStringPNR() As String
         Get
-            If mPnrDataSource = "" Then
+            If mobjPNRConnection.DataSource = "" Then
                 ReadDBConnections()
             End If
-            ConnectionStringPNR = "Data Source=" & mPnrDataSource &
-                                  ";Initial Catalog=" & mPnrDataCatalog &
-                                  ";User ID=" & mPnrUserName &
-                                  ";Password=" & mPnrPassword
+            Return "Data Source=" & mobjPNRConnection.DataSource & ";Initial Catalog=" & mobjPNRConnection.InitialCatalog & ";User ID=" & mobjPNRConnection.UserId & ";Password=" & mobjPNRConnection.UserPassword
         End Get
     End Property
-    Public Shared ReadOnly Property ConnectionStringTWS_MIS() As String
+    Public Shared ReadOnly Property ConnectionString(ByVal pBackOffice As Integer) As String
         Get
-            If mTWS_MISDataSource = "" Then
-                ReadDBConnections()
-            End If
-            ConnectionStringTWS_MIS = "Data Source=" & mTWS_MISDataSource &
-                                  ";Initial Catalog=" & mTWS_MISDataCatalog &
-                                  ";User ID=" & mTWS_MISUserName &
-                                  ";Password=" & mTWS_MISPassword
+            Try
+                If UtilitiesDB.BackOfficeDB(pBackOffice) Is Nothing Then
+                    ReadDBConnections()
+                End If
+                With UtilitiesDB.BackOfficeDB(pBackOffice)
+                    Return "Data Source=" & .DataSource & ";Initial Catalog=" & .InitialCatalog & ";User ID=" & .UserId & ";Password=" & .UserPassword
+                End With
+            Catch ex As Exception
+                Return ""
+            End Try
+        End Get
+    End Property
+    Public Shared ReadOnly Property ConnectionString(ByVal DBName As String) As String
+        Get
+            Try
+                If UtilitiesDB.BackOfficeDB(DBName) Is Nothing Then
+                    ReadDBConnections()
+                End If
+                With UtilitiesDB.BackOfficeDB(DBName)
+                    Return "Data Source=" & .DataSource & ";Initial Catalog=" & .InitialCatalog & ";User ID=" & .UserId & ";Password=" & .UserPassword
+                End With
+            Catch ex As Exception
+                Return ""
+            End Try
         End Get
     End Property
     Private Shared Sub ReadDBConnections()
 
+        Dim pDataSource As String = ""
+        Dim pDataCatalog As String = ""
+        Dim pUserName As String = ""
+        Dim pPassword As String = ""
         Dim pFileExists As Boolean = False
 
         If File.Exists(mstrDBConnectionsFile) Then
@@ -102,22 +101,23 @@ Public NotInheritable Class UtilitiesDB
             Dim GDSData As StreamReader = File.OpenText(mstrDBConnectionFileActual)
             Dim xLine() As String = Split(GDSData.ReadToEnd, vbCrLf)
             GDSData.Close()
-
             If IsArray(xLine) Then
                 For i As Integer = xLine.GetLowerBound(0) To xLine.GetUpperBound(0)
                     Dim pValues() As String = xLine(i).Split("="c)
                     Select Case pValues(0).Trim.ToUpper
                         Case "DATASOURCEPNR"
-                            mPnrDataSource = pValues(1).Trim
+                            pDataSource = pValues(1).Trim
                         Case "DATACATALOGPNR"
-                            mPnrDataCatalog = pValues(1).Trim
+                            pDataCatalog = pValues(1).Trim
                         Case "DATAUSERNAMEPNR"
-                            mPnrUserName = pValues(1).Trim
+                            pUserName = pValues(1).Trim
                         Case "DATAUSERPASSWORDPNR"
-                            mPnrPassword = pValues(1).Trim
+                            pPassword = pValues(1).Trim
                     End Select
                 Next
-                GetTWS_MISCredentials()
+                mobjPNRConnection.SetValues(0, "PNR", pDataSource, pDataCatalog, pUserName, pPassword, "")
+                mobjBackOffice.Load(0)
+                'GetTWS_MISCredentials()
             Else
                 Throw New Exception("Settings File Error" & vbCrLf & mstrDBConnectionFileActual)
             End If
@@ -126,41 +126,19 @@ Public NotInheritable Class UtilitiesDB
         End If
 
     End Sub
-    Private Shared Sub GetTWS_MISCredentials()
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
-        Dim pobjComm As New SqlClient.SqlCommand
-        Dim pobjReader As SqlClient.SqlDataReader
-
-        pobjConn.Open()
-        pobjComm = pobjConn.CreateCommand
-
-        With pobjComm
-            .CommandType = CommandType.Text
-            .CommandText = "SELECT [pfrBODBDataSource]
-                                  ,[pfrBODBInitialCatalog]
-                                  ,[pfrBODBUserId]
-                                  ,[pfrBODBUserPassword]
-                              FROM [AmadeusReports].[dbo].[PNRFinisherBackOffice]
-                              WHERE pfrBOName = 'TWS_MIS'"
-            pobjReader = .ExecuteReader
-        End With
-
-        With pobjReader
-            If .Read Then
-                mTWS_MISDataSource = CStr(.Item("pfrBODBDataSource"))
-                mTWS_MISDataCatalog = CStr(.Item("pfrBODBInitialCatalog"))
-                mTWS_MISUserName = CStr(.Item("pfrBODBUserId"))
-                mTWS_MISPassword = CStr(.Item("pfrBODBUserPassword"))
-            Else
-                mTWS_MISDataSource = ""
-                mTWS_MISDataCatalog = ""
-                mTWS_MISUserName = ""
-                mTWS_MISPassword = ""
-
-            End If
-            .Close()
-        End With
-        pobjConn.Close()
-
-    End Sub
+    Public Shared ReadOnly Property BackOfficeDB(ByVal BOName As String) As BackOfficeItem
+        Get
+            Return mobjBackOffice.Load(BOName)
+        End Get
+    End Property
+    Public Shared ReadOnly Property BackOfficeDB(ByVal BOId As Integer) As BackOfficeItem
+        Get
+            Return mobjBackOffice.Load(BOId)
+        End Get
+    End Property
+    Public Shared ReadOnly Property BackOfficeDB As BackOfficeCollection
+        Get
+            Return mobjBackOffice
+        End Get
+    End Property
 End Class

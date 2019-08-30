@@ -130,7 +130,7 @@ Public Class DBUser
 
         Dim pErrorMessage As String = ""
         If isValid Then
-            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
             Dim pobjComm As New SqlClient.SqlCommand
 
             pobjConn.Open()
@@ -165,62 +165,62 @@ Public Class DBUser
                 .Parameters.Add("@pfOSMLOGPerPax", SqlDbType.Bit).Value = 0
                 .Parameters.Add("@pfOSMLOGOnSigner", SqlDbType.Bit).Value = 0
                 .Parameters.Add("@pfOSMLOGPath", SqlDbType.NVarChar, 255).Value = 0
-                .CommandText = " INSERT INTO [dbo].[PNRFinisherUsers] " &
-                                "            ([pfPCC] " &
-                                "            ,[pfUser] " &
-                                "            ,[pfAgentQueue] " &
-                                "            ,[pfAgentOPQueue] " &
-                                "            ,[pfAgentName] " &
-                                "            ,[pfAgentEmail] " &
-                                "            ,[pfAirportName] " &
-                                "            ,[pfAirlineLocator] " &
-                                "            ,[pfClassOfService] " &
-                                "            ,[pfBanElectricalEquipment] " &
-                                "            ,[pfBrazilText] " &
-                                "            ,[pfUSAText] " &
-                                "            ,[pfTickets] " &
-                                "            ,[pfPaxSegPerTkt] " &
-                                "            ,[pfShowStopovers] " &
-                                "            ,[pfShowTerminal] " &
-                                "            ,[pfFlyingTime] " &
-                                "            ,[pfCostCentre] " &
-                                "            ,[pfSeating] " &
-                                "            ,[pfVessel] " &
-                                "            ,[pfPlainFormat] " &
-                                "            ,[pfAdministrator] " &
-                                "            ,[pfFormatStyle] " &
-                                "            ,[pfOSMVesselGroup] " &
-                                "            ,[pfOSMLOGPerPax] " &
-                                "            ,[pfOSMLOGOnSigner] " &
-                                "            ,[pfOSMLOGPath]) " &
-                                "      VALUES " &
-                                "            (@pfPCC " &
-                                "            ,@pfUser " &
-                                "            ,@pfAgentQueue " &
-                                "            ,@pfAgentOPQueue " &
-                                "            ,@pfAgentName " &
-                                "            ,@pfAgentEmail " &
-                                "            ,@pfAirportName " &
-                                "            ,@pfAirlineLocator " &
-                                "            ,@pfClassOfService " &
-                                "            ,@pfBanElectricalEquipment " &
-                                "            ,@pfBrazilText " &
-                                "            ,@pfUSAText " &
-                                "            ,@pfTickets " &
-                                "            ,@pfPaxSegPerTkt " &
-                                "            ,@pfShowStopovers " &
-                                "            ,@pfShowTerminal " &
-                                "            ,@pfFlyingTime " &
-                                "            ,@pfCostCentre " &
-                                "            ,@pfSeating " &
-                                "            ,@pfVessel " &
-                                "            ,@pfPlainFormat " &
-                                "            ,@pfAdministrator " &
-                                "            ,@pfFormatStyle " &
-                                "            ,@pfOSMVesselGroup " &
-                                "            ,@pfOSMLOGPerPax " &
-                                "            ,@pfOSMLOGOnSigner " &
-                                "            ,@pfOSMLOGPath )"
+                .CommandText = " INSERT INTO [dbo].[PNRFinisherUsers]  
+                                             ([pfPCC]  
+                                             ,[pfUser]  
+                                             ,[pfAgentQueue]  
+                                             ,[pfAgentOPQueue]  
+                                             ,[pfAgentName]  
+                                             ,[pfAgentEmail]  
+                                             ,[pfAirportName]  
+                                             ,[pfAirlineLocator]  
+                                             ,[pfClassOfService]  
+                                             ,[pfBanElectricalEquipment]  
+                                             ,[pfBrazilText]  
+                                             ,[pfUSAText]  
+                                             ,[pfTickets]  
+                                             ,[pfPaxSegPerTkt]  
+                                             ,[pfShowStopovers]  
+                                             ,[pfShowTerminal]  
+                                             ,[pfFlyingTime]  
+                                             ,[pfCostCentre]  
+                                             ,[pfSeating]  
+                                             ,[pfVessel]  
+                                             ,[pfPlainFormat]  
+                                             ,[pfAdministrator]  
+                                             ,[pfFormatStyle]  
+                                             ,[pfOSMVesselGroup]  
+                                             ,[pfOSMLOGPerPax]  
+                                             ,[pfOSMLOGOnSigner]  
+                                             ,[pfOSMLOGPath])  
+                                       VALUES  
+                                             (@pfPCC  
+                                             ,@pfUser  
+                                             ,@pfAgentQueue  
+                                             ,@pfAgentOPQueue  
+                                             ,@pfAgentName  
+                                             ,@pfAgentEmail  
+                                             ,@pfAirportName  
+                                             ,@pfAirlineLocator  
+                                             ,@pfClassOfService  
+                                             ,@pfBanElectricalEquipment  
+                                             ,@pfBrazilText  
+                                             ,@pfUSAText  
+                                             ,@pfTickets  
+                                             ,@pfPaxSegPerTkt  
+                                             ,@pfShowStopovers  
+                                             ,@pfShowTerminal  
+                                             ,@pfFlyingTime  
+                                             ,@pfCostCentre  
+                                             ,@pfSeating  
+                                             ,@pfVessel  
+                                             ,@pfPlainFormat  
+                                             ,@pfAdministrator  
+                                             ,@pfFormatStyle  
+                                             ,@pfOSMVesselGroup  
+                                             ,@pfOSMLOGPerPax  
+                                             ,@pfOSMLOGOnSigner  
+                                             ,@pfOSMLOGPath )"
 
                 .ExecuteScalar()
             End With

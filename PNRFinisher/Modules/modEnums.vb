@@ -8,6 +8,7 @@ Module modEnums
         SeaChefsWithCode = 3
         Euronav = 4
         Fleet = 5
+        AimeryMoxie = 6
     End Enum
     Public Enum EnumGDSCode
         Unknown = 0
@@ -29,6 +30,9 @@ Module modEnums
         PassengerID = 12
         OPT = 13
         TRId = 14
+        SubDepartment = 901
+        CRM = 902
+        Reference = 903
     End Enum
     Public Enum EnumTicketDocType
         NONE = 0

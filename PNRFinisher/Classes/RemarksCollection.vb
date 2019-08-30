@@ -3,7 +3,7 @@ Option Explicit On
 Public Class RemarksCollection
     Inherits Collections.Generic.Dictionary(Of Integer, RemarksItem)
     Public Sub Load()
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR) ' ActiveConnection)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
         Dim pobjClass As RemarksItem

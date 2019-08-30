@@ -1,6 +1,6 @@
 ﻿Option Strict On
 Option Explicit On
-Public Class ConfigGDSReferenceItem
+Public Class GDS_BOReferenceItem
     Private Structure ClassProps
         Dim Id As Integer
         Dim Key As String

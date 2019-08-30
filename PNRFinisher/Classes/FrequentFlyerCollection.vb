@@ -1,7 +1,10 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class FrequentFlyerCollection
-    Inherits Collections.Generic.List(Of FrequentFlyerItem)
+    Inherits Collections.ObjectModel.Collection(Of FrequentFlyerItem)
+    Public Sub New()
+        MyBase.New
+    End Sub
     Friend Sub AddItem(ByVal pPaxName As String, ByVal pAirline As String, ByVal pFrequentTravelerNo As String, ByVal pCrossAccrual As String)
         Dim pobjClass As FrequentFlyerItem
 

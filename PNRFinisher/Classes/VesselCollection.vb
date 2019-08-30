@@ -3,9 +3,19 @@ Option Explicit On
 Public Class VesselCollection
     Inherits Collections.Generic.Dictionary(Of String, VesselItem)
     Private mlngEntityID As Integer
+    Private mintBackOffice As Integer
+    'Public Sub Load(ByVal pEntityID As Integer)
+    '    mintBackOffice = MySettings.PCCBackOffice
+    '    Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString)
+    '    ReadDB(pEntityID, pobjConn)
 
-    Public Sub Load(ByVal pEntityID As Integer)
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringACC) ' ActiveConnection)
+    'End Sub
+    Public Sub Load(ByVal pEntityID As Integer, ByVal BackOffice As Integer)
+        mintBackOffice = BackOffice
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(mintBackOffice))
+        ReadDB(pEntityID, pobjConn)
+    End Sub
+    Private Sub ReadDB(ByVal pEntityID As Integer, ByRef pobjConn As SqlClient.SqlConnection)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
         Dim pobjClass As VesselItem
@@ -17,7 +27,8 @@ Public Class VesselCollection
 
         With pobjComm
             .CommandType = CommandType.Text
-            .CommandText = PrepareVesselSelectCommand(mlngEntityID)
+            .Parameters.Add("@EntityId", SqlDbType.Int).Value = mlngEntityID
+            .CommandText = PrepareVesselSelectCommand()
             pobjReader = .ExecuteReader
         End With
 
@@ -33,22 +44,22 @@ Public Class VesselCollection
         End With
         pobjConn.Close()
     End Sub
-    Private Function PrepareVesselSelectCommand(ByVal pEntityID As Integer) As String
+    Private Function PrepareVesselSelectCommand() As String
 
-        Select Case MySettings.PCCBackOffice
+        Select Case mintBackOffice
             Case 1
-                PrepareVesselSelectCommand = " SELECT DISTINCT " &
-                           " RTRIM(LTRIM(Name)) AS Name " &
-                           " ,ISNULL(RTRIM(LTRIM(Flag)), '') AS Flag " &
-                           " FROM [TravelForceCosmos].[dbo].[TFEntityDepartments] " &
-                           " WHERE InUse = 1 " &
-                           " AND RTRIM(LTRIM(Name)) <> '' AND EntityID = " & pEntityID & " " &
-                           " ORDER BY Name "
+                PrepareVesselSelectCommand = " SELECT DISTINCT  
+                                               RTRIM(LTRIM(Name)) AS Name  
+                                               ,ISNULL(RTRIM(LTRIM(Flag)), '') AS Flag  
+                                               FROM [TravelForceCosmos].[dbo].[TFEntityDepartments]  
+                                               WHERE InUse = 1  
+                                               AND RTRIM(LTRIM(Name)) <> '' AND EntityID = @EntityId  
+                                               ORDER BY Name "
             Case 2
-                PrepareVesselSelectCommand = " SELECT [Child_Value] AS Name " &
-                                             ",'' AS Flag " &
-                                             "  FROM [Disco_Instone_EU].[dbo].[Costcen] " &
-                                             "  WHERE Child_Value IS NOT NULL AND Child_Name = 'CC1' AND CostCen.Account_id =  " & pEntityID
+                PrepareVesselSelectCommand = " SELECT [Child_Value] AS Name  
+                                               ,'' AS Flag  
+                                               FROM [Disco_Instone_EU].[dbo].[Costcen]  
+                                               WHERE Child_Value IS NOT NULL AND Child_Name = 'CC1' AND CostCen.Account_id =  @EntityId"
             Case Else
                 PrepareVesselSelectCommand = ""
         End Select

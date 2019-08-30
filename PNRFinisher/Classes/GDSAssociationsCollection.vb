@@ -1,36 +1,38 @@
 ﻿Option Strict Off
 Option Explicit On
 Public Class GDSAssociationsCollection
-    Dim mPaxCollection As New Collections.Generic.List(Of Integer)
-    Dim mSegCollection As New Collections.Generic.List(Of Integer)
+    Dim mPaxCollection As Collections.ObjectModel.ReadOnlyCollection(Of Integer)
+    Dim mSegCollection As Collections.ObjectModel.ReadOnlyCollection(Of Integer)
     Public Sub LoadAssociations(ByVal PNRElement As Object)
-        mPaxCollection.Clear()
-        mSegCollection.Clear()
+
+        Dim pPaxCollection As New Collections.Generic.List(Of Integer)
+        Dim pSegCollection As New Collections.Generic.List(Of Integer)
+
+        pPaxCollection.Clear()
+        pSegCollection.Clear()
+
         Try
-            'If PNRElement.Count > 0 Then
-            '    For Each pobjSSR In PNRElement
             If PNRElement.Associations.Passengers.Count > 0 Then
                 For Each objPax In PNRElement.Associations.Passengers
-                    mPaxCollection.Add(objPax.ElementNo)
+                    pPaxCollection.Add(objPax.ElementNo)
                 Next
             End If
             If PNRElement.Associations.Segments.Count > 0 Then
                 For Each objPax In PNRElement.Associations.Segments
-                    mSegCollection.Add(objPax.ElementNo)
+                    pSegCollection.Add(objPax.ElementNo)
                 Next
             End If
+            mPaxCollection = New Collections.ObjectModel.ReadOnlyCollection(Of Integer)(pPaxCollection)
 
-            '    Next
-            'End If
         Catch ex As Exception
         End Try
     End Sub
-    Public ReadOnly Property PaxAssociations As Collections.Generic.List(Of Integer)
+    Public ReadOnly Property PaxAssociations As Collections.ObjectModel.ReadOnlyCollection(Of Integer)
         Get
             Return mPaxCollection
         End Get
     End Property
-    Public ReadOnly Property SegAssociation As Collections.Generic.List(Of Integer)
+    Public ReadOnly Property SegAssociation As Collections.ObjectModel.ReadOnlyCollection(Of Integer)
         Get
             Return mSegCollection
         End Get

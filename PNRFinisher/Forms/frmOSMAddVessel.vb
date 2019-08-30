@@ -1,4 +1,6 @@
-﻿Public Class frmOSMAddVessel
+﻿Option Strict On
+Option Explicit On
+Public Class frmOSMAddVessel
 
     Private Sub CmdSave_Click(sender As Object, e As EventArgs) Handles cmdSave.Click
 

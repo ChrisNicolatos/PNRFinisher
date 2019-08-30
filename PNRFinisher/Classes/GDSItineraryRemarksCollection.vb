@@ -1,7 +1,10 @@
 ﻿Option Strict Off
 Option Explicit On
 Public Class GDSItineraryRemarksCollection
-    Inherits Collections.Generic.List(Of GDSItineraryRemarksItem)
+    Inherits Collections.ObjectModel.Collection(Of GDSItineraryRemarksItem)
+    Public Sub New()
+        MyBase.New
+    End Sub
     Public Sub Load1A(ByRef pItinRemarks As s1aPNR.PNR)
         MyBase.Clear()
 

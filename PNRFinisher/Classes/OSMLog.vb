@@ -8,17 +8,13 @@ Public Class OSMLog
     Private mobjPortAgent As OSMEmailItem
     Private mflgNoPortAgent As Boolean
     Private mobjAddressItem As OSMAddressItem
-    Public Sub CreatePDF(ByVal AgentName As String, ByRef pPNR As GDSReadPNR)
-
+    Public Sub CreatePDF(ByRef pPNR As GDSReadPNR)
         mobjPNR = pPNR
         ReadOptions()
-
     End Sub
     Private Function CreateDocs() As String
-
         Dim pFileName As String = ""
         Dim pstrTextCrewMembers As String = "crew member listed below is scheduled" ' default text is for one pax
-
         CreateDocs = ""
         If MySettings.OSMLoGPerPax Then
             For Each pPax As GDSPaxItem In mobjPNR.Passengers.Values
@@ -34,10 +30,8 @@ Public Class OSMLog
             MakePDFDocument(MySettings.OSMLoGLanguage, pFileName, pstrTextCrewMembers)
             CreateDocs = pFileName
         End If
-
     End Function
     Private Sub MakePDFDocument(ByVal LoGLanguage As EnumLoGLanguage, ByVal pFileName As String, ByVal CrewMembersText As String, Optional ByRef pPax As GDSPaxItem = Nothing)
-
         Select Case LoGLanguage
             Case EnumLoGLanguage.Brazil
                 PDFDocumentLangBrazil(pFileName, pPax)
@@ -77,9 +71,9 @@ Public Class OSMLog
         pDoc.Add(AddParagraph("By carrying this letter, the crew is entitled to travel on maritime/offshore fares.", pArial11, 0, 0, "Left"))
 
         If pPax Is Nothing Then
-            pDoc.Add(MakePaxTable(mobjPNR.Passengers, pArial11, pArial11b))
+            pDoc.Add(OSMElements.MakePaxTable(mobjPNR.Passengers, pArial11, pArial11b))
         Else
-            pDoc.Add(MakePaxTable(pPax, pArial11, pArial11b))
+            pDoc.Add(OSMElements.MakePaxTable(pPax, pArial11, pArial11b))
         End If
 
         pDoc.Add(AddParagraph("Travel Itinerary (subject to change):", pArial11b, 0, 0, "Left"))
@@ -201,7 +195,7 @@ Public Class OSMLog
         pDoc.Close()
 
     End Sub
-    Private Function GetPDFFileName(ByVal FileNameDetails As String) As String
+    Private Shared Function GetPDFFileName(ByVal FileNameDetails As String) As String
         GetPDFFileName = System.IO.Path.Combine(MySettings.OSMLoGPath, FileNameDetails & ".pdf")
         Dim pTemp As Integer = 0
         Do While System.IO.File.Exists(GetPDFFileName)
@@ -210,7 +204,7 @@ Public Class OSMLog
         Loop
 
     End Function
-    Private Function AddParagraph(ByVal pText As String, ByVal pFont As Font, ByVal pSpacingBefore As Integer, ByVal pSpacingAfter As Integer, ByVal pAlignment As String) As Paragraph
+    Private Shared Function AddParagraph(ByVal pText As String, ByVal pFont As Font, ByVal pSpacingBefore As Integer, ByVal pSpacingAfter As Integer, ByVal pAlignment As String) As Paragraph
 
         Dim x2 As New Paragraph(pText, pFont) With {
             .SpacingBefore = pSpacingBefore,
@@ -221,66 +215,65 @@ Public Class OSMLog
         AddParagraph = x2
 
     End Function
-    Private Function MakePaxTable(ByRef pPassengers As GDSPaxCollection, ByVal pFont As Font, ByVal pHeaderFont As Font) As PdfPTable
+    'Private Function MakePaxTable(ByRef pPassengers As GDSPaxCollection, ByVal pFont As Font, ByVal pHeaderFont As Font) As PdfPTable
 
-        Dim Table As New PdfPTable(2) With {
-            .LockedWidth = False,
-            .HorizontalAlignment = 0,
-            .SpacingBefore = 14,
-            .SpacingAfter = 14
-        }
+    '    Dim Table As New PdfPTable(2) With {
+    '        .LockedWidth = False,
+    '        .HorizontalAlignment = 0,
+    '        .SpacingBefore = 14,
+    '        .SpacingAfter = 14
+    '    }
 
-        Dim pPosition As Boolean = False
-        For Each pPax As GDSPaxItem In pPassengers.Values
-            If pPax.IdNo <> "" Then
-                pPosition = True
-                Exit For
-            End If
-        Next pPax
-        'relative col widths in proportions - 2/3 And 1/3
-        Dim widths() As Single = {2, 1}
-        Table.SetWidths(widths)
-        Table.AddCell(AddCell("Name", pHeaderFont))
-        If pPosition Then
-            Table.AddCell(AddCell("Position", pHeaderFont))
-        Else
-            Table.AddCell(AddCell(" ", pHeaderFont))
-        End If
+    '    Dim pPosition As Boolean = False
+    '    For Each pPax As GDSPaxItem In pPassengers.Values
+    '        If pPax.IdNo <> "" Then
+    '            pPosition = True
+    '            Exit For
+    '        End If
+    '    Next pPax
+    '    'relative col widths in proportions - 2/3 And 1/3
+    '    Dim widths() As Single = {2, 1}
+    '    Table.SetWidths(widths)
+    '    Table.AddCell(AddCell("Name", pHeaderFont))
+    '    If pPosition Then
+    '        Table.AddCell(AddCell("Position", pHeaderFont))
+    '    Else
+    '        Table.AddCell(AddCell(" ", pHeaderFont))
+    '    End If
 
-        For Each pPax As GDSPaxItem In pPassengers.Values
-            Table.AddCell(AddCell(pPax.PaxName, pFont))
-            Table.AddCell(AddCell(pPax.IdNo, pFont))
-        Next pPax
+    '    For Each pPax As GDSPaxItem In pPassengers.Values
+    '        Table.AddCell(AddCell(pPax.PaxName, pFont))
+    '        Table.AddCell(AddCell(pPax.IdNo, pFont))
+    '    Next pPax
 
-        MakePaxTable = Table
+    '    MakePaxTable = Table
 
-    End Function
-    Private Function MakePaxTable(ByRef pPax As GDSPaxItem, ByVal pFont As Font, ByVal pHeaderFont As Font) As PdfPTable
+    'End Function
+    'Private Function MakePaxTable(ByRef pPax As GDSPaxItem, ByVal pFont As Font, ByVal pHeaderFont As Font) As PdfPTable
 
-        Dim Table As New PdfPTable(2) With {
-            .LockedWidth = False,
-            .HorizontalAlignment = 0,
-            .SpacingBefore = 14,
-            .SpacingAfter = 14
-        }
+    '    Dim Table As New PdfPTable(2) With {
+    '        .LockedWidth = False,
+    '        .HorizontalAlignment = 0,
+    '        .SpacingBefore = 14,
+    '        .SpacingAfter = 14
+    '    }
 
-        'relative col widths in proportions - 2/3 And 1/3
-        Dim widths() As Single = {1, 1}
-        Table.SetWidths(widths)
+    '    'relative col widths in proportions - 2/3 And 1/3
+    '    Dim widths() As Single = {1, 1}
+    '    Table.SetWidths(widths)
 
+    '    Table.AddCell(AddCell("Name", pHeaderFont))
+    '    If pPax.IdNo = "" Then
+    '        Table.AddCell(AddCell(" ", pHeaderFont))
+    '    Else
+    '        Table.AddCell(AddCell("Position", pHeaderFont))
+    '    End If
+    '    Table.AddCell(AddCell(pPax.PaxName, pFont))
+    '    Table.AddCell(AddCell(pPax.IdNo, pFont))
 
-        Table.AddCell(AddCell("Name", pHeaderFont))
-        If pPax.IdNo = "" Then
-            Table.AddCell(AddCell(" ", pHeaderFont))
-        Else
-            Table.AddCell(AddCell("Position", pHeaderFont))
-        End If
-        Table.AddCell(AddCell(pPax.PaxName, pFont))
-        Table.AddCell(AddCell(pPax.IdNo, pFont))
+    '    MakePaxTable = Table
 
-        MakePaxTable = Table
-
-    End Function
+    'End Function
     Private Function MakePaxTableLangBrazil(ByRef pPassengers As GDSPaxCollection, ByVal pFont As Font) As PdfPTable
 
         Dim Table As New PdfPTable(2) With {
@@ -300,38 +293,38 @@ Public Class OSMLog
 
         For Each pPax As GDSPaxItem In pPassengers.Values
             'Sobrenome: Carlos Naia
-            Table.AddCell(AddCell("Sobrenome:", pFont))
-            Table.AddCell(AddCell(pPax.LastName, pFont))
+            Table.AddCell(OSMElements.AddCell("Sobrenome:", pFont))
+            Table.AddCell(OSMElements.AddCell(pPax.LastName, pFont))
             'Nome:   Hugo Miguel
-            Table.AddCell(AddCell("Nome:", pFont))
-            Table.AddCell(AddCell(pPax.Initial, pFont))
-            Table.AddCell(AddCell("Posição:", pFont))
-            Table.AddCell(AddCell(pPax.IdNo, pFont))
+            Table.AddCell(OSMElements.AddCell("Nome:", pFont))
+            Table.AddCell(OSMElements.AddCell(pPax.Initial, pFont))
+            Table.AddCell(OSMElements.AddCell("Posição:", pFont))
+            Table.AddCell(OSMElements.AddCell(pPax.IdNo, pFont))
             If mobjPNR.SSRDocsExists Then
                 For Each pDocs As ApisPaxItem In mobjPNR.SSRDocsCollection.Values
                     If pDocs.Surname.Replace(" ", "") = pPax.LastName.Replace(" ", "") And pPax.Initial.Replace(" ", "").StartsWith(pDocs.FirstName.Replace(" ", "")) Then
                         'Nacionalidade: Portuguese
-                        Table.AddCell(AddCell("Nacionalidade:", pFont))
-                        Table.AddCell(AddCell(pDocs.Nationality, pFont))
+                        Table.AddCell(OSMElements.AddCell("Nacionalidade:", pFont))
+                        Table.AddCell(OSMElements.AddCell(pDocs.Nationality, pFont))
                         'DOB:  18/03/1988
                         If pDocs.BirthDate <> Date.MinValue Then
-                            Table.AddCell(AddCell("DOB:", pFont))
-                            Table.AddCell(AddCell(MyMonthName(pDocs.BirthDate, EnumLoGLanguage.Brazil), pFont))
+                            Table.AddCell(OSMElements.AddCell("DOB:", pFont))
+                            Table.AddCell(OSMElements.AddCell(MyMonthName(pDocs.BirthDate, EnumLoGLanguage.Brazil), pFont))
                         End If
                         'Número do passaporte:  P876285
-                        Table.AddCell(AddCell("Número do passaporte:", pFont))
-                        Table.AddCell(AddCell(pDocs.PassportNumber, pFont))
+                        Table.AddCell(OSMElements.AddCell("Número do passaporte:", pFont))
+                        Table.AddCell(OSMElements.AddCell(pDocs.PassportNumber, pFont))
                         'Data de validade:   06/07/2022 
                         If pDocs.ExpiryDate <> Date.MinValue Then
-                            Table.AddCell(AddCell("Data de validade:", pFont))
-                            Table.AddCell(AddCell(MyMonthName(pDocs.ExpiryDate, EnumLoGLanguage.Brazil), pFont))
+                            Table.AddCell(OSMElements.AddCell("Data de validade:", pFont))
+                            Table.AddCell(OSMElements.AddCell(MyMonthName(pDocs.ExpiryDate, EnumLoGLanguage.Brazil), pFont))
                         End If
                     End If
                 Next
             End If
 
-            Table.AddCell(AddCell(" ", pFont))
-            Table.AddCell(AddCell(" ", pFont))
+            Table.AddCell(OSMElements.AddCell(" ", pFont))
+            Table.AddCell(OSMElements.AddCell(" ", pFont))
         Next pPax
 
         Return Table
@@ -351,31 +344,31 @@ Public Class OSMLog
         Table.SetWidths(widths)
 
         'Sobrenome: Carlos Naia
-        Table.AddCell(AddCell("Sobrenome:", pFont))
-        Table.AddCell(AddCell(pPax.LastName, pFont))
+        Table.AddCell(OSMElements.AddCell("Sobrenome:", pFont))
+        Table.AddCell(OSMElements.AddCell(pPax.LastName, pFont))
         'Nome:   Hugo Miguel
-        Table.AddCell(AddCell("Nome:", pFont))
-        Table.AddCell(AddCell(pPax.Initial, pFont))
-        Table.AddCell(AddCell("Posição:", pFont))
-        Table.AddCell(AddCell(pPax.IdNo, pFont))
+        Table.AddCell(OSMElements.AddCell("Nome:", pFont))
+        Table.AddCell(OSMElements.AddCell(pPax.Initial, pFont))
+        Table.AddCell(OSMElements.AddCell("Posição:", pFont))
+        Table.AddCell(OSMElements.AddCell(pPax.IdNo, pFont))
         If mobjPNR.SSRDocsExists Then
             For Each pDocs As ApisPaxItem In mobjPNR.SSRDocsCollection.Values
                 If pDocs.Surname = pPax.LastName And pDocs.FirstName = pPax.Initial Then
                     'Nacionalidade: Portuguese
-                    Table.AddCell(AddCell("Nacionalidade:", pFont))
-                    Table.AddCell(AddCell(pDocs.Nationality, pFont))
+                    Table.AddCell(OSMElements.AddCell("Nacionalidade:", pFont))
+                    Table.AddCell(OSMElements.AddCell(pDocs.Nationality, pFont))
                     'DOB:  18/03/1988
                     If pDocs.BirthDate <> Date.MinValue Then
-                        Table.AddCell(AddCell("DOB:", pFont))
-                        Table.AddCell(AddCell(MyMonthName(pDocs.BirthDate, EnumLoGLanguage.Brazil), pFont))
+                        Table.AddCell(OSMElements.AddCell("DOB:", pFont))
+                        Table.AddCell(OSMElements.AddCell(MyMonthName(pDocs.BirthDate, EnumLoGLanguage.Brazil), pFont))
                     End If
                     'Número do passaporte:  P876285
-                    Table.AddCell(AddCell("Número do passaporte:", pFont))
-                    Table.AddCell(AddCell(pDocs.PassportNumber, pFont))
+                    Table.AddCell(OSMElements.AddCell("Número do passaporte:", pFont))
+                    Table.AddCell(OSMElements.AddCell(pDocs.PassportNumber, pFont))
                     'Data de validade:   06/07/2022 
                     If pDocs.ExpiryDate <> Date.MinValue Then
-                        Table.AddCell(AddCell("Data de validade:", pFont))
-                        Table.AddCell(AddCell(MyMonthName(pDocs.ExpiryDate, EnumLoGLanguage.Brazil), pFont))
+                        Table.AddCell(OSMElements.AddCell("Data de validade:", pFont))
+                        Table.AddCell(OSMElements.AddCell(MyMonthName(pDocs.ExpiryDate, EnumLoGLanguage.Brazil), pFont))
                     End If
                 End If
             Next
@@ -404,8 +397,8 @@ Public Class OSMLog
                 pWidths(2) = Math.Max(pWidths(2), g.MeasureString(.DepartureDateIATA, pVBFont).Width)
                 pWidths(3) = Math.Max(pWidths(3), g.MeasureString(.BoardCityName, pVBFont).Width)
                 pWidths(4) = Math.Max(pWidths(4), g.MeasureString(.OffPointCityName, pVBFont).Width)
-                pWidths(5) = Math.Max(pWidths(5), g.MeasureString(Format(.DepartTime, "HHmm"), pVBFont).Width)
-                pWidths(6) = Math.Max(pWidths(6), g.MeasureString(Format(.ArriveTime, "HHmm"), pVBFont).Width)
+                pWidths(5) = Math.Max(pWidths(5), g.MeasureString(.DepartTimeShort, pVBFont).Width)
+                pWidths(6) = Math.Max(pWidths(6), g.MeasureString(.ArriveTimeShort, pVBFont).Width)
             End With
         Next
         'relative col widths in proportions - 2/3 And 1/3
@@ -414,13 +407,13 @@ Public Class OSMLog
 
         For Each pSeg As GDSSegItem In pSegs.Values
             With pSeg
-                Table.AddCell(AddCell(.Airline, pFont))
-                Table.AddCell(AddCell(.FlightNo, pFont))
-                Table.AddCell(AddCell(.DepartureDateIATA, pFont))
-                Table.AddCell(AddCell(.BoardCityName, pFont))
-                Table.AddCell(AddCell(.OffPointCityName, pFont))
-                Table.AddCell(AddCell(Format(.DepartTime, "HHmm"), pFont))
-                Table.AddCell(AddCell(Format(.ArriveTime, "HHmm"), pFont))
+                Table.AddCell(OSMElements.AddCell(.Airline, pFont))
+                Table.AddCell(OSMElements.AddCell(.FlightNo, pFont))
+                Table.AddCell(OSMElements.AddCell(.DepartureDateIATA, pFont))
+                Table.AddCell(OSMElements.AddCell(.BoardCityName, pFont))
+                Table.AddCell(OSMElements.AddCell(.OffPointCityName, pFont))
+                Table.AddCell(OSMElements.AddCell(.DepartTimeShort, pFont))
+                Table.AddCell(OSMElements.AddCell(.ArriveTimeShort, pFont))
             End With
         Next
 
@@ -428,12 +421,12 @@ Public Class OSMLog
 
     End Function
 
-    Private Function AddCell(ByVal pText As String, ByVal pFont As Font) As PdfPCell
-        Dim c1 As New PdfPCell(New Phrase(pText, pFont)) With {
-                    .Border = Rectangle.NO_BORDER
-                }
-        AddCell = c1
-    End Function
+    'Private Shared Function AddCell(ByVal pText As String, ByVal pFont As Font) As PdfPCell
+    '    Dim c1 As New PdfPCell(New Phrase(pText, pFont)) With {
+    '                .Border = Rectangle.NO_BORDER
+    '            }
+    '    AddCell = c1
+    'End Function
     Private Sub ReadOptions()
 
         Dim pFrm As New frmOSMLoG(mobjPNR)
