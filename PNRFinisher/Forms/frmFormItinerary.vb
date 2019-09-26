@@ -5,13 +5,14 @@ Public Class frmFormItinerary
     Private mflgLoading As Boolean
     Private mflgLoadingItin As Boolean
 
-    Private mobjPNR As New GDSReadPNR
+    Private mobjPNR As GDSReadPNR
 
     Private mfrmOptimiser As frmPriceOptimiser
 
     Private Sub cmdItn1AReadPNR_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadPNR.Click
 
         mSelectedGDSCode = EnumGDSCode.Amadeus
+        mobjPNR = New GDSReadPNR(mSelectedGDSCode)
         Try
             Cursor = System.Windows.Forms.Cursors.WaitCursor
             Dim mGDSUser As New GDSUser(EnumGDSCode.Amadeus)
@@ -34,10 +35,11 @@ Public Class frmFormItinerary
     Private Sub cmdItnReadQueue_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadQueue.Click
 
         Try
+            mSelectedGDSCode = EnumGDSCode.Amadeus
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
             lblItnPNRCounter.Text = ""
             Cursor = System.Windows.Forms.Cursors.WaitCursor
             txtItnPNR.Text = mobjPNR.RetrievePNRsFromQueue(txtItnPNR.Text)
-            mSelectedGDSCode = EnumGDSCode.Amadeus
             Dim mGDSUser As New GDSUser(mSelectedGDSCode)
             InitSettings(mGDSUser, 0)
             SetupPCCOptions()
@@ -55,6 +57,7 @@ Public Class frmFormItinerary
     Private Sub cmdItnRead1ACurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadCurrent.Click
         Try
             mSelectedGDSCode = EnumGDSCode.Amadeus
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
             ITNReadCurrent()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -64,6 +67,7 @@ Public Class frmFormItinerary
     Private Sub cmdItnRead1GCurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1GReadCurrent.Click
         Try
             mSelectedGDSCode = EnumGDSCode.Galileo
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
             ITNReadCurrent()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -747,12 +751,7 @@ Public Class frmFormItinerary
     Private Sub readGDS(ByVal RecordLocator As String)
 
         Try
-            If RecordLocator = "" Then
-                mobjPNR.CancelError = True
-            Else
-                mobjPNR.CancelError = False
-            End If
-            mobjPNR.Read(mSelectedGDSCode, RecordLocator)
+            mobjPNR.Read(RecordLocator)
         Catch ex As Exception
             Throw New Exception("readGDS()" & vbCrLf & ex.Message)
         End Try

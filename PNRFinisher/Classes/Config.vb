@@ -49,7 +49,7 @@ Friend Class Config
 
     Private mudtProps As ClassProps
     Private mobjGDSUser As GDSUser
-    Private mflgIsDirtyPCC As Boolean
+    Private ReadOnly mflgIsDirtyPCC As Boolean
     Private mflgIsDirtyUser As Boolean
     Private mGDSReferences As New GDS_BOReferenceCollection
     Public Sub New()

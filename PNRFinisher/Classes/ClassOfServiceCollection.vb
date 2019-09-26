@@ -4,6 +4,9 @@ Public Class ClassOfServiceCollection
 
     Private mClassCollection As New Collections.Generic.Dictionary(Of String, ClassOfServiceItem)
 
+    Public Sub New()
+
+    End Sub
     Public Function Load(ByVal pCarrier As String, ByVal pOrigin As String, ByVal pDestination As String, ByVal pClassOfService As String) As ClassOfServiceItem
 
         Dim pItem As New ClassOfServiceItem

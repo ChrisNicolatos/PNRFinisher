@@ -2,12 +2,16 @@
 Option Explicit On
 Public Class ReferenceGenderCollection
     Inherits Collections.Generic.Dictionary(Of Integer, ReferenceItem)
-    Private mstrGenderIndicator(,) As String = {{"M", "MALE"}, {"F", "FEMALE"}, {"MI", "MALE INFANT"}, {"FI", "FEMALE INFANT"}, {"U", "UNDISCLOSED GENDER"}}
     Public Sub New()
-        For i As Integer = 0 To mstrGenderIndicator.GetUpperBound(0)
-            Dim pItem As New ReferenceItem
-            pItem.SetValues(mstrGenderIndicator(i, 0), mstrGenderIndicator(i, 1))
-            MyBase.Add(i, pItem)
-        Next
+        Dim pItem As New ReferenceItem("M", "MALE")
+        MyBase.Add(0, pItem)
+        pItem = New ReferenceItem("F", "FEMALE")
+        MyBase.Add(1, pItem)
+        pItem = New ReferenceItem("MI", "MALE INFANT")
+        MyBase.Add(2, pItem)
+        pItem = New ReferenceItem("FI", "FEMALE INFANT")
+        MyBase.Add(3, pItem)
+        pItem = New ReferenceItem("U", "UNDISCLOSED GENDER")
+        MyBase.Add(4, pItem)
     End Sub
 End Class

@@ -129,6 +129,9 @@ Public Class frmFormMain
     '    Give an option to the user to select which items should be entered - None, ID, ID-Rank, ID-Rank-Nationality, Rank only, etc
     '    Possibly set up a field to specify the required format per client
     ' 4. One time vessel is not working
+    ' 5. Nationality reference fields for WSM
+    ' 6. Vessel is not picked up correctly for OSM LoG
+    ' 7. When reading existing PNRs, the references can be confusing depending if they are from Athens, Crewlink, Discovery etc
 
     Private pfrmFinisher As frmFormFinisher
     Private pfrmItinerary As frmFormItinerary

@@ -4,7 +4,7 @@ Public Class ItnRTBDoc
     Private Const STANDARDMAXSTRINGLENGTH As Integer = 80
     Private mobjPNR As GDSReadPNR
     Private mintMaxString As Integer = STANDARDMAXSTRINGLENGTH
-    Private mstrRemarks As String
+    Private ReadOnly mstrRemarks As String
     Private mintHeaderLength As Integer = 0
     Public Sub New(ByRef pPNR As GDSReadPNR, ByRef pItnRemarks As CheckedListBox)
         mobjPNR = pPNR

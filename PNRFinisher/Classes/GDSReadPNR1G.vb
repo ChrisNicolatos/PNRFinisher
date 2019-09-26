@@ -60,27 +60,27 @@ Public Class GDSReadPNR1G
         Dim SegNo As Integer
         Dim BaggageAllowance As String
     End Structure
-    Private WithEvents mobjSession1G As New Travelport.TravelData.Factory.GalileoDesktopFactory("SPG720", "MYCONNECTION", False, True, "SMRT")
+    Private WithEvents mobjSession1G As Travelport.TravelData.Factory.GalileoDesktopFactory
 
-    Private mobjPassengers As New GDSPaxCollection
-    Private mobjSegments As New GDSSegCollection
-    Private mobjTickets As New GDSTicketCollection
-    Private mobjPhones As New PhoneNumbersCollection
-    Private mobjEmails As New EmailCollection
-    Private mobjOpenSegments As New OpenSegmentCollection
-    Private mobjDI As New DICollection
-    Private mobjTicketElement As New TicketElementItem
-    Private mobjOptionQueue As New OptionQueueCollection
-    Private mobjSSR As New SSRCollection
-    Private mobjFreqFlyer As New FrequentFlyerCollection
-    Private mobjItinRemarks As New GDSItineraryRemarksCollection
+    Private mobjPassengers As GDSPaxCollection
+    Private mobjSegments As GDSSegCollection
+    Private mobjTickets As GDSTicketCollection
+    Private mobjPhones As PhoneNumbersCollection
+    Private mobjEmails As EmailCollection
+    Private mobjOpenSegments As OpenSegmentCollection
+    Private mobjDI As DICollection
+    Private mobjTicketElement As TicketElementItem
+    Private mobjOptionQueue As OptionQueueCollection
+    Private mobjSSR As SSRCollection
+    Private mobjFreqFlyer As FrequentFlyerCollection
+    Private mobjItinRemarks As GDSItineraryRemarksCollection
+    Private mobjBaggageAllowance As BaggageAllowanceCollection
     Private mstrOfficeOfResponsibility As String
     Private mstrPNRNumber As String
     Private mdteDepartureDate As Date
     Private mstrItinerary As String
     Private mSegsFirstElement As Integer
     Private mSegsLastElement As Integer
-    Private mobjBaggageAllowance As BaggageAllowanceCollection
     Private mstrSeats As String
     Private mflgExistsSSRCTC As Boolean
     Public Sub New()
@@ -99,6 +99,7 @@ Public Class GDSReadPNR1G
         mobjSSR = New SSRCollection
         mobjFreqFlyer = New FrequentFlyerCollection
         mobjItinRemarks = New GDSItineraryRemarksCollection
+        mobjBaggageAllowance = New BaggageAllowanceCollection
 
         mstrOfficeOfResponsibility = ""
         mstrPNRNumber = ""
@@ -147,6 +148,9 @@ Public Class GDSReadPNR1G
 
     End Sub
     Private Function SendTerminalCommand(ByVal TerminalEntry As String) As String()
+        If mobjSession1G Is Nothing Then
+            mobjSession1G = New Travelport.TravelData.Factory.GalileoDesktopFactory("SPG720", "MYCONNECTION", False, True, "SMRT")
+        End If
         Dim mstrPNR As ObjectModel.ReadOnlyCollection(Of String) = mobjSession1G.SendTerminalCommand(TerminalEntry)
         RaiseEvent TerminalCommandSent(TerminalEntry)
         Dim pRawIndex As Integer = -1
@@ -191,11 +195,6 @@ Public Class GDSReadPNR1G
             Return mobjTickets
         End Get
     End Property
-    'Public ReadOnly Property Allowance As TQTCollection
-    '    Get
-    '        Return mudtAllowance
-    '    End Get
-    'End Property
     Public ReadOnly Property BaggageAllowance As BaggageAllowanceCollection
         Get
             Return mobjBaggageAllowance
@@ -621,7 +620,6 @@ Public Class GDSReadPNR1G
     Private Sub GetTickets()
         Dim pFF() As String = SendTerminalCommand("*FF")
 
-        'mudtAllowance = New TQTCollection
         mobjBaggageAllowance = New BaggageAllowanceCollection
         mobjTickets.Clear()
 

@@ -26,24 +26,27 @@ Public Class GDSReadPNR
             isNew = True
         End Sub
     End Structure
+    Private ReadOnly mGDSCode As EnumGDSCode
+    Private mudtProps As ClassProps
+
+    Private mobjHostSessions As k1aHostToolKit.HostSessions
     Private WithEvents mobjSession1A As k1aHostToolKit.HostSession
     Private mobjPNR1A As s1aPNR.PNR
-    Private mobjSession1G As New Travelport.TravelData.Factory.GalileoDesktopFactory("SPG720", "MYCONNECTION", False, True, "SMRT")
-    Private WithEvents mobjPNR1GRaw As New GDSReadPNR1G
 
-    Private mobjPassengers As New GDSPaxCollection
-    Private mobjSegments As New GDSSegCollection
-    Private mobjTickets As New GDSTicketCollection
-    Private mobjItinRemarks As New GDSItineraryRemarksCollection
+    Private mobjSession1G As Travelport.TravelData.Factory.GalileoDesktopFactory
+    Private WithEvents mobjPNR1GRaw As GDSReadPNR1G
 
-    Private mobjFrequentFlyer As New FrequentFlyerCollection
-    Private mobjNumberParser As New GDSNumberParser
+    Private mobjPassengers As GDSPaxCollection
+    Private mobjSegments As GDSSegCollection
+    Private mobjTickets As GDSTicketCollection
+    Private mobjItinRemarks As GDSItineraryRemarksCollection
 
-    Private mobjExistingGDSElements As New GDSExistingCollection
-    Private WithEvents mobjNewGDSElements As New GDSNewCollection
-    Private mGDSCode As EnumGDSCode
+    Private mobjFrequentFlyer As FrequentFlyerCollection
+    Private mobjNumberParser As GDSNumberParser
 
-    Private mudtProps As ClassProps
+    Private mobjExistingGDSElements As GDSExistingCollection
+    Private WithEvents mobjNewGDSElements As GDSNewCollection
+
     Private mobjBaggageAllowance As BaggageAllowanceCollection
 
     Private mstrPNRResponse As String
@@ -58,7 +61,7 @@ Public Class GDSReadPNR
     Private mflgExistsSegments As Boolean
     Private mflgExistsSSRDocs As Boolean
     Private mstrSSRDocs As String
-    Private mobjSSRDocs As New ApisPaxCollection
+    Private mobjSSRDocs As ApisPaxCollection
     Private mflgExistsSSRCTC As Boolean
 
     Private mSegsFirstElement As Integer
@@ -71,14 +74,30 @@ Public Class GDSReadPNR
     Private mflgCancelError As Boolean
 
     Private mstrStatus As String
-    Public Sub New()
+    Friend Sub New(ByVal pGDSCode As modEnums.EnumGDSCode)
 
-        ClearElements(EnumGDSCode.Unknown)
+        mGDSCode = pGDSCode
+        If mGDSCode = EnumGDSCode.Galileo Then
+            mobjSession1G = New Travelport.TravelData.Factory.GalileoDesktopFactory("SPG720", "MYCONNECTION", False, True, "SMRT")
+        End If
+        ClearElements()
 
     End Sub
-    Private Sub ClearElements(ByVal pGDSCode As EnumGDSCode)
+    Private Sub CheckForAmadeus()
+        If mGDSCode <> EnumGDSCode.Amadeus Then
+            Throw New Exception("Selected GDS is not Amadeus")
+        End If
+    End Sub
+    Private Sub CheckForGalileo()
+        If mGDSCode <> EnumGDSCode.Galileo Then
+            Throw New Exception("Selected GDS is not Galileo")
+        End If
+    End Sub
+    Private Sub ClearElements()
 
-        mobjPNR1GRaw = New GDSReadPNR1G
+        If mGDSCode = EnumGDSCode.Galileo Then
+            mobjPNR1GRaw = New GDSReadPNR1G
+        End If
         mobjPassengers = New GDSPaxCollection
         mobjSegments = New GDSSegCollection
         mobjTickets = New GDSTicketCollection
@@ -88,7 +107,6 @@ Public Class GDSReadPNR
         mobjExistingGDSElements = New GDSExistingCollection
         mobjNewGDSElements = New GDSNewCollection
         mobjBaggageAllowance = New BaggageAllowanceCollection
-        mGDSCode = pGDSCode
         mudtProps.Clear()
 
         mstrPNRResponse = ""
@@ -117,6 +135,15 @@ Public Class GDSReadPNR
         mstrStatus = ""
 
     End Sub
+    Private Sub GetActiveAmadeusSession()
+        mobjHostSessions = New k1aHostToolKit.HostSessions
+        If mobjHostSessions.Count > 0 Then
+            mobjSession1A = mobjHostSessions.UIActiveSession
+        Else
+            Throw New Exception("Amadeus not signed in")
+        End If
+    End Sub
+
     Private Sub mobjSession_ReceivedResponse(ByRef newResponse As CHostResponse) Handles mobjSession1A.ReceivedResponse
         mstrPNRResponse = newResponse.Text
     End Sub
@@ -126,51 +153,61 @@ Public Class GDSReadPNR
             Return mobjSegments
         End Get
     End Property
+
     Public ReadOnly Property Passengers As GDSPaxCollection
         Get
             Return mobjPassengers
         End Get
     End Property
+
     Public ReadOnly Property AllowanceForSegment(ByVal Origin As String, ByVal Destination As String, ByVal Airline As String, ByVal FlightNumber As String, ByVal ClassOfService As String, ByVal DepDate As String, ByVal DepTime As String) As String
         Get
             Return mobjBaggageAllowance.BaggageAllowance(Origin, Destination, Airline, FlightNumber, ClassOfService, DepDate, DepTime)
         End Get
     End Property
+
     Public ReadOnly Property GroupName As String
         Get
             Return mstrGroupName
         End Get
     End Property
+
     Public ReadOnly Property GroupNamesCount As Integer
         Get
             Return mintGroupNamesCount
         End Get
     End Property
+
     Public ReadOnly Property NumberOfPax As Integer
         Get
             Return mobjPassengers.Count
         End Get
     End Property
+
     Public ReadOnly Property PaxLeadName As String
         Get
             Return mobjPassengers.LeadName
         End Get
     End Property
+
     Public ReadOnly Property SSRDocsCollection As ApisPaxCollection
         Get
             Return mobjSSRDocs
         End Get
     End Property
+
     Public ReadOnly Property IsGroup As Boolean
         Get
             Return (mstrGroupName <> "")
         End Get
     End Property
+
     Public ReadOnly Property HasSegments As Boolean
         Get
             Return (mSegsLastElement > -1)
         End Get
     End Property
+
     Public ReadOnly Property FirstSegment As GDSSegItem
         Get
             If mSegsFirstElement = -1 Then
@@ -180,6 +217,7 @@ Public Class GDSReadPNR
             End If
         End Get
     End Property
+
     Public ReadOnly Property LastSegment As GDSSegItem
         Get
             If mSegsLastElement = -1 Then
@@ -189,11 +227,13 @@ Public Class GDSReadPNR
             End If
         End Get
     End Property
+
     Public ReadOnly Property Itinerary As String
         Get
             Return mstrItinerary
         End Get
     End Property
+
     Public ReadOnly Property Tickets() As GDSTicketCollection
         Get
             Return mobjTickets
@@ -317,13 +357,10 @@ Public Class GDSReadPNR
             Return mGDSCode
         End Get
     End Property
-    Public Property CancelError() As Boolean
+    Public ReadOnly Property CancelError() As Boolean
         Get
             Return mflgCancelError
         End Get
-        Set(ByVal Value As Boolean)
-            mflgCancelError = Value
-        End Set
     End Property
     Public ReadOnly Property MaxAirportNameLength As Integer
         Get
@@ -352,55 +389,49 @@ Public Class GDSReadPNR
         End Get
     End Property
     Public Function RetrievePNRsFromQueue(ByVal Queue As String) As String
-        Dim pobjHostSessions As k1aHostToolKit.HostSessions
+
         Dim pQV As String = ""
         RetrievePNRsFromQueue = ""
         Try
             mstrStatus = ""
-            pobjHostSessions = New k1aHostToolKit.HostSessions
-            If pobjHostSessions.Count > 0 Then
-                mobjSession1A = pobjHostSessions.UIActiveSession
-                If Queue <> "" Then
-                    mobjSession1A.Send("QI")
-                    mobjSession1A.Send("IG")
-                End If
-                pQV &= mobjSession1A.Send("QV/" & Queue).Text
-                Do While pQV.LastIndexOf(")>") = pQV.Length - 4
-                    pQV &= mobjSession1A.Send("MDR").Text
-                Loop
-                Dim pLines() As String = pQV.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries)
-                Dim pPNRs As String = ""
-                For i As Integer = 4 To pLines.GetUpperBound(0)
-                    If pLines(i).Length >= 19 Then
-                        pPNRs &= pLines(i).Substring(14, 6) & vbCrLf
-                    End If
-                Next
-                RetrievePNRsFromQueue = pPNRs
-            Else
-                Throw New Exception("Amadeus not signed in")
+            GetActiveAmadeusSession()
+            If Queue <> "" Then
+                mobjSession1A.Send("QI")
+                mobjSession1A.Send("IG")
             End If
+            pQV &= mobjSession1A.Send("QV/" & Queue).Text
+            Do While pQV.LastIndexOf(")>") = pQV.Length - 4
+                pQV &= mobjSession1A.Send("MDR").Text
+            Loop
+            Dim pLines() As String = pQV.Split(vbCrLf.ToCharArray, StringSplitOptions.RemoveEmptyEntries)
+            Dim pPNRs As String = ""
+            For i As Integer = 4 To pLines.GetUpperBound(0)
+                If pLines(i).Length >= 19 Then
+                    pPNRs &= pLines(i).Substring(14, 6) & vbCrLf
+                End If
+            Next
+            RetrievePNRsFromQueue = pPNRs
         Catch ex As Exception
             mstrStatus = Err.Description
             If CancelError Then
-                Throw New Exception("RetrivePNRsFromQueue()" & vbCrLf & mstrStatus)
+                Throw New Exception("RetrievePNRsFromQueue()" & vbCrLf & mstrStatus)
             End If
         End Try
     End Function
-    Friend Function Read(ByVal pGDSCode As EnumGDSCode, ByVal PNR As String) As Boolean
-        Dim pReturnValue As Boolean = False
-        ClearElements(pGDSCode)
+    Friend Sub Read(ByVal PNR As String)
+        mflgCancelError = (PNR = "")
+        ClearElements()
         If mGDSCode = EnumGDSCode.Amadeus Then
-            pReturnValue = Read1A(PNR)
+            Read1A(PNR)
         ElseIf mGDSCode = EnumGDSCode.Galileo Then
             ReadPNR1G(PNR)
         Else
             Throw New Exception("Incorrect GDS")
         End If
-        Return pReturnValue
-    End Function
-    Friend Function Read(ByVal GDSCode As EnumGDSCode) As String
+    End Sub
+    Friend Function Read() As String
         Dim pReturnValue As String = ""
-        ClearElements(GDSCode)
+        ClearElements()
         If mGDSCode = EnumGDSCode.Amadeus Then
             pReturnValue = Read1A()
         ElseIf mGDSCode = EnumGDSCode.Galileo Then
@@ -410,9 +441,122 @@ Public Class GDSReadPNR
         End If
         Return pReturnValue
     End Function
+    Private Sub Read1A(ByVal PNR As String)
+
+        Try
+            CheckForAmadeus()
+            ClearElements()
+            mstrStatus = ""
+            GetActiveAmadeusSession()
+            If PNR <> "" Then
+                mobjSession1A.Send("QI")
+                mobjSession1A.Send("IG")
+            End If
+            mudtProps.RequestedPNR = PNR
+            Dim pReturnValue As Boolean = RetrievePNR1A()
+            If pReturnValue Then
+                mstrStatus = "Amadeus read " & PNR & " OK"
+            Else
+                mstrStatus = "Amadeus " & PNR & " not found"
+            End If
+            mobjSession1A.SendSpecialKey(512 + 282) '(k1aHostConstantsLib.AmaKeyValues.keySHIFT + k1aHostConstantsLib.AmaKeyValues.keyPause)
+            mobjSession1A.Send("RT")
+        Catch ex As Exception
+            mstrStatus = Err.Description
+            If CancelError Then
+                Throw New Exception("GDSReadPNR.Read1A()" & vbCrLf & mstrStatus)
+            End If
+        End Try
+
+    End Sub
+    Private Function Read1A() As String
+
+        Try
+            Dim pReturnValue As String = ""
+            CheckForAmadeus()
+            ClearElements()
+            GetActiveAmadeusSession()
+            mobjPNR1A = New s1aPNR.PNR
+            Dim pStatus As Integer = mobjPNR1A.RetrievePNR(mobjSession1A, "RT")
+            mflgNewPNR = False
+            If pStatus = 0 Or pStatus = 1005 Then
+                GetOfficeOfResponsibility1A()
+                GetPnrNumber1A()
+                GetGroup1A()
+                GetPassengers1A()
+                GetSegments1A()
+                GetPhoneElement1A()
+                GetEmailElement1A()
+                GetAOH1A()
+                GetOpenSegment1A()
+                GetTicketElement1A()
+                GetOptionQueueElement1A()
+                GetVesselOSI1A()
+                GetSSR1A()
+                GetAI1A()
+                GetRM1A()
+                GetTickets1A()
+                GetItinRemarks1A()
+                If mobjPNR1A.RawResponse.IndexOf("***  NHP  ***") >= 0 Then
+                    pReturnValue = "               ***  NHP  ***"
+                Else
+                    pReturnValue = CheckDMI1A()
+                End If
+                Return pReturnValue
+            Else
+                Throw New Exception("There is no active PNR" & vbCrLf & mstrPNRResponse)
+            End If
+        Catch ex As Exception
+            Throw New Exception("GDSReadPNR.Read1A()" & vbCrLf & ex.Message)
+        End Try
+    End Function
+
+    Private Function RetrievePNR1A() As Boolean
+
+        Dim pintPNRStatus As Integer
+        Dim pReturnValue As Boolean = False
+
+        mobjPNR1A = New s1aPNR.PNR
+        mobjTickets = New GDSTicketCollection
+        mobjItinRemarks = New GDSItineraryRemarksCollection
+        mstrVesselName = ""
+        mstrBookedBy = ""
+        mstrCC = ""
+        mstrCLA = ""
+        mstrCLN = ""
+
+        With mudtProps
+
+            If .RequestedPNR = "" Then
+                pintPNRStatus = mobjPNR1A.RetrieveCurrent(mobjSession1A)
+            Else
+                pintPNRStatus = mobjPNR1A.RetrievePNR(mobjSession1A, "RT" & .RequestedPNR)
+            End If
+            .PNRCreationdate = Today
+
+            If pintPNRStatus = 0 Or pintPNRStatus = 1005 Then
+                .RequestedPNR = setRecordLocator1A()
+                GetTQT1A()
+                GetGroup1A()
+                GetPax1A()
+                GetSegs1A()
+                GetAutoTickets1A()
+                GetOtherServiceElements1A()
+                GetSSRElements1A()
+                GetSSR1A()
+                GetRMElements1A()
+                GetItinRemarks1A()
+                pReturnValue = True
+            Else
+                pReturnValue = False
+            End If
+        End With
+        Return pReturnValue
+    End Function
+
     Private Sub ReadPNR1G(ByVal PNR As String)
         Try
-            ClearElements(EnumGDSCode.Galileo)
+            ClearElements()
             If PNR <> "" Then
                 mobjSession1G.SendTerminalCommand("QXI+I")
             End If
@@ -423,7 +567,7 @@ Public Class GDSReadPNR
         End Try
     End Sub
     Private Function Read1G() As String
-        ClearElements(EnumGDSCode.Galileo)
+        ClearElements()
         mobjPNR1GRaw = New GDSReadPNR1G
         Dim pResponse As ObjectModel.ReadOnlyCollection(Of String) = mobjSession1G.SendTerminalCommand("*R")
         If pResponse.Count > 0 AndAlso pResponse(0).Length > 5 AndAlso pResponse(0).Substring(6, 1) = "/" Then
@@ -484,10 +628,8 @@ Public Class GDSReadPNR
         End Try
     End Sub
     Private Function CheckDMI1A() As String
-        If mGDSCode <> EnumGDSCode.Amadeus Then
-            Throw New Exception("GDSReadPNR.CheckDMI1A()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
         Try
+            CheckForAmadeus()
             If mobjPNR1A.AirSegments.Count <= 1 Then
                 Return ""
             End If
@@ -502,9 +644,7 @@ Public Class GDSReadPNR
         End Try
     End Function
     Private Sub RemoveOldGDSEntries1A()
-        If mGDSCode <> EnumGDSCode.Amadeus Then
-            Throw New Exception("GDSReadPNR.RemoveOldGDSEntries1A()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
+        CheckForAmadeus()
         Dim pLineNumbers(0) As Integer
         ' the following elements remain as they are if they already exist in the PNR
         ClearExistingItems(mobjExistingGDSElements.PhoneElement, mobjNewGDSElements.PhoneElement)
@@ -552,9 +692,7 @@ Public Class GDSReadPNR
         Loop
     End Sub
     Private Sub RemoveOldGDSEntries1G()
-        If mGDSCode <> EnumGDSCode.Galileo Then
-            Throw New Exception("GDSReadPNR.RemoveOldGDSEntries1G()" & vbCrLf & "Selected GDS is not Galileo")
-        End If
+        CheckForGalileo()
         Dim pLineNumbers(0) As LineNumbers
         ' the following elements remain as they are if they already exist in the PNR
         ClearExistingItems(mobjExistingGDSElements.PhoneElement, mobjNewGDSElements.PhoneElement)
@@ -641,17 +779,14 @@ Public Class GDSReadPNR
         End If
     End Sub
     Public Sub SendGDSEntry1A(ByVal GDSEntry As String)
-        If mGDSCode <> EnumGDSCode.Amadeus Then
-            Throw New Exception("GDSReadPNR.SendNewGDSEntries1A()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
+        CheckForAmadeus()
+
         If GDSEntry <> "" Then
             mobjSession1A.Send(GDSEntry)
         End If
     End Sub
     Public Sub SendGDSEntry1G(ByVal GDSEntry As String)
-        If mGDSCode <> EnumGDSCode.Galileo Then
-            Throw New Exception("GDSReadPNR.SendNewGDSEntries1G()" & vbCrLf & "Selected GDS is not Galileo")
-        End If
+        CheckForGalileo()
         If GDSEntry <> "" Then
             mobjSession1G.SendTerminalCommand(GDSEntry)
         End If
@@ -862,12 +997,9 @@ Public Class GDSReadPNR
     End Sub
     Private Sub APISUpdate1G(ByVal mflgExpiryDateOK As Boolean, dgvApis As DataGridView)
 
-        If mGDSCode <> EnumGDSCode.Galileo Then
-            Throw New Exception("GDSReadPNR.APISUpdate1G()" & vbCrLf & "Selected GDS is not Galileo")
-        End If
-
-        Dim pstrCommand As String
         Try
+            CheckForGalileo()
+            Dim pstrCommand As String
             For i = 0 To dgvApis.RowCount - 1
                 With dgvApis.Rows(i)
                     If .ErrorText.IndexOf("Birth") = -1 Then
@@ -903,11 +1035,10 @@ Public Class GDSReadPNR
         End Try
     End Sub
     Private Function CloseOffPNR1A(AirlineEntries As CheckedListBox) As String
-        Dim pLastCommand As String = ""
-        If mGDSCode <> EnumGDSCode.Amadeus Then
-            Throw New Exception("GDSReadPNR.CloseOffPNR1A()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
 
+        CheckForAmadeus()
+
+        Dim pLastCommand As String = ""
         Dim pCloseOffEntries As New CloseOffEntriesCollection
 
         pCloseOffEntries.Load(MySettings.GDSPcc, mstrOfficeOfResponsibility = MySettings.GDSPcc)
@@ -954,9 +1085,8 @@ Public Class GDSReadPNR
 
     End Function
     Private Function CloseOffPNR1G() As String
-        If mGDSCode <> EnumGDSCode.Galileo Then
-            Throw New Exception("GDSReadPNR.CloseOffPNR1G()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
+        CheckForGalileo()
+
         Dim pCloseOffEntries As New CloseOffEntriesCollection
         CloseOffPNR1G = ""
         pCloseOffEntries.Load(MySettings.GDSPcc, mstrOfficeOfResponsibility = MySettings.GDSPcc)
@@ -999,28 +1129,22 @@ Public Class GDSReadPNR
         End If
     End Function
     Private Sub SendGDSElement1A(ByVal pElement As GDSNewItem)
-        If mGDSCode <> EnumGDSCode.Amadeus Then
-            Throw New Exception("GDSReadPNR.SendGDSElement1A()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
+        CheckForAmadeus()
+
         If pElement.GDSCommand <> "" Then
             mobjSession1A.Send(pElement.GDSCommand)
         End If
 
     End Sub
     Private Sub SendGDSElement1A(ByVal pElement As String)
-        If mGDSCode <> EnumGDSCode.Amadeus Then
-            Throw New Exception("GDSReadPNR.SendGDSElement1A()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
-
+        CheckForAmadeus()
         If pElement <> "" Then
             mobjSession1A.Send(pElement)
         End If
 
     End Sub
     Private Function SendGDSElement1G(ByVal pElement As GDSNewItem, ByVal ShowResponse As Boolean) As String
-        If mGDSCode <> EnumGDSCode.Galileo Then
-            Throw New Exception("GDSReadPNR.SendGDSElement1G()" & vbCrLf & "Selected GDS is not Galileo")
-        End If
+        CheckForGalileo()
         SendGDSElement1G = ""
         Dim pResponse As ObjectModel.ReadOnlyCollection(Of String)
         If pElement.GDSCommand <> "" Then
@@ -1038,9 +1162,7 @@ Public Class GDSReadPNR
 
     End Function
     Private Sub SendGDSItemsNoDuplicate1A(ByVal pItemToSend As String)
-        If mGDSCode <> EnumGDSCode.Amadeus Then
-            Throw New Exception("GDSReadPNR.SendGDSItemsNoDuplicate1A()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
+        CheckForAmadeus()
 
         If pItemToSend.Length > 3 AndAlso pItemToSend.StartsWith("OS ") Then
             If mobjPNR1A.RawResponse.Replace(vbCrLf, "").Replace(" ", "").IndexOf(("OSI " & pItemToSend.Substring(3)).Replace(" ", "")) = -1 Then
@@ -1066,9 +1188,7 @@ Public Class GDSReadPNR
 
     End Sub
     Private Function SendGDSAirlineItems1G(ByVal pItemToSend As String) As String
-        If mGDSCode <> EnumGDSCode.Galileo Then
-            Throw New Exception("GDSReadPNR.SendGDSAirlineItems1G()" & vbCrLf & "Selected GDS is not Galileo")
-        End If
+        CheckForGalileo()
         SendGDSAirlineItems1G = ""
         Dim pResponse
         If pItemToSend <> "" Then
@@ -1100,134 +1220,6 @@ Public Class GDSReadPNR
                 End If
             End If
         End If
-
-    End Function
-    Private Function Read1A(ByVal PNR As String) As Boolean
-        If mGDSCode <> EnumGDSCode.Amadeus Then
-            Throw New Exception("GDSReadPNR.Read1A()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
-        Dim pReturnValue As Boolean = False
-        Dim pobjHostSessions As k1aHostToolKit.HostSessions
-
-        Try
-            ClearElements(EnumGDSCode.Amadeus)
-            mstrStatus = ""
-            pobjHostSessions = New k1aHostToolKit.HostSessions
-            If pobjHostSessions.Count > 0 Then
-                mobjSession1A = pobjHostSessions.UIActiveSession
-                If PNR <> "" Then
-                    mobjSession1A.Send("QI")
-                    mobjSession1A.Send("IG")
-                End If
-                mudtProps.RequestedPNR = PNR
-                pReturnValue = RetrievePNR1A()
-            Else
-                Throw New Exception("Amadeus not signed in")
-            End If
-            If pReturnValue Then
-                mstrStatus = "Amadeus read " & PNR & " OK"
-            Else
-                mstrStatus = "Amadeus " & PNR & " not found"
-            End If
-            mobjSession1A.SendSpecialKey(512 + 282) '(k1aHostConstantsLib.AmaKeyValues.keySHIFT + k1aHostConstantsLib.AmaKeyValues.keyPause)
-            mobjSession1A.Send("RT")
-        Catch ex As Exception
-            mstrStatus = Err.Description
-            If CancelError Then
-                Throw New Exception("GDSReadPNR.Read1A()" & vbCrLf & mstrStatus)
-            End If
-        End Try
-        Return pReturnValue
-
-    End Function
-    Private Function Read1A() As String
-        If mGDSCode <> EnumGDSCode.Amadeus Then
-            Throw New Exception("GDSReadPNR.Read1A()" & vbCrLf & "Selected GDS is not Amadeus")
-        End If
-        Dim pReturnValue As String = ""
-        Dim pobjHostSessions As k1aHostToolKit.HostSessions
-        Try
-            ClearElements(EnumGDSCode.Amadeus)
-            pobjHostSessions = New k1aHostToolKit.HostSessions
-            If pobjHostSessions.Count > 0 Then
-                mobjSession1A = pobjHostSessions.UIActiveSession
-                mobjPNR1A = New s1aPNR.PNR
-                Dim pStatus As Integer = mobjPNR1A.RetrievePNR(mobjSession1A, "RT")
-                mflgNewPNR = False
-                If pStatus = 0 Or pStatus = 1005 Then
-                    GetOfficeOfResponsibility1A()
-                    GetPnrNumber1A()
-                    GetGroup1A()
-                    GetPassengers1A()
-                    GetSegments1A()
-                    GetPhoneElement1A()
-                    GetEmailElement1A()
-                    GetAOH1A()
-                    GetOpenSegment1A()
-                    GetTicketElement1A()
-                    GetOptionQueueElement1A()
-                    GetVesselOSI1A()
-                    GetSSR1A()
-                    GetAI1A()
-                    GetRM1A()
-                    GetTickets1A()
-                    GetItinRemarks1A()
-                    If mobjPNR1A.RawResponse.IndexOf("***  NHP  ***") >= 0 Then
-                        pReturnValue = "               ***  NHP  ***"
-                    Else
-                        pReturnValue = CheckDMI1A()
-                    End If
-                Else
-                    Throw New Exception("There is no active PNR" & vbCrLf & mstrPNRResponse)
-                End If
-            Else
-                Throw New Exception("Please start Amadeus and retry")
-            End If
-        Catch ex As Exception
-            Throw New Exception("GDSReadPNR.Read1A()" & vbCrLf & ex.Message)
-        End Try
-        Return pReturnValue
-    End Function
-
-    Private Function RetrievePNR1A() As Boolean
-
-        Dim pintPNRStatus As Integer
-
-        mobjPNR1A = New s1aPNR.PNR
-        mobjTickets = New GDSTicketCollection
-        mobjItinRemarks = New GDSItineraryRemarksCollection
-        mstrVesselName = ""
-        mstrBookedBy = ""
-        mstrCC = ""
-        mstrCLA = ""
-        mstrCLN = ""
-
-        With mudtProps
-
-            If .RequestedPNR = "" Then
-                pintPNRStatus = mobjPNR1A.RetrieveCurrent(mobjSession1A)
-            Else
-                pintPNRStatus = mobjPNR1A.RetrievePNR(mobjSession1A, "RT" & .RequestedPNR)
-            End If
-            .PNRCreationdate = Today
-
-            If pintPNRStatus = 0 Or pintPNRStatus = 1005 Then
-                .RequestedPNR = setRecordLocator1A()
-                GetTQT1A()
-                GetGroup1A()
-                GetPax1A()
-                GetSegs1A()
-                GetAutoTickets1A()
-                GetOtherServiceElements1A()
-                GetSSRElements1A()
-                GetSSR1A()
-                GetRMElements1A()
-                GetItinRemarks1A()
-                RetrievePNR1A = True
-            Else
-                RetrievePNR1A = False
-            End If
-        End With
 
     End Function
 
@@ -1540,7 +1532,7 @@ Public Class GDSReadPNR
             Dim pstrSplit() As String = Split(Left(ElementText, pintLen), "/")
             If IsArray(pstrSplit) AndAlso pstrSplit.Length >= 2 Then
                 If ElementText.StartsWith(ElementKey) Then
-                    pElementFound = pstrSplit(2)
+                    pElementFound = pstrSplit(1)
                     pFound = True
                 End If
             End If
@@ -1567,7 +1559,6 @@ Public Class GDSReadPNR
         Dim pFound As Boolean = False
         Dim pTemp As String = ""
         pstrText = Element.ElementID & " " & Element.FreeFlow ' ConcatenateText(Element.Text)
-
         mstrCLA = SplitRM1AElement(mstrCLA, MySettings.GDSValue("TextCLA"), pstrText)
         mstrCC = SplitRM1AElement(mstrCC, MySettings.GDSValue("TextCC"), pstrText)
         mstrCC = SplitRM1AElement(mstrCC, "RM *GRACECRM/COST CENTRE-", pstrText)
@@ -1856,7 +1847,9 @@ Public Class GDSReadPNR
         mSegsFirstElement = -1
 
         For Each pobjSeg In mobjPNR1A.AllAirSegments
-            If Not pobjSeg.text.ToString.EndsWith("FLWN") Then
+            If pobjSeg.Tag.Indexof(".AirFlownSegment.") = -1 Then
+                'End If
+                'If Not pobjSeg.Text.ToString.EndsWith("FLWN") Then
                 Dim pElementNo As Integer = airElementNo1A(pobjSeg)
                 Dim pSegDoTemp As k1aHostToolKit.CHostResponse = mobjSession1A.Send("DO" & pobjSeg.ElementNo)
                 Dim pSegDo As String = ""
@@ -1889,7 +1882,7 @@ Public Class GDSReadPNR
                             End If
                         Next i
                     End If
-                    ' TODO fix then connecting time
+                    ' TODO fix the connecting time
                     Dim pTempDiff As Integer
                     Try
                         pTempDiff = DateDiff(DateInterval.Day, pdtePrevArrivalDate, pobjSeg.DepartureDate) * 24 * 60 + DateDiff(DateInterval.Minute, pdtePrevArrivalTime, pobjSeg.DepartureTime)

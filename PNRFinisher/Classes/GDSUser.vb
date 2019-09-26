@@ -119,6 +119,4 @@ Friend Class GDSUser
         mstrResponse = newResponse.Text
 
     End Sub
-
-
 End Class

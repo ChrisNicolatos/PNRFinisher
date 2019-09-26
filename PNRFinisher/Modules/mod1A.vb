@@ -11,13 +11,11 @@ Module mod1A
 
     End Function
     Public Function airAirline1A(ByRef pSegment As Object) As String
-
         Try
             airAirline1A = pSegment.Airline
         Catch ex As Exception
             airAirline1A = ""
         End Try
-
     End Function
 
     Public Function airBoardPoint1A(ByRef pSegment As Object) As String

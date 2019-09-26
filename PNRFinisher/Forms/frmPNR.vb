@@ -97,6 +97,7 @@ Public Class frmPNR
     ' URGENT Fix for baggage allowance
     ' In Baggage AllowanceCollection.AddItem()
     ' added a check that the key does not exist in the collection before adding it. For complex TQTs this could crash
+
     ' REMEMBER TO REMOVE UNNECCESSARY COLUMNS FROM PaxApisInformation
     ' ppQRFrequentFlyer
     ' ppIDNumber
@@ -150,7 +151,7 @@ Public Class frmPNR
     Private mobjAirlinePoints As New AirlinePointsCollection
     Private mobjCTC As New CTCPaxCollection
 
-    Private mobjPNR As New GDSReadPNR
+    Private mobjPNR As GDSReadPNR
     Private mOSMPax As New OSMPaxCollection
     Private mflgReadPNR As Boolean
 
@@ -178,6 +179,7 @@ Public Class frmPNR
     Private Sub cmdPNRRead1APNR_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdPNRRead1APNR.Click
         Try
             mSelectedGDSCode = EnumGDSCode.Amadeus
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
             PNRReadPNR()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -186,6 +188,7 @@ Public Class frmPNR
     Private Sub cmdPNRRead1GPNR_Click(sender As Object, e As EventArgs) Handles cmdPNRRead1GPNR.Click
         Try
             mSelectedGDSCode = EnumGDSCode.Galileo
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
             PNRReadPNR()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -194,7 +197,7 @@ Public Class frmPNR
     Private Sub PNRReadPNR()
         Try
             ClearForm()
-            ReadPNR(mSelectedGDSCode)
+            ReadPNR()
             ShowPriceOptimiser()
             SetEnabled()
         Catch ex As Exception
@@ -488,6 +491,7 @@ Public Class frmPNR
     Private Sub cmdItn1AReadPNR_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadPNR.Click
 
         mSelectedGDSCode = EnumGDSCode.Amadeus
+        mobjPNR = New GDSReadPNR(mSelectedGDSCode)
         Try
             Cursor = System.Windows.Forms.Cursors.WaitCursor
             Dim mGDSUser As New GDSUser(EnumGDSCode.Amadeus)
@@ -510,10 +514,11 @@ Public Class frmPNR
     Private Sub cmdItnReadQueue_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadQueue.Click
 
         Try
+            mSelectedGDSCode = EnumGDSCode.Amadeus
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
             lblItnPNRCounter.Text = ""
             Cursor = System.Windows.Forms.Cursors.WaitCursor
             txtItnPNR.Text = mobjPNR.RetrievePNRsFromQueue(txtItnPNR.Text)
-            mSelectedGDSCode = EnumGDSCode.Amadeus
             Dim mGDSUser As New GDSUser(mSelectedGDSCode)
             InitSettings(mGDSUser, 0)
             SetupPCCOptions()
@@ -531,6 +536,7 @@ Public Class frmPNR
     Private Sub cmdItnRead1ACurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadCurrent.Click
         Try
             mSelectedGDSCode = EnumGDSCode.Amadeus
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
             ITNReadCurrent()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -540,6 +546,7 @@ Public Class frmPNR
     Private Sub cmdItnRead1GCurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1GReadCurrent.Click
         Try
             mSelectedGDSCode = EnumGDSCode.Galileo
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
             ITNReadCurrent()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -1961,26 +1968,21 @@ Public Class frmPNR
     Private Sub readGDS(ByVal RecordLocator As String)
 
         Try
-            If RecordLocator = "" Then
-                mobjPNR.CancelError = True
-            Else
-                mobjPNR.CancelError = False
-            End If
-            mobjPNR.Read(mSelectedGDSCode, RecordLocator)
+            mobjPNR.Read(RecordLocator)
         Catch ex As Exception
             Throw New Exception("readGDS()" & vbCrLf & ex.Message)
         End Try
 
     End Sub
-    Private Sub ReadPNR(ByVal GDSCode As EnumGDSCode)
+    Private Sub ReadPNR()
         Dim pDMI As String
         Try
             With mobjPNR
                 mflgReadPNR = False
-                Dim mGDSUser As New GDSUser(GDSCode)
+                Dim mGDSUser As New GDSUser(mSelectedGDSCode)
                 InitSettings(mGDSUser, 0)
                 SetupPCCOptions()
-                pDMI = .Read(GDSCode)
+                pDMI = .Read()
                 If .NumberOfPax = 0 And Not .IsGroup Then
                     Throw New Exception("Need passenger names")
                 End If
@@ -2513,89 +2515,36 @@ Public Class frmPNR
             txtCustomer.BackColor = lstCustomers.BackColor
             txtSubdepartment.BackColor = lstCustomers.BackColor
             txtCRM.BackColor = lstCustomers.BackColor
-            If Not mobjPNR.NewElements Is Nothing Then
-                If mobjPNR.NewElements.CustomerCode.GDSCommand = "" Then
-                    cmdPNRWrite.Enabled = False
-                    txtCustomer.BackColor = Color.Red
+            If Not mobjPNR Is Nothing Then
+
+                If mobjPNR.NewElements Is Nothing Then
+                    If mobjPNR.NewElements.CustomerCode.GDSCommand = "" Then
+                        cmdPNRWrite.Enabled = False
+                        txtCustomer.BackColor = Color.Red
+                    End If
+
+                    ' if subdepartments exist they are by default madatory
+                    If mobjPNR.NewElements.CustomerCode.GDSCommand <> "" And lstSubDepartments.Items.Count > 0 And mobjPNR.NewElements.SubDepartmentCode.GDSCommand = "" Then
+                        cmdPNRWrite.Enabled = False
+                        txtSubdepartment.BackColor = Color.Red
+                    End If
+
+                    ' the code above is complete validation but allow entry without CRM in any case
+                    If mobjPNR.NewElements.CustomerCode.GDSCommand <> "" And lstCRM.Items.Count > 0 And mobjPNR.NewElements.CRMCode.GDSCommand = "" Then
+                        txtCRM.BackColor = Color.Pink
+                    End If
+                    SetClientReferencesEnabled(mobjPNR.NewElements.BookedBy, lblBookedByHighlight, cmbBookedby)
+                    SetClientReferencesEnabled(mobjPNR.NewElements.CostCentre, lblCostCentreHighlight, cmbCostCentre)
+                    SetClientReferencesEnabled(mobjPNR.NewElements.Department, lblDepartmentHighlight, cmbDepartment)
+                    SetClientReferencesEnabled(mobjPNR.NewElements.ReasonForTravel, lblReasonForTravelHighLight, cmbReasonForTravel)
+                    SetClientReferencesEnabled(mobjPNR.NewElements.TRId, lblTRIDHighLight, txtTrId)
                 End If
 
-                ' if subdepartments exist they are by default madatory
-                If mobjPNR.NewElements.CustomerCode.GDSCommand <> "" And lstSubDepartments.Items.Count > 0 And mobjPNR.NewElements.SubDepartmentCode.GDSCommand = "" Then
-                    cmdPNRWrite.Enabled = False
-                    txtSubdepartment.BackColor = Color.Red
-                End If
-
-                ' the code above is complete validation but allow entry without CRM in any case
-                If mobjPNR.NewElements.CustomerCode.GDSCommand <> "" And lstCRM.Items.Count > 0 And mobjPNR.NewElements.CRMCode.GDSCommand = "" Then
-                    txtCRM.BackColor = Color.Pink
-                End If
-
-                If mobjPNR.NewElements.BookedBy.GDSCommand = "" Then
-                    lblBookedByHighlight.Text = ""
-                    If cmbBookedby.Enabled Then
-                        pProps = CType(cmbBookedby.Tag, CustomPropertiesItem)
-                        If Not pProps Is Nothing Then
-                            lblBookedByHighlight.Text = pProps.Label
-                            If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
-                                cmdPNRWrite.Enabled = False
-                            End If
-                        End If
-                    End If
-                End If
-                If mobjPNR.NewElements.CostCentre.GDSCommand = "" Then
-                    lblCostCentreHighlight.Text = ""
-                    If cmbCostCentre.Enabled Then
-                        pProps = CType(cmbCostCentre.Tag, CustomPropertiesItem)
-                        If Not pProps Is Nothing Then
-                            lblCostCentreHighlight.Text = pProps.Label
-                            If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
-                                cmdPNRWrite.Enabled = False
-                            End If
-                        End If
-                    End If
-                End If
-                If mobjPNR.NewElements.Department.GDSCommand = "" Then
-                    lblDepartmentHighlight.Text = ""
-                    If cmbDepartment.Enabled Then
-                        pProps = CType(cmbDepartment.Tag, CustomPropertiesItem)
-                        If Not pProps Is Nothing Then
-                            lblDepartmentHighlight.Text = pProps.Label
-                            If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
-                                cmdPNRWrite.Enabled = False
-                            End If
-                        End If
-                    End If
-                End If
-                If mobjPNR.NewElements.ReasonForTravel.GDSCommand = "" Then
-                    lblReasonForTravelHighLight.Text = ""
-                    If cmbReasonForTravel.Enabled Then
-                        pProps = CType(cmbReasonForTravel.Tag, CustomPropertiesItem)
-                        If Not pProps Is Nothing Then
-                            lblReasonForTravelHighLight.Text = pProps.Label
-                            If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
-                                cmdPNRWrite.Enabled = False
-                            End If
-                        End If
-                    End If
-                End If
-                If mobjPNR.NewElements.TRId.GDSCommand = "" Then
-                    lblTRIDHighLight.Text = ""
-                    If txtTrId.Enabled Then
-                        pProps = CType(txtTrId.Tag, CustomPropertiesItem)
-                        If Not pProps Is Nothing Then
-                            lblTRIDHighLight.Text = pProps.Label
-                            If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
-                                cmdPNRWrite.Enabled = False
-                            End If
-                        End If
-                    End If
-                End If
+                cmdPNRWriteWithDocs.Enabled = cmdPNRWrite.Enabled And mflgAPISUpdate
+                cmdPNROnlyDocs.Enabled = mflgAPISUpdate And Not mobjPNR.NewPNR
             End If
 
-            cmdPNRWriteWithDocs.Enabled = cmdPNRWrite.Enabled And mflgAPISUpdate
-            cmdPNROnlyDocs.Enabled = mflgAPISUpdate And Not mobjPNR.NewPNR
             dgvApis.Enabled = True
-
             txtReference.Enabled = True
 
             lblBookedByHighlight.Enabled = (cmbBookedby.Enabled)
@@ -2605,16 +2554,48 @@ Public Class frmPNR
             lblTRIDHighLight.Enabled = (txtTrId.Enabled)
 
             SetLabelColor(lblBookedByHighlight, CType(cmbBookedby.Tag, CustomPropertiesItem))
+            SetLabelColor(lblCostCentreHighlight, CType(cmbCostCentre.Tag, CustomPropertiesItem))
             SetLabelColor(lblDepartmentHighlight, CType(cmbDepartment.Tag, CustomPropertiesItem))
             SetLabelColor(lblReasonForTravelHighLight, CType(cmbReasonForTravel.Tag, CustomPropertiesItem))
-            SetLabelColor(lblCostCentreHighlight, CType(cmbCostCentre.Tag, CustomPropertiesItem))
             SetLabelColor(lblTRIDHighLight, CType(txtTrId.Tag, CustomPropertiesItem))
-
-
         Catch ex As Exception
             Throw New Exception("SetEnabled()" & vbCrLf & ex.Message)
         End Try
 
+    End Sub
+    Private Sub SetClientReferencesEnabled(ByRef pNewItem As GDSNewItem, ByRef pLabel As Label, ByRef pCombo As ComboBox)
+
+        Dim pProps As CustomPropertiesItem
+
+        If pNewItem.GDSCommand = "" Then
+            pLabel.Text = ""
+            If pCombo.Enabled Then
+                pProps = CType(pCombo.Tag, CustomPropertiesItem)
+                If Not pProps Is Nothing Then
+                    pLabel.Text = pProps.Label
+                    If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
+                        cmdPNRWrite.Enabled = False
+                    End If
+                End If
+            End If
+        End If
+    End Sub
+    Private Sub SetClientReferencesEnabled(ByRef pNewItem As GDSNewItem, ByRef pLabel As Label, ByRef pText As TextBox)
+
+        Dim pProps As CustomPropertiesItem
+
+        If pNewItem.GDSCommand = "" Then
+            pLabel.Text = ""
+            If pText.Enabled Then
+                pProps = CType(pText.Tag, CustomPropertiesItem)
+                If Not pProps Is Nothing Then
+                    pLabel.Text = pProps.Label
+                    If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
+                        cmdPNRWrite.Enabled = False
+                    End If
+                End If
+            End If
+        End If
     End Sub
     Private Sub SetCTCExists(ByVal pSSRExists As Boolean, ByVal pPaxFound As String, ByVal pPaxNotFound As String)
         Try

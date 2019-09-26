@@ -25,7 +25,6 @@ Public Class GDSSegCollection
         Dim pobjClass As GDSSegItem
 
         pobjClass = New GDSSegItem
-
         pobjClass.SetValues(pAirline, pBoardPoint, pClass, pDepartureDate, pArrivalDate, pElementNo, pFlightNo, pOffPoint, pStatus, pDepartTime, pArriveTime, pEquipment, pMealFlight, pMealSSR, pText, SegDo, pConnectTimeFromPrevious)
         MyBase.Add(pElementNo, pobjClass)
 

@@ -24,8 +24,7 @@ Public Class ReferenceCountriesCollection
 
         With pobjReader
             Do While .Read
-                pobjClass = New ReferenceItem
-                pobjClass.SetValues(CStr(.Item("countryISO3Code")), CStr(.Item("countryName")))
+                pobjClass = New ReferenceItem(CStr(.Item("countryISO3Code")), CStr(.Item("countryName")))
                 MyBase.Add(pobjClass.Code, pobjClass)
             Loop
             .Close()

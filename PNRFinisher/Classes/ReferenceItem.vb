@@ -6,6 +6,10 @@ Public Class ReferenceItem
         Dim Description As String
     End Structure
     Private mudtProps As ClassProps
+    Public Sub New(ByVal pCode As String, ByVal pDescription As String)
+        mudtProps.Code = pCode
+        mudtProps.Description = pDescription
+    End Sub
     Public ReadOnly Property Code As String
         Get
             Return mudtProps.Code
@@ -19,11 +23,11 @@ Public Class ReferenceItem
     Public Overrides Function ToString() As String
         Return mudtProps.Code & If(Description = "", "", " - " & mudtProps.Description)
     End Function
-    Friend Sub SetValues(ByVal pCode As String, ByVal pDescription As String)
-        With mudtProps
-            .Code = pCode
-            .Description = pDescription
-        End With
-    End Sub
+    'Friend Sub SetValues(ByVal pCode As String, ByVal pDescription As String)
+    '    With mudtProps
+    '        .Code = pCode
+    '        .Description = pDescription
+    '    End With
+    'End Sub
 
 End Class
