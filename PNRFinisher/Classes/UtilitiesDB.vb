@@ -14,20 +14,10 @@ Public NotInheritable Class UtilitiesDB
     Private Const mstrDBConnectionsFileGT As String = "\\192.168.102.223\Common\Click-Once Applications\PNR Finisher ATH V2\Config\PNRFinisher.txt"
     Private Const mstrDBConnectionsFile As String = "\\192.168.102.223\Common\Click-Once Applications\PNR Finisher ATH V2\Config\PNRFinisher.txt"
     Private Const msrtConfigFolder As String = "\\192.168.102.223\Common\Click-Once Applications\PNR Finisher ATH V2\Config"
-
     Private Shared mstrDBConnectionFileActual As String
+
     Private Shared mobjPNRConnection As New BackOfficeItem
-    Public Shared ReadOnly Property BackOfficeDB As New BackOfficeCollection
-    Public Shared ReadOnly Property BackOfficeDB(ByVal BOName As String) As BackOfficeItem
-        Get
-            Return UtilitiesDB.BackOfficeDB.Load(BOName)
-        End Get
-    End Property
-    Public Shared ReadOnly Property BackOfficeDB(ByVal BOId As Integer) As BackOfficeItem
-        Get
-            Return UtilitiesDB.BackOfficeDB.Load(BOId)
-        End Get
-    End Property
+    Private Shared mobjBackOffice As New BackOfficeCollection
     Private Sub New()
     End Sub
     Public Shared ReadOnly Property PNRDataSource As String
@@ -126,7 +116,8 @@ Public NotInheritable Class UtilitiesDB
                     End Select
                 Next
                 mobjPNRConnection.SetValues(0, "PNR", pDataSource, pDataCatalog, pUserName, pPassword, "")
-                BackOfficeDB.Load(0)
+                mobjBackOffice.Load(0)
+                'GetTWS_MISCredentials()
             Else
                 Throw New Exception("Settings File Error" & vbCrLf & mstrDBConnectionFileActual)
             End If
@@ -135,4 +126,19 @@ Public NotInheritable Class UtilitiesDB
         End If
 
     End Sub
+    Public Shared ReadOnly Property BackOfficeDB(ByVal BOName As String) As BackOfficeItem
+        Get
+            Return mobjBackOffice.Load(BOName)
+        End Get
+    End Property
+    Public Shared ReadOnly Property BackOfficeDB(ByVal BOId As Integer) As BackOfficeItem
+        Get
+            Return mobjBackOffice.Load(BOId)
+        End Get
+    End Property
+    Public Shared ReadOnly Property BackOfficeDB As BackOfficeCollection
+        Get
+            Return mobjBackOffice
+        End Get
+    End Property
 End Class

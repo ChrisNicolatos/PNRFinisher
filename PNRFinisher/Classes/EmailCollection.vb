@@ -12,7 +12,8 @@ Public Class EmailCollection
         End Get
     End Property
     Public Sub AddItem(ByVal pElementNo As Integer, ByVal pEmailAddress As String, ByVal pEmailComment As String)
-        Dim pobjClass As New EmailItem(pElementNo, pEmailAddress, pEmailComment)
+        Dim pobjClass As New EmailItem
+        pobjClass.SetValues(pElementNo, pEmailAddress, pEmailComment)
         MyBase.Add(pobjClass.ElementNo, pobjClass)
     End Sub
 End Class

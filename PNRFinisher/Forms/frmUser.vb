@@ -3,13 +3,18 @@ Option Explicit On
 Public Class frmUser
     Private WithEvents mobjDBUser As DBUser
     Friend Sub New(ByVal pGDS As EnumGDSCode, ByVal pPCC As String, pUserID As String)
+
         ' This call is required by the designer.
         InitializeComponent()
+
         ' Add any initialization after the InitializeComponent() call.
+
         mobjDBUser = New DBUser(pGDS, pPCC, pUserID)
         DisplayUser()
         EnableOptions()
+
     End Sub
+
     Private Sub cmdSave_Click(sender As Object, e As EventArgs) Handles cmdSave.Click
         Try
             mobjDBUser.Update()
@@ -18,20 +23,28 @@ Public Class frmUser
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
+
     End Sub
+
     Private Sub cmdCancel_Click(sender As Object, e As EventArgs) Handles cmdCancel.Click
+
         DialogResult = DialogResult.Cancel
         Me.Close()
+
     End Sub
+
     Private Sub txtUsername_TextChanged(sender As Object, e As EventArgs) Handles txtUsername.TextChanged
         mobjDBUser.Username = txtUsername.Text.Trim
     End Sub
+
     Private Sub txtEmail_TextChanged(sender As Object, e As EventArgs) Handles txtEmail.TextChanged
         mobjDBUser.Email = txtEmail.Text.Trim
     End Sub
+
     Private Sub txtQueue_TextChanged(sender As Object, e As EventArgs) Handles txtQueue.TextChanged
         mobjDBUser.QueueNumber = txtQueue.Text.Trim
     End Sub
+
     Private Sub txtOPQueue_TextChanged(sender As Object, e As EventArgs) Handles txtOPQueue.TextChanged
         mobjDBUser.OPQueue = txtOPQueue.Text.Trim
     End Sub
@@ -70,7 +83,11 @@ Public Class frmUser
             txtBox.BackColor = Color.Yellow
         End If
     End Sub
+
     Private Sub mobjDBUser_UserValid() Handles mobjDBUser.UserValid
+
         EnableOptions()
+
     End Sub
+
 End Class

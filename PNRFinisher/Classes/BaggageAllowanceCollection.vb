@@ -4,7 +4,7 @@ Public Class BaggageAllowanceCollection
     Inherits Collections.Generic.Dictionary(Of String, BaggageAllowanceItem)
     Public Sub AddItem(ByVal pLine1 As String, ByVal pLine2 As String)
 
-        Dim pItem As BaggageAllowanceItem
+        Dim pItem As New BaggageAllowanceItem
         Dim pOrigin As String = ""
         Dim pDestination As String = ""
         Dim pAirline As String = ""
@@ -23,7 +23,7 @@ Public Class BaggageAllowanceCollection
             pDepDate = pLine1.Substring(19, 5).Trim
             pDepTime = pLine1.Substring(25, 4).Trim
             pBaggageAllowance = pLine1.Substring(60).Trim
-            pItem = New BaggageAllowanceItem(pOrigin, pDestination, pAirline, pFlightNumber, pClassOfService, pDepDate, pDepTime, pBaggageAllowance)
+            pItem.SetValues(pOrigin, pDestination, pAirline, pFlightNumber, pClassOfService, pDepDate, pDepTime, pBaggageAllowance)
             If Not MyBase.ContainsKey(pItem.Key) Then
                 MyBase.Add(pItem.Key, pItem)
             End If
@@ -33,8 +33,9 @@ Public Class BaggageAllowanceCollection
     End Sub
     Public Sub AddItem(ByVal pSegment As GDSSegItem, ByVal pBaggageAllowance As String)
         Try
+            Dim pItem As New BaggageAllowanceItem
             With pSegment
-                Dim pItem As New BaggageAllowanceItem(.BoardPoint, .OffPoint, .Airline, .FlightNo, .ClassOfService, .DepartureDateIATA, .DepartTimeShort, pBaggageAllowance)
+                pItem.SetValues(.BoardPoint, .OffPoint, .Airline, .FlightNo, .ClassOfService, .DepartureDateIATA, .DepartTimeShort, pBaggageAllowance)
                 If Not MyBase.ContainsKey(pItem.Key) Then
                     MyBase.Add(pItem.Key, pItem)
                 End If
@@ -45,7 +46,8 @@ Public Class BaggageAllowanceCollection
     End Sub
     Public ReadOnly Property BaggageAllowance(ByVal Origin As String, ByVal Destination As String, ByVal Airline As String, ByVal FlightNumber As String, ByVal ClassOfService As String, ByVal DepDate As String, ByVal DepTime As String) As String
         Get
-            Dim pTemp As New BaggageAllowanceItem(Origin, Destination, Airline, FlightNumber, ClassOfService, DepDate, DepTime, "")
+            Dim pTemp As New BaggageAllowanceItem
+            pTemp.SetValues(Origin, Destination, Airline, FlightNumber, ClassOfService, DepDate, DepTime, "")
             If MyBase.ContainsKey(pTemp.Key) Then
                 Return MyBase.Item(pTemp.Key).BaggageAllowance
             Else

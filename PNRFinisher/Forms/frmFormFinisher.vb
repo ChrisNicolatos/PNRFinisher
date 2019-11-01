@@ -57,7 +57,7 @@
             If pFrm.ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
                 If Not MySettings Is Nothing Then
                     mobjPNR.NewElements.SetVesselForPNR("", "")
-                    mobjPNR.NewElements.VesselName = New GDSNewItem(pFrm.VesselName & If(pFrm.Registration <> "", " REG " & pFrm.Registration, ""))
+                    mobjPNR.NewElements.VesselName.SetText(pFrm.VesselName & If(pFrm.Registration <> "", " REG " & pFrm.Registration, ""))
                     mflgLoading = True
                     txtVessel.Text = pFrm.VesselName & If(pFrm.Registration <> "", " REG " & pFrm.Registration, "")
                     'PopulateVesselsList()
@@ -236,7 +236,7 @@
             If Not mflgLoading Then
                 If Not MySettings Is Nothing Then
                     mobjPNR.NewElements.SetVesselForPNR("", "")
-                    mobjPNR.NewElements.VesselName = New GDSNewItem(txtVessel.Text)
+                    mobjPNR.NewElements.VesselName.SetText(txtVessel.Text)
                     PopulateVesselsList()
                 End If
             End If
@@ -446,7 +446,7 @@
                         If cmbBookedby.Enabled Then
                             pProps = CType(cmbBookedby.Tag, CustomPropertiesItem)
                             If Not pProps Is Nothing Then
-                                lblBookedBy.Text = pProps.PropertyLabel
+                                lblBookedBy.Text = pProps.Label
                                 If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                                     cmdPNRWrite.Enabled = False
                                 End If
@@ -458,7 +458,7 @@
                         If cmbCostCentre.Enabled Then
                             pProps = CType(cmbCostCentre.Tag, CustomPropertiesItem)
                             If Not pProps Is Nothing Then
-                                lblCostCentre.Text = pProps.PropertyLabel
+                                lblCostCentre.Text = pProps.Label
                                 If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                                     cmdPNRWrite.Enabled = False
                                 End If
@@ -470,7 +470,7 @@
                         If cmbSubDepartment.Enabled Then
                             pProps = CType(cmbSubDepartment.Tag, CustomPropertiesItem)
                             If Not pProps Is Nothing Then
-                                lblSubDepartment.Text = pProps.PropertyLabel
+                                lblSubDepartment.Text = pProps.Label
                                 If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                                     cmdPNRWrite.Enabled = False
                                 End If
@@ -482,7 +482,7 @@
                         If cmbCRM.Enabled Then
                             pProps = CType(cmbCRM.Tag, CustomPropertiesItem)
                             If Not pProps Is Nothing Then
-                                lblCRM.Text = pProps.PropertyLabel
+                                lblCRM.Text = pProps.Label
                                 If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                                     cmdPNRWrite.Enabled = False
                                 End If
@@ -494,7 +494,7 @@
                         If txtReference.Enabled Then
                             pProps = CType(txtReference.Tag, CustomPropertiesItem)
                             If Not pProps Is Nothing Then
-                                lblReference.Text = pProps.PropertyLabel
+                                lblReference.Text = pProps.Label
                                 If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                                     cmdPNRWrite.Enabled = False
                                 End If
@@ -507,7 +507,7 @@
                         If cmbDepartment.Enabled Then
                             pProps = CType(cmbDepartment.Tag, CustomPropertiesItem)
                             If Not pProps Is Nothing Then
-                                lblDepartment.Text = pProps.PropertyLabel
+                                lblDepartment.Text = pProps.Label
                                 If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                                     cmdPNRWrite.Enabled = False
                                 End If
@@ -519,7 +519,7 @@
                         If cmbReasonForTravel.Enabled Then
                             pProps = CType(cmbReasonForTravel.Tag, CustomPropertiesItem)
                             If Not pProps Is Nothing Then
-                                lblReasonForTravel.Text = pProps.PropertyLabel
+                                lblReasonForTravel.Text = pProps.Label
                                 If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                                     cmdPNRWrite.Enabled = False
                                 End If
@@ -531,7 +531,7 @@
                         If txtTrId.Enabled Then
                             pProps = CType(txtTrId.Tag, CustomPropertiesItem)
                             If Not pProps Is Nothing Then
-                                lblTRID.Text = pProps.PropertyLabel
+                                lblTRID.Text = pProps.Label
                                 If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                                     cmdPNRWrite.Enabled = False
                                 End If
@@ -917,8 +917,8 @@
 
         Try
             mflgLoading = True
-            mobjCustomerSelected = Nothing
-            mobjVesselSelected = Nothing
+            mobjCustomerSelected = New CustomerItem
+            mobjVesselSelected = New VesselItem
 
             If Not mfrmCTC Is Nothing Then
                 mfrmCTC.Dispose()
@@ -990,7 +990,7 @@
                 cmdPriceOptimiser.Visible = False
             End If
 
-            mobjPNR.ExistingElements = New GDSExistingCollection
+            mobjPNR.ExistingElements.Clear()
             mobjPNR.NewElements.Clear()
 
             mflgAPISUpdate = False
@@ -1298,13 +1298,14 @@
             End With
 
             If pstrCustomerCode <> "" Then
-                Dim pCustomer As New CustomerItem(pstrCustomerCode, mintBackOffice)
+                Dim pCustomer As New CustomerItem
+                pCustomer.Load(pstrCustomerCode, mintBackOffice)
                 txtCustomer.Text = pCustomer.Code
                 If pstrVesselName <> "" Then
-                    Dim pVessel As New VesselItem(pstrCustomerCode, pstrVesselName, mintBackOffice)
-                    If pVessel.Loaded Then
-                        mobjPNR.NewElements.VesselNameForPNR = New GDSNewItem
-                        mobjPNR.NewElements.VesselFlagForPNR = New GDSNewItem
+                    Dim pVessel As New VesselItem
+                    If pVessel.Load(pstrCustomerCode, pstrVesselName, mintBackOffice) Then
+                        mobjPNR.NewElements.VesselNameForPNR.Clear()
+                        mobjPNR.NewElements.VesselFlagForPNR.Clear()
                         txtVessel.Text = pVessel.Name
                     Else
                         mobjPNR.NewElements.SetVesselForPNR(pstrVesselName, pstrVesselRegistration)
@@ -1340,7 +1341,7 @@
                 Dim pItem As New CustomPropertiesValues(0, "", "")
                 cmbCombo.Items.Add(pItem)
             End If
-            For Each pItem As CustomPropertiesValues In pProp.Values.Values
+            For Each pItem As CustomPropertiesValues In pProp.Value.Values
                 cmbCombo.Items.Add(pItem)
             Next
         Catch ex As Exception

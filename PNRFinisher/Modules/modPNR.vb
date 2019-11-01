@@ -8,7 +8,9 @@ Module modPNR
     Private mstrRequestedPCC As String = ""
     Private mstrRequestedUser As String = ""
     Private mClassOfService As New ClassOfServiceCollection
+
     Public Function DateFromIATA(ByVal InDate As String) As Date
+
         Dim pintDay As Integer
         Dim pintMonth As Integer
         Dim pintYear As Integer
@@ -34,12 +36,15 @@ Module modPNR
 
     End Function
     Public Function DateToIATA(ByVal InDate As Date) As String
+
         Return Format(InDate.Day, "00") & MONTH_NAMES.Substring(InDate.Month * 3 - 3, 3) & Format(InDate.Year Mod 100, "00")
+
     End Function
     Public Sub InitSettings()
         Try
             mstrRequestedPCC = ""
             mstrRequestedUser = ""
+
             mMySettings = New Config
             If Not mHomeSettingsExist Then
                 mHomeSettings = mMySettings
@@ -52,11 +57,14 @@ Module modPNR
                 Throw New Exception(ex.Message)
             End If
         End Try
+
+
     End Sub
     Public Function InitSettings(ByVal mGDSUser As GDSUser, ByVal pBackOffice As Integer) As Integer
         Try
             mstrRequestedPCC = mGDSUser.PCC
             mstrRequestedUser = mGDSUser.User
+
             mMySettings = New Config(mGDSUser, pBackOffice)
             If Not mHomeSettingsExist Then
                 mHomeSettings = mMySettings
@@ -69,12 +77,14 @@ Module modPNR
                 Throw New Exception(ex.Message)
             End If
         End Try
+
         Return mMySettings.PCCBackOffice
     End Function
     Public ReadOnly Property MySettings As Config
         Get
             Return mMySettings
         End Get
+
     End Property
     Public ReadOnly Property RequestedPCC As String
         Get
@@ -88,15 +98,19 @@ Module modPNR
     End Property
     Public Function MyMonthName(ByVal pDate As Date, ByVal Language As EnumLoGLanguage) As String
         Static Dim pNamesLang1() As String = {"janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"}
+
         If Language = EnumLoGLanguage.Brazil Then
             Return pDate.Day & " de " & pNamesLang1(pDate.Month - 1) & " de " & pDate.Year
         Else
             Return pDate.Day & " " & MonthName(pDate.Month) & " " & pDate.Year
         End If
+
     End Function
     Public Function myCurr(ByVal StringToParse As String) As Decimal
+
         Dim pintPoint As Integer
         Dim pintComma As Integer
+
         Do While Not IsNumeric(Right(StringToParse, 1)) And StringToParse.Length > 0
             StringToParse = Left(StringToParse, StringToParse.Length - 1)
         Loop
@@ -133,35 +147,5 @@ Module modPNR
             Return mClassOfService.Load(pCarrier, pOrigin, pDestination, pClassOfService)
         End Get
     End Property
-    Public Function IsNothingToString(ByVal Value As String) As String
-        If Value Is Nothing Then
-            Return ""
-        Else
-            Return Value
-        End If
-    End Function
-    Public Function WeekDaySeg(ByVal InputDate As Date) As String
-        Try
-            Select Case Weekday(InputDate)
-                Case 1
-                    WeekDaySeg = "Sunday"
-                Case 2
-                    WeekDaySeg = "Monday"
-                Case 3
-                    WeekDaySeg = "Tuesday"
-                Case 4
-                    WeekDaySeg = "Wednesday"
-                Case 5
-                    WeekDaySeg = "Thursday"
-                Case 6
-                    WeekDaySeg = "Friday"
-                Case 7
-                    WeekDaySeg = "Saturday"
-                Case Else
-                    WeekDaySeg = ""
-            End Select
-        Catch ex As Exception
-            WeekDaySeg = ""
-        End Try
-    End Function
+
 End Module

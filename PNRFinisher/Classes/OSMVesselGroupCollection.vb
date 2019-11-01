@@ -27,7 +27,8 @@ Public Class OSMVesselGroupCollection
         MyBase.Clear()
         With pobjReader
             Do While .Read
-                pobjClass = New OSMVesselGroupItem(CInt(.Item("osmvrId")), CStr(.Item("osmvrGroupName")))
+                pobjClass = New OSMVesselGroupItem
+                pobjClass.SetValues(CInt(.Item("osmvrId")), CStr(.Item("osmvrGroupName")))
                 MyBase.Add(pobjClass.Id, pobjClass)
             Loop
             .Close()
@@ -57,7 +58,8 @@ Public Class OSMVesselGroupCollection
         MyBase.Clear()
         With pobjReader
             Do While .Read
-                pobjClass = New OSMVesselGroupItem(CInt(.Item("osmvrId")), CStr(.Item("osmvrGroupName")))
+                pobjClass = New OSMVesselGroupItem
+                pobjClass.SetValues(CInt(.Item("osmvrId")), CStr(.Item("osmvrGroupName")))
                 MyBase.Add(pobjClass.Id, pobjClass)
             Loop
             .Close()

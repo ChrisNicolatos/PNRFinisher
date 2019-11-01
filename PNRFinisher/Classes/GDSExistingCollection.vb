@@ -1,60 +1,191 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class GDSExistingCollection
+    Private mobjOpenSegment As New GDSExistingItem
+    Private mobjPhoneElement As New GDSExistingItem
+    Private mobjAgentElement As New GDSExistingItem
+    Private mobjEmailElement As New GDSExistingItem
+    Private mobjTicketElement As New GDSExistingItem
+    Private mobjOptionQueueElement As New GDSExistingItem
+    Private mobjAOH As New GDSExistingItem
+    Private mobjAgentID As New GDSExistingItem
+    Private mobjSavingsElement As New GDSExistingItem
+    Private mobjLossElement As New GDSExistingItem
 
-    Public Property OpenSegment As GDSExistingItem = New GDSExistingItem
-    Public Property PhoneElement As GDSExistingItem = New GDSExistingItem
-    Public Property AgentElement As GDSExistingItem = New GDSExistingItem
-    Public Property EmailElement As GDSExistingItem = New GDSExistingItem
-    Public Property TicketElement As GDSExistingItem = New GDSExistingItem
-    Public Property OptionQueueElement As GDSExistingItem = New GDSExistingItem
-    Public Property AOH As GDSExistingItem = New GDSExistingItem
-    Public Property AgentID As GDSExistingItem = New GDSExistingItem
-    Public Property SavingsElement As GDSExistingItem = New GDSExistingItem
-    Public Property LossElement As GDSExistingItem = New GDSExistingItem
-    Public Property CustomerCodeAI As GDSExistingItem = New GDSExistingItem
-    Public Property CustomerCode As GDSExistingItem = New GDSExistingItem
-    Public Property CustomerName As GDSExistingItem = New GDSExistingItem
-    Public Property SubDepartmentCode As GDSExistingItem = New GDSExistingItem
-    Public Property SubDepartmentName As GDSExistingItem = New GDSExistingItem
-    Public Property CRMCode As GDSExistingItem = New GDSExistingItem
-    Public Property CRMName As GDSExistingItem = New GDSExistingItem
-    Public Property VesselName As GDSExistingItem = New GDSExistingItem
-    Public Property VesselFlag As GDSExistingItem = New GDSExistingItem
-    Public Property VesselOSI As GDSExistingItem = New GDSExistingItem
-    Public Property Reference As GDSExistingItem = New GDSExistingItem
-    Public Property BookedBy As GDSExistingItem = New GDSExistingItem
-    Public Property Department As GDSExistingItem = New GDSExistingItem
-    Public Property ReasonForTravel As GDSExistingItem = New GDSExistingItem
-    Public Property CostCentre As GDSExistingItem = New GDSExistingItem
-    Public Property TRId As GDSExistingItem = New GDSExistingItem
-    Public Sub New()
-        OpenSegment = New GDSExistingItem
-        PhoneElement = New GDSExistingItem
-        AgentElement = New GDSExistingItem
-        EmailElement = New GDSExistingItem
-        TicketElement = New GDSExistingItem
-        OptionQueueElement = New GDSExistingItem
-        AOH = New GDSExistingItem
-        AgentID = New GDSExistingItem
-        SavingsElement = New GDSExistingItem
-        LossElement = New GDSExistingItem
+    Private mobjCustomerCodeAI As New GDSExistingItem
+    Private mobjCustomerCode As New GDSExistingItem
+    Private mobjCustomerName As New GDSExistingItem
+    Private mobjSubDepartmentCode As New GDSExistingItem
+    Private mobjSubDepartmentName As New GDSExistingItem
+    Private mobjCRMCode As New GDSExistingItem
+    Private mobjCRMName As New GDSExistingItem
+    Private mobjVesselName As New GDSExistingItem
+    Private mobjVesselFlag As New GDSExistingItem
+    Private mobjVesselOSI As New GDSExistingItem
+    Private mobjReference As New GDSExistingItem
+    Private mobjBookedBy As New GDSExistingItem
+    Private mobjDepartment As New GDSExistingItem
+    Private mobjReasonForTravel As New GDSExistingItem
+    Private mobjCostCentre As New GDSExistingItem
+    Private mobjTRId As New GDSExistingItem
 
-        CustomerCodeAI = New GDSExistingItem
-        CustomerCode = New GDSExistingItem
-        CustomerName = New GDSExistingItem
-        SubDepartmentCode = New GDSExistingItem
-        SubDepartmentName = New GDSExistingItem
-        CRMCode = New GDSExistingItem
-        CRMName = New GDSExistingItem
-        VesselName = New GDSExistingItem
-        VesselFlag = New GDSExistingItem
-        VesselOSI = New GDSExistingItem
-        Reference = New GDSExistingItem
-        BookedBy = New GDSExistingItem
-        Department = New GDSExistingItem
-        ReasonForTravel = New GDSExistingItem
-        CostCentre = New GDSExistingItem
+    Public ReadOnly Property OpenSegment As GDSExistingItem
+        Get
+            Return mobjOpenSegment
+        End Get
+    End Property
+    Public ReadOnly Property PhoneElement As GDSExistingItem
+        Get
+            Return mobjPhoneElement
+        End Get
+    End Property
+    Public ReadOnly Property AgentElement As GDSExistingItem
+        Get
+            Return mobjAgentElement
+        End Get
+    End Property
+    Public ReadOnly Property EmailElement As GDSExistingItem
+        Get
+            Return mobjEmailElement
+        End Get
+    End Property
+    Public ReadOnly Property TicketElement As GDSExistingItem
+        Get
+            Return mobjTicketElement
+        End Get
+    End Property
+    Public ReadOnly Property OptionQueueElement As GDSExistingItem
+        Get
+            Return mobjOptionQueueElement
+        End Get
+    End Property
+    Public ReadOnly Property AOH As GDSExistingItem
+        Get
+            Return mobjAOH
+        End Get
+    End Property
+    Public ReadOnly Property AgentID As GDSExistingItem
+        Get
+            Return mobjAgentID
+        End Get
+    End Property
+    Public ReadOnly Property SavingsElement As GDSExistingItem
+        Get
+            Return mobjSavingsElement
+        End Get
+    End Property
+    Public ReadOnly Property LossElement As GDSExistingItem
+        Get
+            Return mobjLossElement
+        End Get
+    End Property
+    Public ReadOnly Property CustomerCodeAI As GDSExistingItem
+        Get
+            Return mobjCustomerCodeAI
+        End Get
+    End Property
+    Public ReadOnly Property CustomerCode As GDSExistingItem
+        Get
+            Return mobjCustomerCode
+        End Get
+    End Property
+    Public ReadOnly Property CustomerName As GDSExistingItem
+        Get
+            Return mobjCustomerName
+        End Get
+    End Property
+    Public ReadOnly Property SubDepartmentCode As GDSExistingItem
+        Get
+            Return mobjSubDepartmentCode
+        End Get
+    End Property
+    Public ReadOnly Property SubDepartmentName As GDSExistingItem
+        Get
+            Return mobjSubDepartmentName
+        End Get
+    End Property
+    Public ReadOnly Property CRMCode As GDSExistingItem
+        Get
+            Return mobjCRMCode
+        End Get
+    End Property
+    Public ReadOnly Property CRMName As GDSExistingItem
+        Get
+            Return mobjCRMName
+        End Get
+    End Property
+    Public ReadOnly Property VesselName As GDSExistingItem
+        Get
+            Return mobjVesselName
+        End Get
+    End Property
+    Public ReadOnly Property VesselFlag As GDSExistingItem
+        Get
+            Return mobjVesselFlag
+        End Get
+    End Property
+    Public ReadOnly Property VesselOSI As GDSExistingItem
+        Get
+            Return mobjVesselOSI
+        End Get
+    End Property
+    Public ReadOnly Property Reference As GDSExistingItem
+        Get
+            Return mobjReference
+        End Get
+    End Property
+    Public ReadOnly Property BookedBy As GDSExistingItem
+        Get
+            Return mobjBookedBy
+        End Get
+    End Property
+    Public ReadOnly Property Department As GDSExistingItem
+        Get
+            Return mobjDepartment
+        End Get
+    End Property
+    Public ReadOnly Property ReasonForTravel As GDSExistingItem
+        Get
+            Return mobjReasonForTravel
+        End Get
+    End Property
+    Public ReadOnly Property CostCentre As GDSExistingItem
+        Get
+            Return mobjCostCentre
+        End Get
+    End Property
+    Public ReadOnly Property TRId As GDSExistingItem
+        Get
+            Return mobjTRId
+        End Get
+    End Property
+    Public Sub Clear()
+        mobjOpenSegment.Clear()
+        mobjPhoneElement.Clear()
+        mobjAgentElement.Clear()
+        mobjEmailElement.Clear()
+        mobjTicketElement.Clear()
+        mobjOptionQueueElement.Clear()
+        mobjAOH.Clear()
+        mobjAgentID.Clear()
+        mobjSavingsElement.Clear()
+        mobjLossElement.Clear()
+
+        mobjCustomerCodeAI.Clear()
+        mobjCustomerCode.Clear()
+        mobjCustomerName.Clear()
+        mobjSubDepartmentCode.Clear()
+        mobjSubDepartmentName.Clear()
+        mobjCRMCode.Clear()
+        mobjCRMName.Clear()
+        mobjVesselName.Clear()
+        mobjVesselFlag.Clear()
+        mobjVesselOSI.Clear()
+        mobjReference.Clear()
+        mobjBookedBy.Clear()
+        mobjDepartment.Clear()
+        mobjReasonForTravel.Clear()
+        mobjCostCentre.Clear()
     End Sub
 
 End Class

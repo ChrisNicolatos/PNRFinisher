@@ -2,8 +2,14 @@
 Option Explicit On
 Public Class GDSPaxCollection
     Inherits Collections.Generic.Dictionary(Of String, GDSPaxItem)
+
     Friend Sub AddItem(ByVal pElementNo As Integer, ByVal pInitial As String, ByVal pLastName As String, ByVal pID As String)
-        Dim pobjClass As New GDSPaxItem(pElementNo, pInitial, pLastName, pID)
+
+        Dim pobjClass As GDSPaxItem
+
+        pobjClass = New GDSPaxItem
+
+        pobjClass.SetValues(pElementNo, pInitial, pLastName, pID)
         MyBase.Add(Format(pElementNo), pobjClass)
     End Sub
     Public ReadOnly Property LeadName As String

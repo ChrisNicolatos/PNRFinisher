@@ -24,7 +24,8 @@ Public Class GDSSegCollection
         ' For Amadeus
         Dim pobjClass As GDSSegItem
 
-        pobjClass = New GDSSegItem(pAirline, pBoardPoint, pClass, pDepartureDate, pArrivalDate, pElementNo, pFlightNo, pOffPoint, pStatus, pDepartTime, pArriveTime, pEquipment, pMealFlight, pMealSSR, pText, SegDo, pConnectTimeFromPrevious)
+        pobjClass = New GDSSegItem
+        pobjClass.SetValues(pAirline, pBoardPoint, pClass, pDepartureDate, pArrivalDate, pElementNo, pFlightNo, pOffPoint, pStatus, pDepartTime, pArriveTime, pEquipment, pMealFlight, pMealSSR, pText, SegDo, pConnectTimeFromPrevious)
         MyBase.Add(pElementNo, pobjClass)
 
         SetItinValues(pobjClass)
@@ -32,7 +33,8 @@ Public Class GDSSegCollection
     End Sub
     Friend Function AddSurfaceSegment(ByVal pElementNo As Integer) As GDSSegItem
         Dim pobjClass As GDSSegItem
-        pobjClass = New GDSSegItem(pElementNo)
+        pobjClass = New GDSSegItem
+        pobjClass.SetSurfaceSegment(pElementNo)
         MyBase.Add(pElementNo, pobjClass)
         Return pobjClass
     End Function
@@ -40,7 +42,9 @@ Public Class GDSSegCollection
         ' For Galileo
         Dim pobjClass As GDSSegItem
 
-        pobjClass = New GDSSegItem(pAirline, pBoardPoint, pClass, pDepartureDate, pArrivalDate, pElementNo, pFlightNo, pOffPoint, pStatus, pDepartTime, pArriveTime, pEquipment, pMealFlight, pMealSSR, pVL, pText, pOperatedBy, SVC, pConnectTimeFromPrevious)
+        pobjClass = New GDSSegItem
+
+        pobjClass.SetValues(pAirline, pBoardPoint, pClass, pDepartureDate, pArrivalDate, pElementNo, pFlightNo, pOffPoint, pStatus, pDepartTime, pArriveTime, pEquipment, pMealFlight, pMealSSR, pVL, pText, pOperatedBy, SVC, pConnectTimeFromPrevious)
         MyBase.Add(pElementNo, pobjClass)
 
         SetItinValues(pobjClass)

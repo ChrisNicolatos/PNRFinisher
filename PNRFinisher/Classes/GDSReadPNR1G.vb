@@ -94,7 +94,7 @@ Public Class GDSReadPNR1G
         mobjEmails = New EmailCollection
         mobjOpenSegments = New OpenSegmentCollection
         mobjDI = New DICollection
-        mobjTicketElement = Nothing
+        mobjTicketElement = New TicketElementItem
         mobjOptionQueue = New OptionQueueCollection
         mobjSSR = New SSRCollection
         mobjFreqFlyer = New FrequentFlyerCollection
@@ -509,7 +509,7 @@ Public Class GDSReadPNR1G
                 If pItems.GetUpperBound(0) = 2 Then
                     pPCC = pItems(1)
                 End If
-                mobjTicketElement = New TicketElementItem(pElement, pPCC, pActionDate, pRemark)
+                mobjTicketElement.SetValues(pElement, pPCC, pActionDate, pRemark)
             End If
         Next
     End Sub

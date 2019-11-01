@@ -139,7 +139,7 @@ Partial Class frmFormFinisher
         Me.txtTrId.Font = New System.Drawing.Font("Courier New", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
         Me.txtTrId.Location = New System.Drawing.Point(172, 108)
         Me.txtTrId.Name = "txtTrId"
-        Me.txtTrId.Size = New System.Drawing.Size(564, 20)
+        Me.txtTrId.Size = New System.Drawing.Size(563, 20)
         Me.txtTrId.TabIndex = 81
         '
         'lblTRID
@@ -288,7 +288,7 @@ Partial Class frmFormFinisher
         Me.cmbCostCentre.FormattingEnabled = True
         Me.cmbCostCentre.Location = New System.Drawing.Point(172, 186)
         Me.cmbCostCentre.Name = "cmbCostCentre"
-        Me.cmbCostCentre.Size = New System.Drawing.Size(564, 21)
+        Me.cmbCostCentre.Size = New System.Drawing.Size(563, 21)
         Me.cmbCostCentre.TabIndex = 79
         '
         'cmdPNRWrite
@@ -353,7 +353,7 @@ Partial Class frmFormFinisher
         Me.cmbReasonForTravel.FormattingEnabled = True
         Me.cmbReasonForTravel.Location = New System.Drawing.Point(172, 160)
         Me.cmbReasonForTravel.Name = "cmbReasonForTravel"
-        Me.cmbReasonForTravel.Size = New System.Drawing.Size(564, 21)
+        Me.cmbReasonForTravel.Size = New System.Drawing.Size(563, 21)
         Me.cmbReasonForTravel.TabIndex = 77
         '
         'lblSubDepartment
@@ -469,7 +469,7 @@ Partial Class frmFormFinisher
         Me.cmbDepartment.FormattingEnabled = True
         Me.cmbDepartment.Location = New System.Drawing.Point(172, 82)
         Me.cmbDepartment.Name = "cmbDepartment"
-        Me.cmbDepartment.Size = New System.Drawing.Size(564, 21)
+        Me.cmbDepartment.Size = New System.Drawing.Size(563, 21)
         Me.cmbDepartment.TabIndex = 73
         '
         'cmbBookedby
@@ -479,7 +479,7 @@ Partial Class frmFormFinisher
         Me.cmbBookedby.FormattingEnabled = True
         Me.cmbBookedby.Location = New System.Drawing.Point(172, 134)
         Me.cmbBookedby.Name = "cmbBookedby"
-        Me.cmbBookedby.Size = New System.Drawing.Size(564, 21)
+        Me.cmbBookedby.Size = New System.Drawing.Size(563, 21)
         Me.cmbBookedby.TabIndex = 75
         '
         'txtReference
@@ -489,7 +489,7 @@ Partial Class frmFormFinisher
         Me.txtReference.Font = New System.Drawing.Font("Courier New", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
         Me.txtReference.Location = New System.Drawing.Point(172, 56)
         Me.txtReference.Name = "txtReference"
-        Me.txtReference.Size = New System.Drawing.Size(564, 20)
+        Me.txtReference.Size = New System.Drawing.Size(563, 20)
         Me.txtReference.TabIndex = 71
         '
         'StatusStrip1
@@ -546,7 +546,7 @@ Partial Class frmFormFinisher
         Me.tabCustomProperties.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.[Single]
         Me.tabCustomProperties.ColumnCount = 2
         Me.tabCustomProperties.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 167.0!))
-        Me.tabCustomProperties.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 570.0!))
+        Me.tabCustomProperties.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 569.0!))
         Me.tabCustomProperties.Controls.Add(Me.cmbCRM, 1, 1)
         Me.tabCustomProperties.Controls.Add(Me.cmbSubDepartment, 1, 0)
         Me.tabCustomProperties.Controls.Add(Me.lblReference, 0, 2)
@@ -584,7 +584,7 @@ Partial Class frmFormFinisher
         Me.cmbCRM.FormattingEnabled = True
         Me.cmbCRM.Location = New System.Drawing.Point(172, 30)
         Me.cmbCRM.Name = "cmbCRM"
-        Me.cmbCRM.Size = New System.Drawing.Size(564, 21)
+        Me.cmbCRM.Size = New System.Drawing.Size(563, 21)
         Me.cmbCRM.TabIndex = 83
         '
         'cmbSubDepartment
@@ -594,7 +594,7 @@ Partial Class frmFormFinisher
         Me.cmbSubDepartment.FormattingEnabled = True
         Me.cmbSubDepartment.Location = New System.Drawing.Point(172, 4)
         Me.cmbSubDepartment.Name = "cmbSubDepartment"
-        Me.cmbSubDepartment.Size = New System.Drawing.Size(564, 21)
+        Me.cmbSubDepartment.Size = New System.Drawing.Size(563, 21)
         Me.cmbSubDepartment.TabIndex = 82
         '
         'lblWarning

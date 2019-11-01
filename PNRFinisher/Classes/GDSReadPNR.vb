@@ -44,6 +44,7 @@ Public Class GDSReadPNR
     Private mobjFrequentFlyer As FrequentFlyerCollection
     Private mobjNumberParser As GDSNumberParser
 
+    Private mobjExistingGDSElements As GDSExistingCollection
     Private WithEvents mobjNewGDSElements As GDSNewCollection
 
     Private mobjBaggageAllowance As BaggageAllowanceCollection
@@ -103,7 +104,7 @@ Public Class GDSReadPNR
         mobjItinRemarks = New GDSItineraryRemarksCollection
         mobjFrequentFlyer = New FrequentFlyerCollection
         mobjNumberParser = New GDSNumberParser
-        ExistingElements = New GDSExistingCollection
+        mobjExistingGDSElements = New GDSExistingCollection
         mobjNewGDSElements = New GDSNewCollection
         mobjBaggageAllowance = New BaggageAllowanceCollection
         mudtProps.Clear()
@@ -310,7 +311,11 @@ Public Class GDSReadPNR
             Return mdteDepartureDate
         End Get
     End Property
-    Public Property ExistingElements As GDSExistingCollection
+    Public ReadOnly Property ExistingElements As GDSExistingCollection
+        Get
+            Return mobjExistingGDSElements
+        End Get
+    End Property
     Public ReadOnly Property NewElements As GDSNewCollection
         Get
             Return mobjNewGDSElements
@@ -600,6 +605,7 @@ Public Class GDSReadPNR
             mflgExistsSegments = (mobjSegments.Count > 0)
             mSegsFirstElement = mobjPNR1GRaw.SegsFirstElement
             mSegsLastElement = mobjPNR1GRaw.SegsLastElement
+            'mudtAllowance = mobjPNR1GRaw.Allowance
             mobjBaggageAllowance = mobjPNR1GRaw.BaggageAllowance
             mobjTickets = mobjPNR1GRaw.Tickets
             mudtProps.Seats = mobjPNR1GRaw.Seats
@@ -641,30 +647,30 @@ Public Class GDSReadPNR
         CheckForAmadeus()
         Dim pLineNumbers(0) As Integer
         ' the following elements remain as they are if they already exist in the PNR
-        ClearExistingItems(ExistingElements.PhoneElement, mobjNewGDSElements.PhoneElement)
-        ClearExistingItems(ExistingElements.EmailElement, mobjNewGDSElements.EmailElement)
-        ClearExistingItems(ExistingElements.AOH, mobjNewGDSElements.AOH)
-        ClearExistingItems(ExistingElements.OpenSegment, mobjNewGDSElements.OpenSegment)
-        ClearExistingItems(ExistingElements.OptionQueueElement, mobjNewGDSElements.OptionQueueElement)
-        ClearExistingItems(ExistingElements.TicketElement, mobjNewGDSElements.TicketElement)
-        ClearExistingItems(ExistingElements.AgentID, mobjNewGDSElements.AgentID)
+        ClearExistingItems(mobjExistingGDSElements.PhoneElement, mobjNewGDSElements.PhoneElement)
+        ClearExistingItems(mobjExistingGDSElements.EmailElement, mobjNewGDSElements.EmailElement)
+        ClearExistingItems(mobjExistingGDSElements.AOH, mobjNewGDSElements.AOH)
+        ClearExistingItems(mobjExistingGDSElements.OpenSegment, mobjNewGDSElements.OpenSegment)
+        ClearExistingItems(mobjExistingGDSElements.OptionQueueElement, mobjNewGDSElements.OptionQueueElement)
+        ClearExistingItems(mobjExistingGDSElements.TicketElement, mobjNewGDSElements.TicketElement)
+        ClearExistingItems(mobjExistingGDSElements.AgentID, mobjNewGDSElements.AgentID)
         ' the following elements are removed and replaced if they exist in the PNR
-        PrepareLineNumbers1A(ExistingElements.CustomerCodeAI, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.CustomerCode, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.CustomerName, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.SubDepartmentCode, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.SubDepartmentName, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.CRMCode, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.CRMName, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.VesselFlag, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.VesselName, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.VesselOSI, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.Reference, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.BookedBy, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.Department, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.ReasonForTravel, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.CostCentre, pLineNumbers)
-        PrepareLineNumbers1A(ExistingElements.TRId, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.CustomerCodeAI, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.CustomerCode, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.CustomerName, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.SubDepartmentCode, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.SubDepartmentName, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.CRMCode, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.CRMName, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.VesselFlag, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.VesselName, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.VesselOSI, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.Reference, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.BookedBy, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.Department, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.ReasonForTravel, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.CostCentre, pLineNumbers)
+        PrepareLineNumbers1A(mobjExistingGDSElements.TRId, pLineNumbers)
         Dim pMax As Integer = 0
         Dim pMaxIndex As Integer = -1
         Dim pFound As Boolean = True
@@ -689,29 +695,29 @@ Public Class GDSReadPNR
         CheckForGalileo()
         Dim pLineNumbers(0) As LineNumbers
         ' the following elements remain as they are if they already exist in the PNR
-        ClearExistingItems(ExistingElements.PhoneElement, mobjNewGDSElements.PhoneElement)
-        ClearExistingItems(ExistingElements.EmailElement, mobjNewGDSElements.EmailElement)
-        ClearExistingItems(ExistingElements.AOH, mobjNewGDSElements.AOH)
+        ClearExistingItems(mobjExistingGDSElements.PhoneElement, mobjNewGDSElements.PhoneElement)
+        ClearExistingItems(mobjExistingGDSElements.EmailElement, mobjNewGDSElements.EmailElement)
+        ClearExistingItems(mobjExistingGDSElements.AOH, mobjNewGDSElements.AOH)
         ' the following elements are removed and replaced if they exist in the PNR
-        PrepareLineNumbers1G(ExistingElements.OpenSegment, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.AgentID, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.OptionQueueElement, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.TicketElement, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.CustomerCode, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.CustomerName, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.SubDepartmentCode, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.SubDepartmentName, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.CRMCode, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.CRMName, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.VesselFlag, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.VesselName, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.VesselOSI, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.Reference, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.BookedBy, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.Department, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.ReasonForTravel, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.CostCentre, pLineNumbers)
-        PrepareLineNumbers1G(ExistingElements.TRId, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.OpenSegment, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.AgentID, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.OptionQueueElement, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.TicketElement, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.CustomerCode, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.CustomerName, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.SubDepartmentCode, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.SubDepartmentName, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.CRMCode, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.CRMName, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.VesselFlag, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.VesselName, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.VesselOSI, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.Reference, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.BookedBy, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.Department, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.ReasonForTravel, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.CostCentre, pLineNumbers)
+        PrepareLineNumbers1G(mobjExistingGDSElements.TRId, pLineNumbers)
         Dim pMax As Integer = 0
         Dim pMaxIndex As Integer = -1
         Dim pCategory As String = ""
@@ -759,11 +765,11 @@ Public Class GDSReadPNR
     End Sub
     Private Shared Sub ClearExistingItems(ByRef ExistingItem As GDSExistingItem, ByRef NewItem As GDSNewItem)
         If ExistingItem.Exists Then
-            NewItem = New GDSNewItem
+            NewItem.Clear()
         End If
     End Sub
     Private Shared Sub PrepareLineNumbers1G(ByVal ExistingItem As GDSExistingItem, ByRef pLineNumbers() As LineNumbers)
-        If Not ExistingItem Is Nothing AndAlso ExistingItem.Exists Then
+        If ExistingItem.Exists Then
             Dim pItems() As String = ExistingItem.Category.Split(".")
             If IsArray(pItems) AndAlso pItems(0) <> "" Then
                 ReDim Preserve pLineNumbers(pLineNumbers.GetUpperBound(0) + 1)
@@ -1000,6 +1006,7 @@ Public Class GDSReadPNR
                         Dim pobjItem As New ApisPaxItem(.Cells(0).Value, .Cells(1).Value, .Cells(2).Value,
                                                        DateFromIATA(.Cells(6).Value), .Cells(7).Value, .Cells(3).Value,
                                                      .Cells(4).Value, DateFromIATA(.Cells(8).Value), .Cells(5).Value)
+
                         pobjItem.Update(mflgExpiryDateOK)
                         'SI.P1/SSRDOCSBAHK1/P/GB/S12345678/GB/12JUL76/M/23OCT16/SMITH/JOHN/RICHARD
                         pstrCommand = "SI.P" & pobjItem.Id & "/SSRDOCSYYHK1/P/" & pobjItem.IssuingCountry & "/" & pobjItem.PassportNumber & "/" & pobjItem.Nationality & "/" & DateToIATA(pobjItem.BirthDate) & "/" & pobjItem.Gender & "/"
@@ -1329,7 +1336,7 @@ Public Class GDSReadPNR
 
         For Each pSeg As s1aPNR.MemoSegment In mobjPNR1A.MemoSegments
             If pSeg.Text.Contains(MySettings.GDSValue("TextMISSegmentLookup") & mobjPNR1A.NameElements.Count & " " & MySettings.OfficeCityCode) Then
-                ExistingElements.OpenSegment = New GDSExistingItem(True, pSeg.ElementNo, MySettings.GDSElement("TextMISSegmentLookup"), "", "")
+                mobjExistingGDSElements.OpenSegment.SetValues(True, pSeg.ElementNo, MySettings.GDSElement("TextMISSegmentLookup"), "", "")
                 Exit For
             End If
         Next
@@ -1339,7 +1346,7 @@ Public Class GDSReadPNR
 
         For Each pOpenSeg As OpenSegmentItem In mobjPNR1GRaw.OpenSegments.Values
             If pOpenSeg.SegmentType = "T" Then
-                ExistingElements.OpenSegment = New GDSExistingItem(True, pOpenSeg.ElementNo, "Segment", pOpenSeg.Remark.ToString, "")
+                mobjExistingGDSElements.OpenSegment.SetValues(True, pOpenSeg.ElementNo, "Segment", pOpenSeg.Remark.ToString, "")
             End If
         Next
     End Sub
@@ -1347,7 +1354,7 @@ Public Class GDSReadPNR
 
         For Each pField As s1aPNR.PhoneElement In mobjPNR1A.PhoneElements
             If pField.Text.Replace(" ", "").Contains(MySettings.GDSValue("TextAP").Replace(" ", "")) Then
-                ExistingElements.PhoneElement = New GDSExistingItem(True, pField.Text.Substring(0, pField.Text.IndexOf(pField.ElementID) - 1), MySettings.GDSElement("TextAP"), "", "")
+                mobjExistingGDSElements.PhoneElement.SetValues(True, pField.Text.Substring(0, pField.Text.IndexOf(pField.ElementID) - 1), MySettings.GDSElement("TextAP"), "", "")
                 Exit For
             End If
         Next
@@ -1357,9 +1364,9 @@ Public Class GDSReadPNR
 
         For Each pPhone As PhoneNumbersItem In mobjPNR1GRaw.PhoneNumbers.Values
             If "P." & pPhone.CityCode & "T*" & pPhone.PhoneNumber = MySettings.GDSValue("TextAP") Then
-                ExistingElements.PhoneElement = New GDSExistingItem(True, pPhone.ElementNo, MySettings.GDSElement("TextAP"), pPhone.PhoneNumber, pPhone.PhoneNumber)
+                mobjExistingGDSElements.PhoneElement.SetValues(True, pPhone.ElementNo, MySettings.GDSElement("TextAP"), pPhone.PhoneNumber, pPhone.PhoneNumber)
             ElseIf "P." & pPhone.CityCode & "T*" & pPhone.PhoneNumber = MySettings.GDSValue("TextAOH") Then
-                ExistingElements.AOH = New GDSExistingItem(True, pPhone.ElementNo, MySettings.GDSElement("TextAOH"), pPhone.PhoneNumber, pPhone.PhoneNumber)
+                mobjExistingGDSElements.AOH.SetValues(True, pPhone.ElementNo, MySettings.GDSElement("TextAOH"), pPhone.PhoneNumber, pPhone.PhoneNumber)
             End If
         Next
     End Sub
@@ -1367,45 +1374,41 @@ Public Class GDSReadPNR
 
         For Each pField As s1aPNR.PhoneElement In mobjPNR1A.PhoneElements
             If pField.Text.Contains(MySettings.GDSValue("TextAPE_ToFind")) Then
-                ExistingElements.EmailElement = New GDSExistingItem(True, pField.Text.Substring(0, pField.Text.IndexOf(pField.ElementID) - 1), MySettings.GDSElement("TextAPE_ToFind"), "", "")
+                mobjExistingGDSElements.EmailElement.SetValues(True, pField.Text.Substring(0, pField.Text.IndexOf(pField.ElementID) - 1), MySettings.GDSElement("TextAPE_ToFind"), "", "")
             End If
         Next
     End Sub
     Private Sub GetEmailElement1G()
         For Each pEmail As EmailItem In mobjPNR1GRaw.Emails.Values
             If "MT." & pEmail.EmailAddress = MySettings.GDSValue("TextAPE") Then
-                ExistingElements.EmailElement = New GDSExistingItem(True, pEmail.ElementNo, MySettings.GDSElement("TextAPE"), pEmail.EmailAddress, pEmail.EmailAddress)
+                mobjExistingGDSElements.EmailElement.SetValues(True, pEmail.ElementNo, MySettings.GDSElement("TextAPE"), pEmail.EmailAddress, pEmail.EmailAddress)
             End If
         Next
     End Sub
     Private Sub GetAOH1A()
         For Each pElement As s1aPNR.SSRElement In mobjPNR1A.SSRElements
             If pElement.Text.Contains(MySettings.GDSValue("TextAOH_ToFind")) Then
-                ExistingElements.AOH = New GDSExistingItem(True, pElement.Text.Substring(0, pElement.Text.IndexOf(pElement.ElementID) - 1), MySettings.GDSElement("TextAOH_ToFind"), "", "")
+                mobjExistingGDSElements.AOH.SetValues(True, pElement.Text.Substring(0, pElement.Text.IndexOf(pElement.ElementID) - 1), MySettings.GDSElement("TextAOH_ToFind"), "", "")
             End If
         Next
     End Sub
 
     Private Sub GetTicketElement1A()
         For Each pElement As s1aPNR.TicketElement In mobjPNR1A.TicketElements
-            ExistingElements.TicketElement = New GDSExistingItem(True, pElement.Text.Substring(0, pElement.Text.IndexOf(pElement.ElementID) - 1), "TKT", "", "")
+            mobjExistingGDSElements.TicketElement.SetValues(True, pElement.Text.Substring(0, pElement.Text.IndexOf(pElement.ElementID) - 1), "TKT", "", "")
         Next
     End Sub
     Private Sub GetTicketElement1G()
-        Try
 
-            If Not mobjPNR1GRaw.TicketElement Is Nothing AndAlso mobjPNR1GRaw.TicketElement.ElementNo = 1 Then
-                ExistingElements.TicketElement = New GDSExistingItem(True, 1, "T.", mobjPNR1GRaw.TicketElement.ActionDateTime, "")
-            End If
-        Catch ex As Exception
-
-        End Try
+        If mobjPNR1GRaw.TicketElement.ElementNo = 1 Then
+            mobjExistingGDSElements.TicketElement.SetValues(True, 1, "T.", mobjPNR1GRaw.TicketElement.ActionDateTime, "")
+        End If
     End Sub
 
     Private Sub GetOptionQueueElement1A()
         For Each pElement As s1aPNR.OptionQueueElement In mobjPNR1A.OptionQueueElements
             If pElement.Text.Contains(MySettings.GDSValue("TextOP")) Then
-                ExistingElements.OptionQueueElement = New GDSExistingItem(True, pElement.Text.Substring(0, pElement.Text.IndexOf(pElement.ElementID) - 1), MySettings.GDSElement("TextOP"), "", "")
+                mobjExistingGDSElements.OptionQueueElement.SetValues(True, pElement.Text.Substring(0, pElement.Text.IndexOf(pElement.ElementID) - 1), MySettings.GDSElement("TextOP"), "", "")
                 Exit For
             End If
         Next
@@ -1414,18 +1417,18 @@ Public Class GDSReadPNR
         For Each pField As OptionQueueItem In mobjPNR1GRaw.OptionQueue.Values
             Dim pFullText As String = MySettings.GDSValue("TextOP") & "/DDMMM/0001/Q" & MySettings.AgentOPQueue
             If pFullText.StartsWith(MySettings.GDSValue("TextOP")) And pFullText.EndsWith("/0001/Q" & MySettings.AgentOPQueue) Then
-                ExistingElements.OptionQueueElement = New GDSExistingItem(True, pField.ElementNo, MySettings.GDSElement("TextOP"), pField.QueueNumber, pField.QueueNumber)
+                mobjExistingGDSElements.OptionQueueElement.SetValues(True, pField.ElementNo, MySettings.GDSElement("TextOP"), pField.QueueNumber, pField.QueueNumber)
             End If
         Next
     End Sub
     Private Sub GetVesselOSI1A()
         For Each pOSI As s1aPNR.OtherServiceElement In mobjPNR1A.OtherServiceElements
             If pOSI.Text.Contains(MySettings.GDSValue("TextVOSI")) Then
-                If ExistingElements.VesselOSI.Exists Then
-                    Throw New Exception("Please check PNR. Duplicate OSI Vessel defined" & vbCrLf & ExistingElements.VesselOSI.RawText & vbCrLf & pOSI.Text)
+                If mobjExistingGDSElements.VesselOSI.Exists Then
+                    Throw New Exception("Please check PNR. Duplicate OSI Vessel defined" & vbCrLf & mobjExistingGDSElements.VesselOSI.RawText & vbCrLf & pOSI.Text)
                 Else
                     Dim pVesselNameOSI As String = pOSI.Text.Substring(pOSI.Text.IndexOf(MySettings.GDSValue("TextVSL")) + MySettings.GDSValue("TextVSL").Length)
-                    ExistingElements.VesselOSI = New GDSExistingItem(True, pOSI.Text.Substring(0, pOSI.Text.IndexOf(pOSI.ElementID) - 1), MySettings.GDSElement("TextVSL"), pOSI.Text, pVesselNameOSI)
+                    mobjExistingGDSElements.VesselOSI.SetValues(True, pOSI.Text.Substring(0, pOSI.Text.IndexOf(pOSI.ElementID) - 1), MySettings.GDSElement("TextVSL"), pOSI.Text, pVesselNameOSI)
                 End If
             End If
         Next
@@ -1499,7 +1502,7 @@ Public Class GDSReadPNR
                 '"SEMN/VESSEL-CHRISTOS"
                 If (("SI." & .CarrierCode & "*" & .Text).StartsWith(MySettings.GDSValue("TextVOSI"))) Then
                     Dim pVesselNameOSI As String = ("SI." & .CarrierCode & "*" & .Text).Substring(MySettings.GDSValue("TextVOSI").Length).Trim
-                    ExistingElements.VesselOSI = New GDSExistingItem(True, pobjSSR.ElementNo, MySettings.GDSElement("TextVOSI"), pobjSSR.Text, pVesselNameOSI)
+                    mobjExistingGDSElements.VesselOSI.SetValues(True, pobjSSR.ElementNo, MySettings.GDSElement("TextVOSI"), pobjSSR.Text, pVesselNameOSI)
                     mstrVesselName = .Text.Substring(12).Trim
                 ElseIf .SSRCode = "DOCS" Then
                     mstrSSRDocs &= "SI.SSR" & .SSRCode & .CarrierCode & .StatusCode & "1" & .Text.Split("-")(0) & vbCrLf
@@ -1640,77 +1643,77 @@ Public Class GDSReadPNR
     Private Sub GetAI1A()
         For Each pElement As s1aPNR.AccountingAIElement In mobjPNR1A.AccountingAIElements
             If pElement.Text.Contains(MySettings.GDSValue("TextAI")) Then
-                ExistingElements.CustomerCodeAI = New GDSExistingItem(True, pElement.Text.Substring(0, pElement.Text.IndexOf(pElement.ElementID) - 1), MySettings.GDSElement("TextAI"), pElement.Text, pElement.AccountNo)
+                mobjExistingGDSElements.CustomerCodeAI.SetValues(True, pElement.Text.Substring(0, pElement.Text.IndexOf(pElement.ElementID) - 1), MySettings.GDSElement("TextAI"), pElement.Text, pElement.AccountNo)
             End If
         Next
     End Sub
     Private Sub GetRM1A()
         For Each pRemark As s1aPNR.RemarkElement In mobjPNR1A.RemarkElements
             If pRemark.Text.Contains(MySettings.GDSValue("TextAGT")) Then
-                ExistingElements.AgentID = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextAGT"), pRemark.Text, "")
+                mobjExistingGDSElements.AgentID.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextAGT"), pRemark.Text, "")
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextCLN")) Then
-                If ExistingElements.CustomerCode.Exists Then
-                    Throw New Exception("Please check PNR. Duplicate customer defined" & vbCrLf & ExistingElements.CustomerCode.RawText & vbCrLf & pRemark.Text)
+                If mobjExistingGDSElements.CustomerCode.Exists Then
+                    Throw New Exception("Please check PNR. Duplicate customer defined" & vbCrLf & mobjExistingGDSElements.CustomerCode.RawText & vbCrLf & pRemark.Text)
                 Else
                     Dim pCustomerCode As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextCLN")) + MySettings.GDSValue("TextCLN").Length)
-                    ExistingElements.CustomerCode = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCLN"), pRemark.Text, pCustomerCode)
+                    mobjExistingGDSElements.CustomerCode.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCLN"), pRemark.Text, pCustomerCode)
                 End If
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextSBN")) Then
-                If ExistingElements.SubDepartmentCode.Exists Then
-                    Throw New Exception("Please check PNR. Duplicate subdepartment defined" & vbCrLf & ExistingElements.SubDepartmentCode.LineNumber & vbCrLf & pRemark.Text)
+                If mobjExistingGDSElements.SubDepartmentCode.Exists Then
+                    Throw New Exception("Please check PNR. Duplicate subdepartment defined" & vbCrLf & mobjExistingGDSElements.SubDepartmentCode.LineNumber & vbCrLf & pRemark.Text)
                 Else
                     Dim pSubDepartment As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextSBN")) + MySettings.GDSValue("TextSBN").Length)
-                    ExistingElements.SubDepartmentCode = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextSBN"), "", pSubDepartment)
+                    mobjExistingGDSElements.SubDepartmentCode.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextSBN"), "", pSubDepartment)
                 End If
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextCRN")) Then
-                If ExistingElements.CRMCode.Exists Then
-                    Throw New Exception("Please check PNR. Duplicate CRM defined" & vbCrLf & ExistingElements.CRMCode.LineNumber & vbCrLf & pRemark.Text)
+                If mobjExistingGDSElements.CRMCode.Exists Then
+                    Throw New Exception("Please check PNR. Duplicate CRM defined" & vbCrLf & mobjExistingGDSElements.CRMCode.LineNumber & vbCrLf & pRemark.Text)
                 Else
                     Dim pCRM As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextCRN")) + MySettings.GDSValue("TextCRN").Length)
-                    ExistingElements.CRMCode = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCRN"), "", pCRM)
+                    mobjExistingGDSElements.CRMCode.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCRN"), "", pCRM)
                 End If
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextVSL")) Then
-                If ExistingElements.VesselName.Exists Then
-                    Throw New Exception("Please check PNR. Duplicate vessel defined" & vbCrLf & ExistingElements.VesselName.LineNumber & vbCrLf & pRemark.Text)
+                If mobjExistingGDSElements.VesselName.Exists Then
+                    Throw New Exception("Please check PNR. Duplicate vessel defined" & vbCrLf & mobjExistingGDSElements.VesselName.LineNumber & vbCrLf & pRemark.Text)
                 Else
                     Dim pVesselName As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextVSL")) + MySettings.GDSValue("TextVSL").Length)
-                    ExistingElements.VesselName = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextVSL"), "", pVesselName)
+                    mobjExistingGDSElements.VesselName.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextVSL"), "", pVesselName)
                 End If
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextVSR")) Then
-                If ExistingElements.VesselFlag.Exists Then
-                    Throw New Exception("Please check PNR. Duplicate vessel registration defined" & vbCrLf & ExistingElements.VesselFlag.LineNumber & vbCrLf & pRemark.Text)
+                If mobjExistingGDSElements.VesselFlag.Exists Then
+                    Throw New Exception("Please check PNR. Duplicate vessel registration defined" & vbCrLf & mobjExistingGDSElements.VesselFlag.LineNumber & vbCrLf & pRemark.Text)
                 Else
                     Dim pVesselRegistration As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextVSR")) + MySettings.GDSValue("TextVSR").Length)
-                    ExistingElements.VesselFlag = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextVSR"), "", pVesselRegistration)
+                    mobjExistingGDSElements.VesselFlag.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextVSR"), "", pVesselRegistration)
                 End If
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextREF")) Then
                 Dim pReference As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextREF")) + MySettings.GDSValue("TextREF").Length)
-                ExistingElements.Reference = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextREF"), "", pReference)
+                mobjExistingGDSElements.Reference.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextREF"), "", pReference)
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextBBY")) Then
                 Dim pBookedBy As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextBBY")) + MySettings.GDSValue("TextBBY").Length)
-                ExistingElements.BookedBy = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextBBY"), "", pBookedBy)
+                mobjExistingGDSElements.BookedBy.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextBBY"), "", pBookedBy)
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextDPT")) Then
                 Dim pDepartment As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextDPT")) + MySettings.GDSValue("TextDPT").Length)
-                ExistingElements.Department = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextDPT"), True, pDepartment)
+                mobjExistingGDSElements.Department.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextDPT"), True, pDepartment)
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextRFT")) Then
                 Dim pReasonForTravel As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextRFT")) + MySettings.GDSValue("TextRFT").Length)
-                ExistingElements.ReasonForTravel = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextRFT"), "", pReasonForTravel)
+                mobjExistingGDSElements.ReasonForTravel.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextRFT"), "", pReasonForTravel)
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextCC")) Then
                 Dim pCostCentre As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextCC")) + MySettings.GDSValue("TextCC").Length)
-                ExistingElements.CostCentre = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCC"), "", pCostCentre)
+                mobjExistingGDSElements.CostCentre.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCC"), "", pCostCentre)
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextTRID")) Then
                 Dim pReference As String = pRemark.Text.Substring(pRemark.Text.IndexOf(MySettings.GDSValue("TextTRID")) + MySettings.GDSValue("TextTRID").Length)
-                ExistingElements.TRId = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextTRID"), "", pReference)
+                mobjExistingGDSElements.TRId.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextTRID"), "", pReference)
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextCLA")) Then
-                If ExistingElements.CustomerName.Exists Then
-                    Throw New Exception("Please check PNR. Duplicate customer name defined" & vbCrLf & ExistingElements.CustomerName.LineNumber & vbCrLf & pRemark.Text)
+                If mobjExistingGDSElements.CustomerName.Exists Then
+                    Throw New Exception("Please check PNR. Duplicate customer name defined" & vbCrLf & mobjExistingGDSElements.CustomerName.LineNumber & vbCrLf & pRemark.Text)
                 Else
-                    ExistingElements.CustomerName = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCLA"), "", "")
+                    mobjExistingGDSElements.CustomerName.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCLA"), "", "")
                 End If
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextSBA")) Then
-                ExistingElements.SubDepartmentName = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextSBA"), "", "")
+                mobjExistingGDSElements.SubDepartmentName.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextSBA"), "", "")
             ElseIf pRemark.Text.Contains(MySettings.GDSValue("TextCRA")) Then
-                ExistingElements.CRMName = New GDSExistingItem(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCRA"), "", "")
+                mobjExistingGDSElements.CRMName.SetValues(True, pRemark.Text.Substring(0, pRemark.Text.IndexOf(pRemark.ElementID) - 1), MySettings.GDSElement("TextCRA"), "", "")
             End If
         Next
     End Sub
@@ -1724,55 +1727,55 @@ Public Class GDSReadPNR
                     pFullText = "DI.AC-" & .Remark
                 End If
                 If pFullText.StartsWith(MySettings.GDSValue("TextAGT")) Then
-                    ExistingElements.AgentID = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextAGT"), .Remark, pFullText.Substring(MySettings.GDSValue("TextAGT").Length))
+                    mobjExistingGDSElements.AgentID.SetValues(True, .ElementNo, MySettings.GDSElement("TextAGT"), .Remark, pFullText.Substring(MySettings.GDSValue("TextAGT").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextBBY")) Then
                     Dim pBookedBy As String = pFullText.Substring(MySettings.GDSValue("TextBBY").Length)
                     mstrBookedBy = pBookedBy ' .Remark.Substring(10)
-                    ExistingElements.BookedBy = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextBBY"), .Remark, pBookedBy)
+                    mobjExistingGDSElements.BookedBy.SetValues(True, .ElementNo, MySettings.GDSElement("TextBBY"), .Remark, pBookedBy)
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextCC")) Then
                     mstrCC = .Remark.Substring(9)
-                    ExistingElements.CostCentre = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextCC"), .Remark, pFullText.Substring(MySettings.GDSValue("TextCC").Length))
+                    mobjExistingGDSElements.CostCentre.SetValues(True, .ElementNo, MySettings.GDSElement("TextCC"), .Remark, pFullText.Substring(MySettings.GDSValue("TextCC").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextTRID")) Then
-                    ExistingElements.TRId = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextTRID"), .Remark, pFullText.Substring(MySettings.GDSValue("TextTRID").Length))
+                    mobjExistingGDSElements.TRId.SetValues(True, .ElementNo, MySettings.GDSElement("TextTRID"), .Remark, pFullText.Substring(MySettings.GDSValue("TextTRID").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextCLA")) Then
-                    If Not ExistingElements.CustomerName Is Nothing AndAlso Not ExistingElements.CustomerName.Exists Then
+                    If Not mobjExistingGDSElements.CustomerName.Exists Then
                         mstrCLA = .Remark.Substring(10)
-                        ExistingElements.CustomerName = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextCLA"), .Remark, pFullText.Substring(MySettings.GDSValue("TextCLA").Length))
+                        mobjExistingGDSElements.CustomerName.SetValues(True, .ElementNo, MySettings.GDSElement("TextCLA"), .Remark, pFullText.Substring(MySettings.GDSValue("TextCLA").Length))
                     End If
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextCLN")) Then
                     Dim pCustomerCode As String = pFullText.Substring(MySettings.GDSValue("TextCLN").Length)
-                    If Not ExistingElements.CustomerCode Is Nothing AndAlso ExistingElements.CustomerCode.Exists Then
-                        Throw New Exception("Please check PNR. Duplicate customer defined" & vbCrLf & ExistingElements.CustomerCode.RawText & vbCrLf & .Remark)
+                    If mobjExistingGDSElements.CustomerCode.Exists Then
+                        Throw New Exception("Please check PNR. Duplicate customer defined" & vbCrLf & mobjExistingGDSElements.CustomerCode.RawText & vbCrLf & .Remark)
                     Else
                         mstrCLN = pCustomerCode
-                        ExistingElements.CustomerCode = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextCLN"), .Remark, pCustomerCode)
+                        mobjExistingGDSElements.CustomerCode.SetValues(True, .ElementNo, MySettings.GDSElement("TextCLN"), .Remark, pCustomerCode)
                     End If
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextCRA")) Then
-                    ExistingElements.CRMName = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextCRA"), .Remark, pFullText.Substring(MySettings.GDSValue("TextCRA").Length))
+                    mobjExistingGDSElements.CRMName.SetValues(True, .ElementNo, MySettings.GDSElement("TextCRA"), .Remark, pFullText.Substring(MySettings.GDSValue("TextCRA").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextCRN")) Then
-                    ExistingElements.CRMCode = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextCRN"), .Remark, pFullText.Substring(MySettings.GDSValue("TextCRN").Length))
+                    mobjExistingGDSElements.CRMCode.SetValues(True, .ElementNo, MySettings.GDSElement("TextCRN"), .Remark, pFullText.Substring(MySettings.GDSValue("TextCRN").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextDPT")) Then
-                    ExistingElements.Department = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextDPT"), .Remark, pFullText.Substring(MySettings.GDSValue("TextDPT").Length))
+                    mobjExistingGDSElements.Department.SetValues(True, .ElementNo, MySettings.GDSElement("TextDPT"), .Remark, pFullText.Substring(MySettings.GDSValue("TextDPT").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextREF")) Then
-                    ExistingElements.Reference = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextREF"), .Remark, pFullText.Substring(MySettings.GDSValue("TextREF").Length))
+                    mobjExistingGDSElements.Reference.SetValues(True, .ElementNo, MySettings.GDSElement("TextREF"), .Remark, pFullText.Substring(MySettings.GDSValue("TextREF").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextRFT")) Then
-                    ExistingElements.ReasonForTravel = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextRFT"), .Remark, pFullText.Substring(MySettings.GDSValue("TextRFT").Length))
+                    mobjExistingGDSElements.ReasonForTravel.SetValues(True, .ElementNo, MySettings.GDSElement("TextRFT"), .Remark, pFullText.Substring(MySettings.GDSValue("TextRFT").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextSBA")) Then
-                    ExistingElements.SubDepartmentName = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextSBA"), .Remark, pFullText.Substring(MySettings.GDSValue("TextSBA").Length))
+                    mobjExistingGDSElements.SubDepartmentName.SetValues(True, .ElementNo, MySettings.GDSElement("TextSBA"), .Remark, pFullText.Substring(MySettings.GDSValue("TextSBA").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextSBN")) Then
-                    ExistingElements.SubDepartmentCode = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextSBN"), .Remark, pFullText.Substring(MySettings.GDSValue("TextSBN").Length))
+                    mobjExistingGDSElements.SubDepartmentCode.SetValues(True, .ElementNo, MySettings.GDSElement("TextSBN"), .Remark, pFullText.Substring(MySettings.GDSValue("TextSBN").Length))
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextVSL")) Then
                     mstrVesselName = pFullText.Substring(MySettings.GDSValue("TextVSL").Length)
-                    ExistingElements.VesselName = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextVSL"), .Remark, mstrVesselName)
+                    mobjExistingGDSElements.VesselName.SetValues(True, .ElementNo, MySettings.GDSElement("TextVSL"), .Remark, mstrVesselName)
                 ElseIf pFullText.StartsWith(MySettings.GDSValue("TextVSR")) Then
-                    ExistingElements.VesselFlag = New GDSExistingItem(True, .ElementNo, MySettings.GDSElement("TextVSR"), .Remark, pFullText.Substring(MySettings.GDSValue("TextVSR").Length))
+                    mobjExistingGDSElements.VesselFlag.SetValues(True, .ElementNo, MySettings.GDSElement("TextVSR"), .Remark, pFullText.Substring(MySettings.GDSValue("TextVSR").Length))
                 ElseIf pFullText.StartsWith("D,BOOKED") > 0 Then
-                    ExistingElements.BookedBy = New GDSExistingItem(True, .ElementNo, "D,BOOKED", .Remark, "DI.")
+                    mobjExistingGDSElements.BookedBy.SetValues(True, .ElementNo, "D,BOOKED", .Remark, "DI.")
                 ElseIf pFullText.StartsWith("D,AC") > 0 Then
-                    If ExistingElements.CustomerCode.Exists Then
-                        Throw New Exception("Please check PNR. Duplicate customer defined" & vbCrLf & ExistingElements.CustomerCode.RawText & vbCrLf & .Remark)
+                    If mobjExistingGDSElements.CustomerCode.Exists Then
+                        Throw New Exception("Please check PNR. Duplicate customer defined" & vbCrLf & mobjExistingGDSElements.CustomerCode.RawText & vbCrLf & .Remark)
                     Else
-                        ExistingElements.CustomerCode = New GDSExistingItem(True, .ElementNo, "D,AC", .Remark, "DI.")
+                        mobjExistingGDSElements.CustomerCode.SetValues(True, .ElementNo, "D,AC", .Remark, "DI.")
                     End If
                 End If
                 If .Remark.StartsWith("D,BOOKED") > 0 Then

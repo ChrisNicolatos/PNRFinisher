@@ -1,14 +1,188 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class CustomerItem
-    ' SQL for Travel Force
-    Private Const SQL1 As String = " SELECT TFEntities.Id 
-                                ,ISNULL(TFEntities.Code, '') AS Code
-                                ,ISNULL(TFEntities.Name, '') AS Name 
-                                ,ISNULL(TFEntities.Logo, '') AS Logo
-                                ,ISNULL(TFEntityCategories.TFEntityKindLT, 0) AS TFEntityKindLT
+    Private Structure ClassProps
+        Dim ID As Integer
+        Dim Code As String
+        Dim Name As String
+        Dim Logo As String
+        Dim EntityKindLT As Integer
+        Dim HasVessels As Boolean
+        Dim HasDepartments As Boolean
+        Dim AlertForFinisher As String
+        Dim AlertForDownsell As String
+        Dim GalileoTrackingCode As String
+        Dim OpsGroup As String
+        Dim CTCCount As Integer
+        Dim BackOffice As Integer
+    End Structure
+    Private mudtProps As ClassProps
+    Private mobjCustomProperties As New CustomPropertiesCollection
+    Private mflgCustomProperties As Boolean
+    Private mobjAlerts As New AlertsCollection
+
+    Public Overrides Function ToString() As String
+
+        If mudtProps.CTCCount > 0 Then
+            Return Code & " " & Logo & " ==>"
+        Else
+            Return Code & " " & Logo
+        End If
+
+
+    End Function
+
+    Public ReadOnly Property ID() As Integer
+        Get
+            Return mudtProps.ID
+        End Get
+    End Property
+
+    Public ReadOnly Property Code() As String
+        Get
+            Return mudtProps.Code
+        End Get
+    End Property
+
+    Public ReadOnly Property Name() As String
+        Get
+            Return mudtProps.Name.ToUpper
+        End Get
+    End Property
+    Public ReadOnly Property Logo As String
+        Get
+            If mudtProps.Logo Is Nothing Then
+                Return ""
+            Else
+                Return mudtProps.Logo.ToUpper
+            End If
+        End Get
+    End Property
+    Public ReadOnly Property EntityKindLT() As Integer
+        Get
+            Return mudtProps.EntityKindLT
+        End Get
+    End Property
+    Public ReadOnly Property OpsGroup As String
+        Get
+            Return mudtProps.OpsGroup
+        End Get
+    End Property
+    Public ReadOnly Property CTCCount As Integer
+        Get
+            Return mudtProps.CTCCount
+        End Get
+    End Property
+    Public ReadOnly Property HasVessels() As Boolean
+        Get
+            Return mudtProps.HasVessels
+        End Get
+    End Property
+
+    Public ReadOnly Property HasDepartments() As Boolean
+        Get
+            Return mudtProps.HasDepartments
+        End Get
+    End Property
+    Public ReadOnly Property AlertForFinisher As String
+        Get
+            Return mudtProps.AlertForFinisher
+        End Get
+    End Property
+    Public ReadOnly Property AlertForDownsell As String
+        Get
+            If mudtProps.AlertForDownsell Is Nothing Then
+                Return ""
+            Else
+                Return mudtProps.AlertForDownsell
+            End If
+
+        End Get
+    End Property
+    Public ReadOnly Property GalileoTrackingCode As String
+        Get
+            Return mudtProps.GalileoTrackingCode
+        End Get
+    End Property
+    Public ReadOnly Property CustomerProperties As CustomPropertiesCollection
+        Get
+            If Not mflgCustomProperties Then
+                mobjCustomProperties.Load(mudtProps.ID, mudtProps.BackOffice)
+                mflgCustomProperties = True
+            End If
+            Return mobjCustomProperties
+        End Get
+    End Property
+
+    Friend Sub SetValues(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String, ByVal pLogo As String, ByVal pEntityKindLT As Integer, ByVal pAlertForFinisher As String, ByVal pAlertForDownsell As String, ByVal pGalileoTrackingCode As String, ByVal pOpsGroup As String, ByVal pCTCCount As Integer, ByVal pBackOffice As Integer)
+        With mudtProps
+            .ID = pID
+            .Code = pCode
+            .Name = pName
+            .Logo = pLogo
+            .EntityKindLT = pEntityKindLT
+            .AlertForFinisher = pAlertForFinisher.Trim
+            .AlertForDownsell = pAlertForDownsell.Trim
+            .GalileoTrackingCode = pGalileoTrackingCode
+            .OpsGroup = pOpsGroup
+            .CTCCount = pCTCCount
+            .BackOffice = pBackOffice
+            ' TFEntityKind (from DB table [TravelForceCosmos].[dbo].[LookupTable])
+            ' 404 = Other
+            ' 405 = Individual
+            ' 406 = Corporate
+            ' 526 = Shipping Co
+            ' 527 = Travel Agency
+            Select Case pEntityKindLT
+                Case 526, 527
+                    .HasDepartments = True
+                    .HasVessels = True
+                Case Else
+                    .HasDepartments = False
+                    .HasVessels = False
+            End Select
+            mflgCustomProperties = False
+        End With
+    End Sub
+    Public Sub Load(ByVal pCode As String, ByVal pBackOffice As Integer)
+
+        mobjAlerts.Load()
+
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(pBackOffice))
+        Dim pobjComm As New SqlClient.SqlCommand
+        Dim pobjReader As SqlClient.SqlDataReader
+
+        pobjConn.Open()
+        pobjComm = pobjConn.CreateCommand
+
+        With pobjComm
+            .CommandType = CommandType.Text
+            .Parameters.Add("@ClientCode", SqlDbType.NVarChar, 20).Value = pCode
+            .CommandText = PrepareClientSelectCommand(pBackOffice)
+            pobjReader = .ExecuteReader
+        End With
+        With pobjReader
+            If pobjReader.Read Then
+                SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")), CStr(.Item("Logo")), CInt(.Item("TFEntityKindLT")), mobjAlerts.AlertForFinisher(pBackOffice, CStr(.Item("Code"))), mobjAlerts.AlertForDownsell(pBackOffice, CStr(.Item("Code"))), CStr(.Item("GalileoTrackingCode")), CStr(.Item("OpsGroup")), CInt(.Item("CTCCount")), pBackOffice)
+                .Close()
+            End If
+        End With
+        pobjConn.Close()
+
+    End Sub
+
+    Private Shared ReadOnly Property PrepareClientSelectCommand(ByVal pBackOffice As Integer) As String
+        Get
+
+            Select Case pBackOffice
+                Case 1 ' Travel Force
+                    Return " SELECT TFEntities.Id 
+                                ,TFEntities.Code
+                                ,TFEntities.Name 
+                                ,TFEntities.Logo
+                                ,TFEntityCategories.TFEntityKindLT 
                                 ,ISNULL(DealCodes.Code, '') AS GalileoTrackingCode 
-                                ,ISNULL((SELECT Description 
+                                , ISNULL((SELECT Description 
 							    FROM  [TravelForceCosmos].[dbo].TFEntityTags 
 							    LEFT JOIN [TravelForceCosmos].[dbo].Tags 
 								ON TFEntityTags.TagId = Tags.Id
@@ -29,11 +203,11 @@ Public Class CustomerItem
                                 AND TFEntities.CanHaveCT = 1 
                                 AND TFEntities.IsActive = 1 
                                 AND TFEntities.Code = @ClientCode "
-    ' SQL for Discovery
-    Private Const SQL2 As String = " SELECT ISNULL([Account_Id], 0) As Id 
-                            ,ISNULL([Account_Abbriviation], '') AS Code 
-                            ,ISNULL([Account_Name], '') AS Name 
-                            ,ISNULL([Account_Name], '') AS Logo 
+                Case 2 ' Discovery
+                    Return " Select [Account_Id] As Id 
+                            ,[Account_Abbriviation] AS Code 
+                            ,[Account_Name] AS Name 
+                            ,[Account_Name] AS Logo 
                             ,526 AS TFEntityKindLT 
                             ,'' AS GalileoTrackingCode 
                             ,'' AS OpsGroup
@@ -45,118 +219,11 @@ Public Class CustomerItem
 									 AND ISNULL(ctcPassengerFirstName, '') = '' 
 									 AND ISNULL(ctcPassengerLastName, '') = '') AS CTCCount
 
-                            FROM [Disco_Instone_EU].[dbo].[Company] 
-                            WHERE Account_Abbriviation = @ClientCode "
-
-    Private mobjCustomProperties As New CustomPropertiesCollection
-    Private mflgCustomProperties As Boolean
-    Private mobjAlerts As New AlertsCollection
-    Public Overrides Function ToString() As String
-        If CTCCount > 0 Then
-            Return Code & " " & Logo & " ==>"
-        Else
-            Return Code & " " & Logo
-        End If
-    End Function
-    Public ReadOnly Property BackOffice As Integer = 0
-    Public ReadOnly Property ID As Integer = 0
-    Public ReadOnly Property Code As String = ""
-    Public ReadOnly Property Name As String = ""
-    Public ReadOnly Property Logo As String = ""
-    ' TFEntityKind (from DB table [TravelForceCosmos].[dbo].[LookupTable])
-    ' 404 = Other
-    ' 405 = Individual
-    ' 406 = Corporate
-    ' 526 = Shipping Co
-    ' 527 = Travel Agency
-    Public ReadOnly Property EntityKindLT As Integer = 0
-    Public ReadOnly Property HasVessels As Boolean = False
-    Public ReadOnly Property HasDepartments As Boolean = False
-    Public ReadOnly Property OpsGroup As String = ""
-    Public ReadOnly Property CTCCount As Integer = 0
-    Public ReadOnly Property AlertForFinisher As String = ""
-    Public ReadOnly Property AlertForDownsell As String = ""
-    Public ReadOnly Property GalileoTrackingCode As String = ""
-    Public ReadOnly Property CustomerProperties As CustomPropertiesCollection
-        Get
-            If Not mflgCustomProperties Then
-                mobjCustomProperties.Load(ID, BackOffice)
-                mflgCustomProperties = True
-            End If
-            Return mobjCustomProperties
+                            From [Disco_Instone_EU].[dbo].[Company] 
+                            Where Account_Abbriviation = @ClientCode "
+                Case Else
+                    Return ""
+            End Select
         End Get
     End Property
-    Friend Sub New(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String, ByVal pLogo As String, ByVal pEntityKindLT As Integer, ByVal pAlertForFinisher As String, ByVal pAlertForDownsell As String, ByVal pGalileoTrackingCode As String, ByVal pOpsGroup As String, ByVal pCTCCount As Integer, ByVal pBackOffice As Integer)
-        ID = pID
-        Code = pCode
-        Name = pName.ToUpper
-        Logo = pLogo.ToUpper
-        EntityKindLT = pEntityKindLT
-        AlertForFinisher = pAlertForFinisher.Trim
-        AlertForDownsell = pAlertForDownsell.Trim
-        GalileoTrackingCode = pGalileoTrackingCode
-        OpsGroup = pOpsGroup
-        CTCCount = pCTCCount
-        BackOffice = pBackOffice
-        Select Case pEntityKindLT
-            Case 526, 527
-                HasDepartments = True
-                HasVessels = True
-            Case Else
-                HasDepartments = False
-                HasVessels = False
-        End Select
-        mflgCustomProperties = False
-    End Sub
-    Public Sub New(ByVal pCode As String, ByVal pBackOffice As Integer)
-
-        If pBackOffice <> 1 And pBackOffice <> 2 Then
-            Throw New Exception("CustomerItem.Load() - BackOffice not defined")
-        End If
-        mobjAlerts.Load()
-
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(pBackOffice))
-        Dim pobjComm As New SqlClient.SqlCommand
-        Dim pobjReader As SqlClient.SqlDataReader
-
-        pobjConn.Open()
-        pobjComm = pobjConn.CreateCommand
-
-        With pobjComm
-            .CommandType = CommandType.Text
-            .Parameters.Add("@ClientCode", SqlDbType.NVarChar, 20).Value = pCode
-            If pBackOffice = 1 Then
-                .CommandText = SQL1
-            ElseIf pBackOffice = 2 Then
-                .CommandText = SQL2
-            End If
-            pobjReader = .ExecuteReader
-        End With
-        With pobjReader
-            If pobjReader.Read Then
-                BackOffice = pBackOffice
-                ID = CInt(.Item("Id"))
-                Code = CStr(.Item("Code"))
-                Name = CStr(.Item("Name")).ToUpper
-                Logo = CStr(.Item("Logo")).ToUpper
-                EntityKindLT = CInt(.Item("TFEntityKindLT"))
-                AlertForFinisher = mobjAlerts.AlertForFinisher(pBackOffice, Code).Trim
-                AlertForDownsell = mobjAlerts.AlertForDownsell(pBackOffice, Code).Trim
-                GalileoTrackingCode = CStr(.Item("GalileoTrackingCode"))
-                OpsGroup = CStr(.Item("OpsGroup"))
-                CTCCount = CInt(.Item("CTCCount"))
-                Select Case EntityKindLT
-                    Case 526, 527
-                        HasDepartments = True
-                        HasVessels = True
-                    Case Else
-                        HasDepartments = False
-                        HasVessels = False
-                End Select
-                mflgCustomProperties = False
-                .Close()
-            End If
-        End With
-        pobjConn.Close()
-    End Sub
 End Class
