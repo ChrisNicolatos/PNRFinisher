@@ -41,16 +41,14 @@ Public Class frmPaxCTC
             PaxFromPNR = True
             mintBackOffice = pBackOfficeID
             mstrClientCode = pClientCode
-            mobjSelectedClient = New CustomerItem
-            mobjSelectedClient.Load(mstrClientCode, pBackOffice)
+            mobjSelectedClient = New CustomerItem(mstrClientCode, pBackOffice)
             mstrClientName = mobjSelectedClient.Name
             mstrVesselName = pVesselName
             lstClient.Items.Clear()
             lstVessel.Items.Clear()
             lstPassenger.Items.Clear()
 
-            mobjSelectedVessel = New VesselItem
-            mobjSelectedVessel.Load(mstrClientCode, mstrVesselName, pBackOffice)
+            mobjSelectedVessel = New VesselItem(mstrClientCode, mstrVesselName, pBackOffice)
             mobjCTCSelectedPax = New CTCPax(mintBackOffice, mobjSelectedClient.ID)
 
             DisplayInformation()

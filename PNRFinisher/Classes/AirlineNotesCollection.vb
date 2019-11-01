@@ -56,8 +56,7 @@ Public Class AirlineNotesCollection
         With pobjReader
             Do While .Read
                 pID += 1
-                pobjClass = New AirlineNotesItem
-                pobjClass.SetValues(CInt(.Item("anID")), CStr(.Item("anAirlineCode")), CStr(.Item("anFlightType")), CBool(.Item("anSeaman")),
+                pobjClass = New AirlineNotesItem(CInt(.Item("anID")), CStr(.Item("anAirlineCode")), CStr(.Item("anFlightType")), CBool(.Item("anSeaman")),
                                         CInt(.Item("anSeqNo")), CStr(.Item("GDSElement")), CStr(.Item("GDSText")), CStr(.Item("GDSEntry")))
                 MyBase.Add(pID, pobjClass)
             Loop

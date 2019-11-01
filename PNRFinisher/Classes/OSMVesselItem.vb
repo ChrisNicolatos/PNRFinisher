@@ -89,14 +89,11 @@ Public Class OSMVesselItem
         CheckValid()
     End Sub
     Private Sub CheckValid()
-
         With mudtProps
             .isValid = (.VesselName.Trim <> "")
         End With
-
     End Sub
     Public Sub Update()
-
         Try
             If mudtProps.isValid Then
 
@@ -140,8 +137,6 @@ Public Class OSMVesselItem
         Catch ex As Exception
             Throw New Exception("Update Vessel Error" & vbCrLf & ex.Message)
         End Try
-
-
     End Sub
 
 End Class

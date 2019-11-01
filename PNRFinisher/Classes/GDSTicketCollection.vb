@@ -20,10 +20,8 @@ Public Class GDSTicketCollection
 
         Try
             If pTicketNumber > 0 Then
-                pobjTicket = New GDSTicketItem
-
                 mintCount = mintCount + 1
-                pobjTicket.SetValues(pGDSLine, pTicketType, pTicketNumber, pTicketCount, IssuingAirline, AirlineCode, eTicket, Segs, Pax, TicketType, ServicesDescription)
+                pobjTicket = New GDSTicketItem(pGDSLine, pTicketType, pTicketNumber, pTicketCount, IssuingAirline, AirlineCode, eTicket, Segs, Pax, TicketType, ServicesDescription)
                 MyBase.Add(Format(mintCount), pobjTicket)
             End If
         Catch ex As Exception
@@ -38,19 +36,16 @@ Public Class GDSTicketCollection
         For Each objOSI As s1aPNR.OtherServiceElement In mobjPNR.OtherServiceElements
             If objOSI.Text.IndexOf("ATH VCHR") > 0 Then
                 ReDim Preserve mobjTickets(mobjTickets.GetUpperBound(0) + 1)
-                mobjTickets(mobjTickets.GetUpperBound(0)) = New GDSTicketItem
-                mobjTickets(mobjTickets.GetUpperBound(0)).SetElement(objOSI.Text, EnumTicketDocType.VCHR, "", "") ', "") ', "")
+                mobjTickets(mobjTickets.GetUpperBound(0)) = New GDSTicketItem(objOSI.Text, EnumTicketDocType.VCHR, "", "") ', "") ', "")
             End If
         Next
         For Each objFA As s1aPNR.FareAutoTktElement In mobjPNR.FareAutoTktElements
             If objFA.Text.Replace(" ", "").Contains(MySettings.GDSPcc) Then
                 ReDim Preserve mobjTickets(mobjTickets.GetUpperBound(0) + 1)
-                mobjTickets(mobjTickets.GetUpperBound(0)) = New GDSTicketItem
-                mobjTickets(mobjTickets.GetUpperBound(0)).SetElement(objFA.Text, EnumTicketDocType.ETKT, BuildPaxname(objFA.Associations.Passengers), BuildSegments(objFA.Associations.Segments)) ', "") ', "")
+                mobjTickets(mobjTickets.GetUpperBound(0)) = New GDSTicketItem(objFA.Text, EnumTicketDocType.ETKT, BuildPaxname(objFA.Associations.Passengers), BuildSegments(objFA.Associations.Segments)) ', "") ', "")
             Else
                 ReDim Preserve mobjTickets(mobjTickets.GetUpperBound(0) + 1)
-                mobjTickets(mobjTickets.GetUpperBound(0)) = New GDSTicketItem
-                mobjTickets(mobjTickets.GetUpperBound(0)).SetElement(objFA.Text, EnumTicketDocType.INTR, BuildPaxname(objFA.Associations.Passengers), BuildSegments(objFA.Associations.Segments)) ', "") ', "")
+                mobjTickets(mobjTickets.GetUpperBound(0)) = New GDSTicketItem(objFA.Text, EnumTicketDocType.INTR, BuildPaxname(objFA.Associations.Passengers), BuildSegments(objFA.Associations.Segments)) ', "") ', "")
             End If
         Next
 

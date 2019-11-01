@@ -1,41 +1,19 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class SubDepartmentItem
-    Private Structure ClassProps
-        Dim ID As Integer
-        Dim Code As String
-        Dim Name As String
-    End Structure
-    Private mudtProps As ClassProps
     Public Overrides Function ToString() As String
-        With mudtProps
-            Return .Code & " " & .Name
-        End With
+        Return Code & " " & Name
     End Function
     Public ReadOnly Property ID() As Integer
-        Get
-            Return mudtProps.ID
-        End Get
-    End Property
     Public ReadOnly Property Code() As String
-        Get
-            Return mudtProps.Code
-        End Get
-    End Property
     Public ReadOnly Property Name() As String
-        Get
-            Return mudtProps.Name
-        End Get
-    End Property
-    Friend Sub SetValues(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String)
-        With mudtProps
-            .ID = pID
-            .Code = pCode
-            .Name = pName
-        End With
+    Public Sub New(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String)
+        ID = pID
+        Code = pCode
+        Name = pName
     End Sub
 
-    Public Sub Load(ByVal pSubID As Integer, ByVal pBackOffice As Integer)
+    Public Sub New(ByVal pSubID As Integer, ByVal pBackOffice As Integer)
         If pBackOffice = 1 Then
 
             Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(pBackOffice))
@@ -58,7 +36,9 @@ Public Class SubDepartmentItem
             End With
             With pobjReader
                 Do While .Read
-                    SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")))
+                    ID = CInt(.Item("Id"))
+                    Code = CStr(.Item("Code"))
+                    Name = CStr(.Item("Name"))
                 Loop
                 .Close()
             End With

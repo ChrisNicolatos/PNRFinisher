@@ -37,9 +37,8 @@ Public Class CustomPropertiesCollection
 
         pSubDepartments.Load(pEntityID, pBackOffice)
         If pSubDepartments.Count > 0 Then
-            pobjClass = New CustomPropertiesItem
-            pobjClass.SetValues(901, EnumCustomPropertyID.SubDepartment, pSubDepartments, True, CustomPropertyRequiredType.PropertyReqToSave, "SubDepartment", pEntityID, pBackOffice)
-            If pobjClass.Value.Count > 0 Then
+            pobjClass = New CustomPropertiesItem(901, EnumCustomPropertyID.SubDepartment, pSubDepartments, True, CustomPropertyRequiredType.PropertyReqToSave, "SubDepartment", pEntityID, pBackOffice)
+            If pobjClass.Values.Count > 0 Then
                 MyBase.Add(pobjClass.ID, pobjClass)
                 mflgSubDepartment = True
             Else
@@ -54,9 +53,8 @@ Public Class CustomPropertiesCollection
 
         pCRM.Load(pEntityID, pBackOffice)
         If pCRM.Count > 0 Then
-            pobjClass = New CustomPropertiesItem
-            pobjClass.SetValues(902, EnumCustomPropertyID.CRM, pCRM, True, CustomPropertyRequiredType.PropertyOptional, "CRM Invoicing Address", pEntityID, pBackOffice)
-            If pobjClass.Value.Count > 0 Then
+            pobjClass = New CustomPropertiesItem(902, EnumCustomPropertyID.CRM, pCRM, True, CustomPropertyRequiredType.PropertyOptional, "CRM Invoicing Address", pEntityID, pBackOffice)
+            If pobjClass.Values.Count > 0 Then
                 MyBase.Add(pobjClass.ID, pobjClass)
                 mflgCRM = True
             Else
@@ -66,8 +64,7 @@ Public Class CustomPropertiesCollection
     End Sub
     Private Sub AddReference(ByVal pEntityID As Integer, ByVal pBackOffice As Integer)
 
-        Dim pobjClass As New CustomPropertiesItem
-        pobjClass.SetValues(903, EnumCustomPropertyID.Reference, "", False, CustomPropertyRequiredType.PropertyOptional, "Reference", pEntityID, pBackOffice)
+        Dim pobjClass As New CustomPropertiesItem(903, EnumCustomPropertyID.Reference, "", False, CustomPropertyRequiredType.PropertyOptional, "Reference", pEntityID, pBackOffice)
         MyBase.Add(pobjClass.ID, pobjClass)
         mflgCRM = True
 
@@ -101,8 +98,7 @@ Public Class CustomPropertiesCollection
 
             With pobjReader
                 Do While .Read
-                    pobjClass = New CustomPropertiesItem
-                    pobjClass.SetValues(CInt(.Item("Id")), CType(.Item("CustomPropertyID"), EnumCustomPropertyID), CStr(.Item("LookUpValues")), CBool(.Item("LimitToLookUp")), CType(.Item("LTRequiredTypeID"), CustomPropertyRequiredType), CStr(.Item("Label")), CInt(.Item("TFEntityID")), pBackOffice)
+                    pobjClass = New CustomPropertiesItem(CInt(.Item("Id")), CType(.Item("CustomPropertyID"), EnumCustomPropertyID), CStr(.Item("LookUpValues")), CBool(.Item("LimitToLookUp")), CType(.Item("LTRequiredTypeID"), CustomPropertyRequiredType), CStr(.Item("Label")), CInt(.Item("TFEntityID")), pBackOffice)
                     MyBase.Add(pobjClass.ID, pobjClass)
                     If pobjClass.CustomPropertyID = EnumCustomPropertyID.BookedBy Then
                         mflgBookedBy = True
@@ -119,25 +115,22 @@ Public Class CustomPropertiesCollection
             pobjConn.Close()
         Else
             Dim pobjClass As CustomPropertiesItem
-            pobjClass = New CustomPropertiesItem
-            pobjClass.SetValues(1, EnumCustomPropertyID.BookedBy, "", True, CustomPropertyRequiredType.PropertyReqToSave, "BookedBy", pEntityID, pBackOffice)
-            If pobjClass.Value.Count > 0 Then
+            pobjClass = New CustomPropertiesItem(1, EnumCustomPropertyID.BookedBy, "", True, CustomPropertyRequiredType.PropertyReqToSave, "BookedBy", pEntityID, pBackOffice)
+            If pobjClass.Values.Count > 0 Then
                 MyBase.Add(pobjClass.ID, pobjClass)
                 mflgBookedBy = True
             Else
                 mflgBookedBy = False
             End If
-            pobjClass = New CustomPropertiesItem
-            pobjClass.SetValues(4, EnumCustomPropertyID.ReasonFortravel, "", True, CustomPropertyRequiredType.PropertyReqToSave, "ReasonFortravel", pEntityID, pBackOffice)
-            If pobjClass.Value.Count > 0 Then
+            pobjClass = New CustomPropertiesItem(4, EnumCustomPropertyID.ReasonFortravel, "", True, CustomPropertyRequiredType.PropertyReqToSave, "ReasonFortravel", pEntityID, pBackOffice)
+            If pobjClass.Values.Count > 0 Then
                 MyBase.Add(pobjClass.ID, pobjClass)
                 mflgReasonForTravel = True
             Else
                 mflgReasonForTravel = False
             End If
-            pobjClass = New CustomPropertiesItem
-            pobjClass.SetValues(5, EnumCustomPropertyID.CostCentre, "", True, CustomPropertyRequiredType.PropertyReqToSave, "CostCentre", pEntityID, pBackOffice)
-            If pobjClass.Value.Count > 0 Then
+            pobjClass = New CustomPropertiesItem(5, EnumCustomPropertyID.CostCentre, "", True, CustomPropertyRequiredType.PropertyReqToSave, "CostCentre", pEntityID, pBackOffice)
+            If pobjClass.Values.Count > 0 Then
                 MyBase.Add(pobjClass.ID, pobjClass)
                 mflgCostCentre = True
             Else

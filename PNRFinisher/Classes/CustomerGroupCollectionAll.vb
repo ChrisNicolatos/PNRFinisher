@@ -43,8 +43,7 @@ Public Class CustomerGroupCollectionAll
 
         With pobjReader
             Do While .Read
-                pobjClass = New CustomerGroupItem
-                pobjClass.SetValues(CInt(.Item("Id")), CStr(.Item("Description")))
+                pobjClass = New CustomerGroupItem(CInt(.Item("Id")), CStr(.Item("Description")))
                 MyBase.Add(pobjClass.ID, pobjClass)
             Loop
             .Close()

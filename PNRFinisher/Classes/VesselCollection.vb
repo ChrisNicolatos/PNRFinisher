@@ -34,8 +34,7 @@ Public Class VesselCollection
 
         With pobjReader
             Do While .Read
-                pobjClass = New VesselItem
-                pobjClass.SetValues(CStr(.Item("Name")), CStr(.Item("Flag")))
+                pobjClass = New VesselItem(CStr(.Item("Name")), CStr(.Item("Flag")))
                 If pobjClass.ToString <> "" And Not MyBase.ContainsKey(pobjClass.ToString) Then
                     MyBase.Add(pobjClass.ToString, pobjClass)
                 End If

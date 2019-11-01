@@ -104,12 +104,46 @@ Public Class frmPNR
     ' ppRank
     ' ppEmail
     ' ppMobile
+
     ' AFTER THE NEW VERSION HAS BEEN INSTALLED 
     ' 18/06/2019 16:46  (PNRFinisher_3_0_0_17)
     ' 1. Added an option for CO2 allowance in the itineraries
-
-
-    ' TODO
+    ' 26/09/2019 14:21  (PNRFinisher_3_0_0_18)
+    ' 1. Change classes to use auto properties. Remove ClassProps structure where possible. Also remove "Sub SetValues" where possible and use the New constructor instead.
+    '    The following classes have been changed:
+    '    AirlineNotesItem
+    '    AlertsItem
+    '    BaggageAllowanceItem
+    '    CloseOffEntriesItem
+    '    CO2Item
+    '    ConditionalGDSEntryItem
+    '    CostCentreLookupItem
+    '    CRMItem
+    '    CustomerItem
+    '    CustomPropertiesItem
+    '    DIItem
+    '    DownsellItem
+    '    EmailItem
+    '    FrequentFlyerItem
+    '    GDSExistingItem
+    '    GDSItineraryRemarksItem
+    '    GDSNewItem
+    '    GDSSegItem
+    '    GDSTicketItem
+    '    OpenSegmentItem
+    '    OptionQueueItem
+    '    OSMPaxItem
+    '    OSMVessel_VesselGroupItem
+    '    OSMVesselGroupItem
+    '    PhoneNumbersItem
+    '    ReferenceItem
+    '    RemarksItem
+    '    SSRitem
+    '    SubDepartmentItem
+    '    VesselItem
+    '
+    '
+    ' TODO - Requirements that have to be added
     ' 1. start setting up the Finisher to handle scenarios (OSM/Takis)
     ' Scenarios will be set up depending on the type of booking:
     '   - ATH booking with ATH tickets - this is the normal everyday case all remarks pertain to one office
@@ -131,6 +165,8 @@ Public Class frmPNR
     '    Give an option to the user to select which items should be entered - None, ID, ID-Rank, ID-Rank-Nationality, Rank only, etc
     '    Possibly set up a field to specify the required format per client
     ' 4. One time vessel is not working
+    ' 5. OSM LoG must have an option to change the company name who guarantees the expenses and not default always to the client's name
+    ' 6. Optimize screen does not show up to all users
     Private mSelectedGDSCode As EnumGDSCode
     Private mflgLoading As Boolean
     Private mflgLoadingItin As Boolean
@@ -305,7 +341,7 @@ Public Class frmPNR
             If Not mflgLoading Then
                 If Not MySettings Is Nothing Then
                     mobjPNR.NewElements.SetVesselForPNR("", "")
-                    mobjPNR.NewElements.VesselName.SetText(txtVessel.Text)
+                    mobjPNR.NewElements.VesselName = New GDSNewItem(txtVessel.Text)
                     PopulateVesselsList()
                 End If
             End If
@@ -380,7 +416,7 @@ Public Class frmPNR
             If pFrm.ShowDialog() <> Windows.Forms.DialogResult.Cancel Then
                 If Not MySettings Is Nothing Then
                     mobjPNR.NewElements.SetVesselForPNR("", "")
-                    mobjPNR.NewElements.VesselName.SetText(pFrm.VesselName & If(pFrm.Registration <> "", " REG " & pFrm.Registration, ""))
+                    mobjPNR.NewElements.VesselName = New GDSNewItem(pFrm.VesselName & If(pFrm.Registration <> "", " REG " & pFrm.Registration, ""))
                     mflgLoading = True
                     txtVessel.Text = pFrm.VesselName & If(pFrm.Registration <> "", " REG " & pFrm.Registration, "")
                     'PopulateVesselsList()
@@ -488,430 +524,6 @@ Public Class frmPNR
 
     End Sub
 
-    Private Sub cmdItn1AReadPNR_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadPNR.Click
-
-        mSelectedGDSCode = EnumGDSCode.Amadeus
-        mobjPNR = New GDSReadPNR(mSelectedGDSCode)
-        Try
-            Cursor = System.Windows.Forms.Cursors.WaitCursor
-            Dim mGDSUser As New GDSUser(EnumGDSCode.Amadeus)
-            InitSettings(mGDSUser, 0)
-            SetupPCCOptions()
-            lblItnPNRCounter.Text = ""
-            ProcessRequestedPNRs(txtItnPNR)
-            CopyItinToClipboard()
-            cmdItnRefresh.Enabled = False
-            cmdItnFormatOSMLoG.Enabled = True
-            Cursor = Cursors.Default
-            MessageBox.Show("Ready", "Read PNR", MessageBoxButtons.OK, MessageBoxIcon.Information)
-        Catch ex As Exception
-            Cursor = Cursors.Default
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub cmdItnReadQueue_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadQueue.Click
-
-        Try
-            mSelectedGDSCode = EnumGDSCode.Amadeus
-            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
-            lblItnPNRCounter.Text = ""
-            Cursor = System.Windows.Forms.Cursors.WaitCursor
-            txtItnPNR.Text = mobjPNR.RetrievePNRsFromQueue(txtItnPNR.Text)
-            Dim mGDSUser As New GDSUser(mSelectedGDSCode)
-            InitSettings(mGDSUser, 0)
-            SetupPCCOptions()
-            ProcessRequestedPNRs(txtItnPNR)
-            CopyItinToClipboard()
-            cmdItnRefresh.Enabled = False
-            cmdItnFormatOSMLoG.Enabled = False
-            Cursor = Cursors.Default
-            MessageBox.Show("Ready", "Read PNR", MessageBoxButtons.OK, MessageBoxIcon.Information)
-        Catch ex As Exception
-            Cursor = Cursors.Default
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub cmdItnRead1ACurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadCurrent.Click
-        Try
-            mSelectedGDSCode = EnumGDSCode.Amadeus
-            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
-            ITNReadCurrent()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-    Private Sub cmdItnRead1GCurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1GReadCurrent.Click
-        Try
-            mSelectedGDSCode = EnumGDSCode.Galileo
-            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
-            ITNReadCurrent()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-    Private Sub ITNReadCurrent()
-        Try
-            ItnReadCurrentPNR()
-            ShowPriceOptimiser()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub cmdItnRefresh_Click(sender As Object, e As EventArgs) Handles cmdItnRefresh.Click
-
-        Try
-            ReadPNRandCreateItn(True)
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-    Private Sub optItnAirportCode_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportCode.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.AirportName = 0
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-    Private Sub optItnAirportname_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportname.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.AirportName = 1
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub optItnAirportBoth_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportBoth.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.AirportName = 2
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub optItnAirportCityName_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportCityName.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.AirportName = 3
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub optItnAirportCityBoth_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportCityBoth.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.AirportName = 4
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkItnVessel_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnVessel.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowVessel = chkItnVessel.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkItnClass_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnClass.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowClassOfService = chkItnClass.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkItnAirlineLocator_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnAirlineLocator.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowAirlineLocator = chkItnAirlineLocator.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkItnTickets_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnTickets.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowTickets = chkItnTickets.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-    Private Sub chkItnEMD_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnEMD.CheckedChanged
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowEMD = chkItnEMD.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub chkPaxSegPerTicket_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnPaxSegPerTicket.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowPaxSegPerTkt = chkItnPaxSegPerTicket.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkSeating_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnSeating.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowSeating = chkItnSeating.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkTerminal_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnTerminal.CheckedChanged
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowTerminal = chkItnTerminal.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkStopovers_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnStopovers.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowStopovers = chkItnStopovers.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkItnFlyingTime_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnFlyingTime.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowFlyingTime = chkItnFlyingTime.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkItnCostCentre_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnCostCentre.CheckedChanged
-
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowCostCentre = chkItnCostCentre.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
-
-    Private Sub chkItnCabinDescription_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnCabinDescription.CheckedChanged
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowCabinDescription = chkItnCabinDescription.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub chkItnItinRemarks_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnItinRemarks.CheckedChanged
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowItinRemarks = chkItnItinRemarks.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub chkItnEquipmentCode_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnEquipmentCode.CheckedChanged
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowEquipmentCode = chkItnEquipmentCode.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub chkItnCO2_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnCO2.CheckedChanged
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    MySettings.ShowCO2 = chkItnCO2.Checked
-                    MySettings.Save()
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
     Private Sub txtPNR_TextChanged(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles txtItnPNR.TextChanged
 
         Try
@@ -1522,10 +1134,10 @@ Public Class frmPNR
     Private Sub ClearForm()
 
         Try
-            mobjCustomerSelected = New CustomerItem
-            mobjSubDepartmentSelected = New SubDepartmentItem
-            mobjCRMSelected = New CRMItem
-            mobjVesselSelected = New VesselItem
+            mobjCustomerSelected = Nothing
+            mobjSubDepartmentSelected = Nothing
+            mobjCRMSelected = Nothing
+            mobjVesselSelected = Nothing
             mobjAirlinePoints = New AirlinePointsCollection
             mobjCTC = New CTCPaxCollection
             mfrmCTC.Dispose()
@@ -1574,8 +1186,9 @@ Public Class frmPNR
                 cmdPriceOptimiser.Visible = False
             End If
 
-            mobjPNR.ExistingElements.Clear()
-            mobjPNR.NewElements.Clear()
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
+            'mobjPNR.ExistingElements.Clear()
+            'mobjPNR.NewElements.Clear()
 
             mflgAPISUpdate = False
             mflgExpiryDateOK = False
@@ -2044,25 +1657,22 @@ Public Class frmPNR
             End With
 
             If pstrCustomerCode <> "" Then
-                Dim pCustomer As New CustomerItem
-                pCustomer.Load(pstrCustomerCode, MySettings.PCCBackOffice)
+                Dim pCustomer As New CustomerItem(pstrCustomerCode, MySettings.PCCBackOffice)
                 txtCustomer.Text = pCustomer.Code
                 If pintSubDepartment <> 0 Then
-                    Dim pSub As New SubDepartmentItem
-                    pSub.Load(pintSubDepartment, MySettings.PCCBackOffice)
+                    Dim pSub As New SubDepartmentItem(pintSubDepartment, MySettings.PCCBackOffice)
                     txtSubdepartment.Text = pSub.Code & " " & pSub.Name
                 End If
                 If Not pstrCRM Is Nothing AndAlso pstrCRM.Length > 0 Then
-                    Dim pSub As New CRMItem
-                    pSub.Load(pstrCRM, MySettings.PCCBackOffice)
+                    Dim pSub As New CRMItem(pstrCRM, MySettings.PCCBackOffice)
                     txtCRM.Text = pSub.Code & " " & pSub.Name
                 End If
 
                 If pstrVesselName <> "" Then
-                    Dim pVessel As New VesselItem
-                    If pVessel.Load(pstrCustomerCode, pstrVesselName, MySettings.PCCBackOffice) Then
-                        mobjPNR.NewElements.VesselNameForPNR.Clear()
-                        mobjPNR.NewElements.VesselFlagForPNR.Clear()
+                    Dim pVessel As New VesselItem(pstrCustomerCode, pstrVesselName, MySettings.PCCBackOffice)
+                    If pVessel.Loaded Then
+                        mobjPNR.NewElements.VesselNameForPNR = New GDSNewItem
+                        mobjPNR.NewElements.VesselFlagForPNR = New GDSNewItem
                         txtVessel.Text = pVessel.Name
                     Else
                         mobjPNR.NewElements.SetVesselForPNR(pstrVesselName, pstrVesselRegistration)
@@ -2095,46 +1705,49 @@ Public Class frmPNR
         Try
             Dim pFound As String = ""
             Dim pNotFound As String = ""
-            mobjCTC.Load(MySettings.PCCBackOffice, mobjCustomerSelected.ID)
-            For Each pPax As GDSPaxItem In mobjPNR.Passengers.Values
-                Dim pCTCCommand() As String = {""}
-                Dim pCTCFound As Boolean = False
-                For Each pCTC As CTCPax In mobjCTC.Values
-                    If pPax.FirstName = pCTC.FirstName And pPax.LastName = pCTC.Lastname Then
-                        pCTCCommand = PrepareCTCCommand(pPax.ElementNo, pCTC)
-                        pCTCFound = (pCTCCommand(0) <> "")
-                        Exit For
+            If Not mobjCustomerSelected Is Nothing Then
+
+                mobjCTC.Load(MySettings.PCCBackOffice, mobjCustomerSelected.ID)
+                For Each pPax As GDSPaxItem In mobjPNR.Passengers.Values
+                    Dim pCTCCommand() As String = {""}
+                    Dim pCTCFound As Boolean = False
+                    For Each pCTC As CTCPax In mobjCTC.Values
+                        If pPax.FirstName = pCTC.FirstName And pPax.LastName = pCTC.Lastname Then
+                            pCTCCommand = PrepareCTCCommand(pPax.ElementNo, pCTC)
+                            pCTCFound = (pCTCCommand(0) <> "")
+                            Exit For
+                        End If
+                    Next
+                    If Not pCTCFound Then
+                        For Each pCTC As CTCPax In mobjCTC.Values
+                            If pCTC.Vesselname = mobjPNR.VesselName And pCTC.FirstName = "" And pCTC.Lastname = "" Then
+                                pCTCCommand = PrepareCTCCommand(pPax.ElementNo, pCTC)
+                                pCTCFound = (pCTCCommand(0) <> "")
+                                Exit For
+                            End If
+                        Next
+                    End If
+                    If Not pCTCFound Then
+                        For Each pCTC As CTCPax In mobjCTC.Values
+                            If pCTC.Vesselname = "" And pCTC.FirstName = "" And pCTC.Lastname = "" Then
+                                pCTCCommand = PrepareCTCCommand(pPax.ElementNo, pCTC)
+                                pCTCFound = (pCTCCommand(0) <> "")
+                                Exit For
+                            End If
+                        Next
+                    End If
+                    If pCTCFound Then
+                        For i As Integer = 0 To pCTCCommand.GetUpperBound(0)
+                            If pCTCCommand(i) <> "" Then
+                                lstAirlineEntries.Items.Add(pCTCCommand(i), True)
+                            End If
+                        Next
+                        pFound &= pPax.ElementNo & " "
+                    Else
+                        pNotFound &= pPax.ElementNo & " "
                     End If
                 Next
-                If Not pCTCFound Then
-                    For Each pCTC As CTCPax In mobjCTC.Values
-                        If pCTC.Vesselname = mobjPNR.VesselName And pCTC.FirstName = "" And pCTC.Lastname = "" Then
-                            pCTCCommand = PrepareCTCCommand(pPax.ElementNo, pCTC)
-                            pCTCFound = (pCTCCommand(0) <> "")
-                            Exit For
-                        End If
-                    Next
-                End If
-                If Not pCTCFound Then
-                    For Each pCTC As CTCPax In mobjCTC.Values
-                        If pCTC.Vesselname = "" And pCTC.FirstName = "" And pCTC.Lastname = "" Then
-                            pCTCCommand = PrepareCTCCommand(pPax.ElementNo, pCTC)
-                            pCTCFound = (pCTCCommand(0) <> "")
-                            Exit For
-                        End If
-                    Next
-                End If
-                If pCTCFound Then
-                    For i As Integer = 0 To pCTCCommand.GetUpperBound(0)
-                        If pCTCCommand(i) <> "" Then
-                            lstAirlineEntries.Items.Add(pCTCCommand(i), True)
-                        End If
-                    Next
-                    pFound &= pPax.ElementNo & " "
-                Else
-                    pNotFound &= pPax.ElementNo & " "
-                End If
-            Next
+            End If
 
             Dim pSSR As Boolean = False
             If mflgReadPNR AndAlso mobjPNR.SSRCTCExists Then
@@ -2183,7 +1796,7 @@ Public Class frmPNR
         Try
             Dim pFound As Boolean = False
 
-            If mobjCustomerSelected.ID <> 0 Then
+            If Not mobjCustomerSelected Is Nothing AndAlso mobjCustomerSelected.ID <> 0 Then
                 'Dim pAirlinePoints As New AirlinePointsCollection
                 For Each pSeg As GDSSegItem In mobjPNR.Segments.Values
                     mobjAirlinePoints.Load(mobjCustomerSelected.ID, pSeg.Airline, mobjPNR.GDSCode, MySettings.PCCBackOffice)
@@ -2423,7 +2036,7 @@ Public Class frmPNR
             If pProp.RequiredType = CustomPropertyRequiredType.PropertyOptional Then
                 cmbCombo.Items.Add("")
             End If
-            For Each pItem As CustomPropertiesValues In pProp.Value.Values
+            For Each pItem As CustomPropertiesValues In pProp.Values.Values
                 cmbCombo.Items.Add(pItem.Value)
             Next
             'For i As Integer = 0 To pProp.ValuesCount - 1
@@ -2471,8 +2084,6 @@ Public Class frmPNR
 
     End Sub
     Private Sub SetEnabled()
-
-        Dim pProps As CustomPropertiesItem
 
         Try
             ' read PNR and Exit are always enabled
@@ -2572,7 +2183,7 @@ Public Class frmPNR
             If pCombo.Enabled Then
                 pProps = CType(pCombo.Tag, CustomPropertiesItem)
                 If Not pProps Is Nothing Then
-                    pLabel.Text = pProps.Label
+                    pLabel.Text = pProps.PropertyLabel
                     If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                         cmdPNRWrite.Enabled = False
                     End If
@@ -2589,7 +2200,7 @@ Public Class frmPNR
             If pText.Enabled Then
                 pProps = CType(pText.Tag, CustomPropertiesItem)
                 If Not pProps Is Nothing Then
-                    pLabel.Text = pProps.Label
+                    pLabel.Text = pProps.PropertyLabel
                     If pProps.RequiredType = CustomPropertyRequiredType.PropertyReqToSave Then
                         cmdPNRWrite.Enabled = False
                     End If
@@ -2637,8 +2248,8 @@ Public Class frmPNR
                     Dim pUserId As String = MySettings.GDSUser
                     ' for testing only
 #If DEBUG Then
-                    'pPCC = "750B"
-                    'pUserId = "038981"
+                    'pPCC = "ATHG42100"
+                    'pUserId = "9680TN"
 #End If
                     'pPCC = "750B"
                     'pUserId = "051244"
@@ -2864,5 +2475,430 @@ Public Class frmPNR
     End Sub
 
 #End Region
+    Private Sub ITNReadCurrent()
+        Try
+            ItnReadCurrentPNR()
+            ShowPriceOptimiser()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub cmdItn1AReadPNR_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadPNR.Click
+
+        mSelectedGDSCode = EnumGDSCode.Amadeus
+        mobjPNR = New GDSReadPNR(mSelectedGDSCode)
+        Try
+            Cursor = System.Windows.Forms.Cursors.WaitCursor
+            Dim mGDSUser As New GDSUser(EnumGDSCode.Amadeus)
+            InitSettings(mGDSUser, 0)
+            SetupPCCOptions()
+            lblItnPNRCounter.Text = ""
+            ProcessRequestedPNRs(txtItnPNR)
+            CopyItinToClipboard()
+            cmdItnRefresh.Enabled = False
+            cmdItnFormatOSMLoG.Enabled = True
+            Cursor = Cursors.Default
+            MessageBox.Show("Ready", "Read PNR", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            Cursor = Cursors.Default
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub cmdItnReadQueue_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadQueue.Click
+
+        Try
+            mSelectedGDSCode = EnumGDSCode.Amadeus
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
+            lblItnPNRCounter.Text = ""
+            Cursor = System.Windows.Forms.Cursors.WaitCursor
+            txtItnPNR.Text = mobjPNR.RetrievePNRsFromQueue(txtItnPNR.Text)
+            Dim mGDSUser As New GDSUser(mSelectedGDSCode)
+            InitSettings(mGDSUser, 0)
+            SetupPCCOptions()
+            ProcessRequestedPNRs(txtItnPNR)
+            CopyItinToClipboard()
+            cmdItnRefresh.Enabled = False
+            cmdItnFormatOSMLoG.Enabled = False
+            Cursor = Cursors.Default
+            MessageBox.Show("Ready", "Read PNR", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            Cursor = Cursors.Default
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub cmdItnRead1ACurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadCurrent.Click
+        Try
+            mSelectedGDSCode = EnumGDSCode.Amadeus
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
+            ITNReadCurrent()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+    Private Sub cmdItnRead1GCurrent_Click(sender As Object, e As EventArgs) Handles cmdItn1GReadCurrent.Click
+        Try
+            mSelectedGDSCode = EnumGDSCode.Galileo
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
+            ITNReadCurrent()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub cmdItnRefresh_Click(sender As Object, e As EventArgs) Handles cmdItnRefresh.Click
+
+        Try
+            ReadPNRandCreateItn(True)
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+    Private Sub optItnAirportCode_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportCode.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.AirportName = 0
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+    Private Sub optItnAirportname_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportname.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.AirportName = 1
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub optItnAirportBoth_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportBoth.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.AirportName = 2
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub optItnAirportCityName_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportCityName.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.AirportName = 3
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub optItnAirportCityBoth_CheckedChanged(sender As Object, e As EventArgs) Handles optItnAirportCityBoth.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.AirportName = 4
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkItnVessel_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnVessel.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowVessel = chkItnVessel.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkItnClass_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnClass.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowClassOfService = chkItnClass.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkItnAirlineLocator_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnAirlineLocator.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowAirlineLocator = chkItnAirlineLocator.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkItnTickets_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnTickets.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowTickets = chkItnTickets.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+    Private Sub chkItnEMD_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnEMD.CheckedChanged
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowEMD = chkItnEMD.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub chkPaxSegPerTicket_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnPaxSegPerTicket.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowPaxSegPerTkt = chkItnPaxSegPerTicket.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkSeating_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnSeating.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowSeating = chkItnSeating.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkTerminal_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnTerminal.CheckedChanged
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowTerminal = chkItnTerminal.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkStopovers_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnStopovers.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowStopovers = chkItnStopovers.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkItnFlyingTime_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnFlyingTime.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowFlyingTime = chkItnFlyingTime.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkItnCostCentre_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnCostCentre.CheckedChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowCostCentre = chkItnCostCentre.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub chkItnCabinDescription_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnCabinDescription.CheckedChanged
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowCabinDescription = chkItnCabinDescription.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub chkItnItinRemarks_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnItinRemarks.CheckedChanged
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowItinRemarks = chkItnItinRemarks.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub chkItnEquipmentCode_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnEquipmentCode.CheckedChanged
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowEquipmentCode = chkItnEquipmentCode.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub chkItnCO2_CheckedChanged(sender As Object, e As EventArgs) Handles chkItnCO2.CheckedChanged
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    MySettings.ShowCO2 = chkItnCO2.Checked
+                    MySettings.Save()
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
 
 End Class

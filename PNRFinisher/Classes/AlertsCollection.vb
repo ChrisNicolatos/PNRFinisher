@@ -32,8 +32,7 @@ Public Class AlertsCollection
 
         With pobjReader
             Do While .Read
-                pobjClass = New AlertsItem
-                pobjClass.SetValues(CInt(.Item("pnaBOId_fkey")), CStr(.Item("pnaClientCode")), CStr(.Item("pnaAlert")), CStr(.Item("pnaOriginCountry")), CStr(.Item("pnaDestinationCountry")), CStr(.Item("pnaAirline")), CStr(.Item("pnaAmadeusQueue")), CStr(.Item("pnaGalileoQueue")), CStr(.Item("pnaAlertForDownsell")))
+                pobjClass = New AlertsItem(CInt(.Item("pnaBOId_fkey")), CStr(.Item("pnaClientCode")), CStr(.Item("pnaAlert")), CStr(.Item("pnaOriginCountry")), CStr(.Item("pnaDestinationCountry")), CStr(.Item("pnaAirline")), CStr(.Item("pnaAmadeusQueue")), CStr(.Item("pnaGalileoQueue")), CStr(.Item("pnaAlertForDownsell")))
                 MyBase.Add(.Item("pnaID").ToString, pobjClass)
             Loop
         End With

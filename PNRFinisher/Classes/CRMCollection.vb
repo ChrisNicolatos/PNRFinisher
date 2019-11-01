@@ -34,8 +34,7 @@ Public Class CRMCollection
 
             With pobjReader
                 Do While .Read
-                    pobjClass = New CRMItem
-                    pobjClass.SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")), mobjAlerts.AlertForFinisher(pBackOffice, CStr(.Item("Code"))))
+                    pobjClass = New CRMItem(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")), mobjAlerts.AlertForFinisher(pBackOffice, CStr(.Item("Code"))))
                     MyBase.Add(pobjClass.ID, pobjClass)
                 Loop
                 .Close()

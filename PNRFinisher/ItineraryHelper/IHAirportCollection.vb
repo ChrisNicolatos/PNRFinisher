@@ -13,8 +13,7 @@ Public Class IHAirportCollection
             pCityCode = MyBase.Item(AirportCode).CityCode
         Else
             If AirportCode = "..." Then
-                Dim pItem As New IHAirportItem
-                pItem.SetValues("...", "A", "...", "ANY AIRPORT")
+                Dim pItem As New IHAirportItem("...", "A", "...", "ANY AIRPORT")
                 MyBase.Add(pItem.Code, pItem)
             Else
                 ReadDB(AirportCode)
@@ -65,8 +64,7 @@ Public Class IHAirportCollection
         End With
         With pobjReader
             Do While .Read
-                Dim pItem As New IHAirportItem
-                pItem.SetValues(CStr(.Item("AirportCode")), CStr(.Item("CodeType")), CStr(.Item("cityCode")), CStr(.Item("Name")))
+                Dim pItem As New IHAirportItem(CStr(.Item("AirportCode")), CStr(.Item("CodeType")), CStr(.Item("cityCode")), CStr(.Item("Name")))
                 If Not MyBase.ContainsKey(pItem.Code) Then
                     MyBase.Add(pItem.Code, pItem)
                 End If

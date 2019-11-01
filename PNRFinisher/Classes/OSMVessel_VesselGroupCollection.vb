@@ -31,9 +31,8 @@ Public Class OSMVessel_VesselGroupCollection
         Dim pId As Integer = 0
         With pobjReader
             Do While .Read
-                pobjClass = New OSMVessel_VesselGroupItem
                 pId += 1
-                pobjClass.SetValues(pId, CInt(.Item("osmvId")), CInt(.Item("osmvrId")), CStr(.Item("osmvVesselName")), CStr(.Item("osmvrGroupName")), CInt(.Item("osmvId_fkey")))
+                pobjClass = New OSMVessel_VesselGroupItem(pId, CInt(.Item("osmvId")), CInt(.Item("osmvrId")), CStr(.Item("osmvVesselName")), CStr(.Item("osmvrGroupName")), CInt(.Item("osmvId_fkey")))
                 MyBase.Add(pobjClass.Id, pobjClass)
             Loop
             .Close()

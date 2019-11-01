@@ -1,15 +1,8 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class CloseOffEntriesItem
-
-    Dim mEntry As String
-
     Public ReadOnly Property CloseOffEntry As String
-        Get
-            Return MySettings.ConvertGDSValue(mEntry)
-        End Get
-    End Property
-    Friend Sub SetValues(ByVal CloseOffEntry As String)
-        mEntry = CloseOffEntry
+    Public Sub New(ByVal pCloseOffEntry As String)
+        CloseOffEntry = MySettings.ConvertGDSValue(pCloseOffEntry)
     End Sub
 End Class

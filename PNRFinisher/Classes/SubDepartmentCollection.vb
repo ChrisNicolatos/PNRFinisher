@@ -31,8 +31,7 @@ Friend Class SubDepartmentCollection
             End With
             With pobjReader
                 Do While .Read
-                    pobjClass = New SubDepartmentItem
-                    pobjClass.SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")))
+                    pobjClass = New SubDepartmentItem(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")))
                     MyBase.Add(pobjClass.ID, pobjClass)
                 Loop
                 .Close()

@@ -3,420 +3,125 @@ Option Explicit On
 Public Class GDSSegItem
 
     Public Event Valid(ByRef Status As Boolean)
-
-    Private Structure ClassProps
-        Dim ElementNo As Integer
-        Dim Airline As String
-        Dim AirlineName As String
-        Dim FlightNo As String
-        Dim ClassOfService As String
-        Dim DepartureDate As Date
-        Dim DepartureDateIATA As String
-        Dim ArrivalDate As Date
-        Dim ArrivalDateIATA As String
-        Dim BoardPoint As String
-        Dim BoardAirportName As String
-        Dim BoardCityName As String
-        Dim BoardAirportShortName As String
-        Dim BoardCountryName As String
-        Dim BoardCountryCode As String
-        Dim OffPoint As String
-        Dim OffPointAirportName As String
-        Dim OffPointCityName As String
-        Dim OffPointAirportShortName As String
-        Dim OffPointCountryName As String
-        Dim OffPointCountryCode As String
-        Dim DepartTime As Date
-        Dim ArriveTime As Date
-        Dim EstimatedFlyingTime As String
-        Dim AirlineLocator As String
-        Dim Text As String
-        Dim OperatedBy As String
-        Dim Stopovers As String
-        Dim DepartTerminal As String
-        Dim ArriveTerminal As String
-        Dim DepartTerminalShort As String
-        Dim ArriveTerminalShort As String
-        Dim Status As String
-        Dim Equipment As String
-        Dim MealFlight As String
-        Dim MealSSR As String
-        Dim ConnectTimeFromPrevious As String
-        Dim SurfaceSegment As Boolean
-        Dim CO2 As Collections.Generic.List(Of CO2Item)
-        Dim ClassOfServiceDescription As ClassOfServiceItem
-    End Structure
-
-    Private mudtProps As ClassProps
     Private mobjAirlineDate As New s1aAirlineDate.clsAirlineDate
     Public Sub New()
-        With mudtProps
-            .ElementNo = 0
-            .Airline = ""
-            .AirlineName = ""
-            .FlightNo = ""
-            .ClassOfService = ""
-            .DepartureDate = Date.MinValue
-            .DepartureDateIATA = ""
-            .ArrivalDate = Date.MinValue
-            .ArrivalDateIATA = ""
-            .BoardPoint = ""
-            .BoardAirportName = ""
-            .BoardCityName = ""
-            .BoardAirportShortName = ""
-            .BoardCountryName = ""
-            .BoardCountryCode = ""
-            .OffPoint = ""
-            .OffPointAirportName = ""
-            .OffPointCityName = ""
-            .OffPointAirportShortName = ""
-            .OffPointCountryName = ""
-            .OffPointCountryCode = ""
-            .DepartTime = Date.MinValue
-            .ArriveTime = Date.MinValue
-            .EstimatedFlyingTime = ""
-            .AirlineLocator = ""
-            .Text = ""
-            .OperatedBy = ""
-            .Stopovers = ""
-            .DepartTerminal = ""
-            .ArriveTerminal = ""
-            .Status = ""
-            .Equipment = ""
-            .MealFlight = ""
-            .MealSSR = ""
-            .ConnectTimeFromPrevious = ""
-            .SurfaceSegment = False
-            .CO2 = New Collections.Generic.List(Of CO2Item)
-            .ClassOfServiceDescription = New ClassOfServiceItem
-        End With
+        ElementNo = 0
+        Airline = ""
+        AirlineName = ""
+        FlightNo = ""
+        ClassOfService = ""
+        DepartureDate = Date.MinValue
+        DepartureDateIATA = ""
+        ArrivalDate = Date.MinValue
+        ArrivalDateIATA = ""
+        BoardAirportShortName = ""
+        BoardCountryName = ""
+        BoardCountryCode = ""
+        OffPoint = ""
+        OffPointAirportName = ""
+        OffPointCityName = ""
+        OffPointAirportShortName = ""
+        OffPointCountryName = ""
+        OffPointCountryCode = ""
+        DepartTime = Date.MinValue
+        ArriveTime = Date.MinValue
+        EstimatedFlyingTime = ""
+        AirlineLocator = ""
+        Text = ""
+        OperatedBy = ""
+        Stopovers = ""
+        DepartTerminal = ""
+        ArriveTerminal = ""
+        Status = ""
+        Equipment = ""
+        MealFlight = ""
+        MealSSR = ""
+        ConnectTimeFromPrevious = ""
+        SurfaceSegment = False
+        CO2 = New Collections.Generic.List(Of CO2Item)
     End Sub
-    Public ReadOnly Property ElementNo As Integer
-        Get
-            Return mudtProps.ElementNo
-        End Get
-    End Property
-    Public ReadOnly Property Airline() As String
-        Get
-            Return mudtProps.Airline.Trim
-        End Get
-    End Property
-    Public ReadOnly Property AirlineName As String
-        Get
-            Return mudtProps.AirlineName.Trim
-        End Get
-    End Property
-    Public ReadOnly Property BoardPoint() As String
-        Get
-            Return mudtProps.BoardPoint.Trim
-        End Get
-    End Property
-    Public ReadOnly Property BoardAirportName() As String
-        Get
-            Return mudtProps.BoardAirportName.Trim
-        End Get
-    End Property
-    Public ReadOnly Property BoardCityName As String
-        Get
-            Return mudtProps.BoardCityName.Trim
-        End Get
-    End Property
-    Public ReadOnly Property BoardAirportShortName As String
-        Get
-            If mudtProps.BoardAirportShortName = "" Then
-                Return mudtProps.BoardCityName.Trim
-            Else
-                Return mudtProps.BoardAirportShortName.Trim
-            End If
-        End Get
-    End Property
-    Public ReadOnly Property BoardCountryName As String
-        Get
-            Return mudtProps.BoardCountryName
-        End Get
-    End Property
-    Public ReadOnly Property OffPointAirportName() As String
-        Get
-            Return mudtProps.OffPointAirportName.Trim
-        End Get
-    End Property
-    Public ReadOnly Property OffPointCityName As String
-        Get
-            Return mudtProps.OffPointCityName.Trim
-        End Get
-    End Property
+    Public ReadOnly Property ElementNo As Integer = 0
+    Public ReadOnly Property Airline As String = ""
+    Public ReadOnly Property AirlineName As String = ""
+    Public ReadOnly Property FlightNo As String = ""
+    Public ReadOnly Property DepartTime As Date = Date.MinValue
+    Public ReadOnly Property ArriveTime As Date = Date.MinValue
+    Public ReadOnly Property AirlineLocator As String = ""
+    Public ReadOnly Property Text As String = ""
+
+    Public ReadOnly Property BoardPoint As String = ""
+    Public ReadOnly Property BoardAirportName As String = ""
+    Public ReadOnly Property BoardCityName As String = ""
+    Public ReadOnly Property BoardAirportShortName As String = ""
+    Public ReadOnly Property BoardCountryName As String = ""
+    Public ReadOnly Property BoardCountryCode As String = ""
+
+    Public ReadOnly Property OffPoint As String = ""
+    Public ReadOnly Property OffPointAirportName As String = ""
+    Public ReadOnly Property OffPointCityName As String = ""
     Public ReadOnly Property OffPointAirportShortName As String
-        Get
-            If mudtProps.OffPointAirportShortName = "" Then
-                Return mudtProps.OffPointCityName.Trim
-            Else
-                Return mudtProps.OffPointAirportShortName.Trim
-            End If
-        End Get
-    End Property
-    Public ReadOnly Property OffPointCountryName As String
-        Get
-            Return mudtProps.OffPointCountryName
-        End Get
-    End Property
-    Public ReadOnly Property Status As String
-        Get
-            Return mudtProps.Status.Trim
-        End Get
-    End Property
-    Public ReadOnly Property ClassOfService() As String
-        Get
-            Return mudtProps.ClassOfService.Trim
-        End Get
-    End Property
-    Public ReadOnly Property DepartureDate() As Date
-        Get
-            Return mudtProps.DepartureDate
-        End Get
-    End Property
-    Public ReadOnly Property DepartureDateIATA As String
-        Get
-            Return mudtProps.DepartureDateIATA.Trim
-        End Get
-    End Property
-    Public ReadOnly Property ArrivalDate As Date
-        Get
-            Return mudtProps.ArrivalDate
-        End Get
-    End Property
-    Public ReadOnly Property ArrivalDateIATA As String
-        Get
-            Return mudtProps.ArrivalDateIATA.Trim
-        End Get
-    End Property
-    Public ReadOnly Property DepartureDay() As String
+    Public ReadOnly Property OffPointCountryName As String = ""
+    Public ReadOnly Property OffPointCountryCode As String = ""
+    Public ReadOnly Property Status As String = ""
+    Public ReadOnly Property ClassOfService As String = ""
+    Public ReadOnly Property DepartureDate As Date = Date.MinValue
+    Public ReadOnly Property DepartureDateIATA As String = ""
+    Public ReadOnly Property ArrivalDate As Date = Date.MinValue
+    Public ReadOnly Property ArrivalDateIATA As String = ""
+    Public ReadOnly Property Equipment As String = ""
+    Public ReadOnly Property MealFlight As String = ""
+    Public ReadOnly Property MealSSR As String = ""
+    Public ReadOnly Property EstimatedFlyingTime As String = ""
+    Public ReadOnly Property Stopovers As String = ""
+    Public ReadOnly Property ArriveTerminal As String = ""
+    Public ReadOnly Property DepartTerminal As String = ""
+    Public ReadOnly Property ArriveTerminalShort As String = "."
+    Public ReadOnly Property DepartTerminalShort As String = "."
+    Public ReadOnly Property OperatedBy As String = ""
 
+    Public ReadOnly Property ConnectTimeFromPrevious As String = ""
+    Public ReadOnly Property SurfaceSegment As Boolean = False
+    Public ReadOnly Property CO2 As Collections.Generic.List(Of CO2Item) = New List(Of CO2Item)
+    Public ReadOnly Property ClassOfServiceDescription As ClassOfServiceItem
+    Public ReadOnly Property DepartureDay As String
         Get
-            Return WeekDaySeg(mudtProps.DepartureDate)
+            Return WeekDaySeg(DepartureDate)
         End Get
-
     End Property
     Public ReadOnly Property ArrivalDay As String
         Get
-            Return WeekDaySeg(mudtProps.ArrivalDate)
-        End Get
-    End Property
-    Private Shared Function WeekDaySeg(ByVal InputDate As Date) As String
-
-        Try
-            Select Case Weekday(InputDate)
-                Case 1
-                    WeekDaySeg = "Sunday"
-                Case 2
-                    WeekDaySeg = "Monday"
-                Case 3
-                    WeekDaySeg = "Tuesday"
-                Case 4
-                    WeekDaySeg = "Wednesday"
-                Case 5
-                    WeekDaySeg = "Thursday"
-                Case 6
-                    WeekDaySeg = "Friday"
-                Case 7
-                    WeekDaySeg = "Saturday"
-                Case Else
-                    WeekDaySeg = ""
-            End Select
-        Catch ex As Exception
-            WeekDaySeg = ""
-        End Try
-
-    End Function
-    Public ReadOnly Property Equipment As String
-        Get
-            Return mudtProps.Equipment.Trim.PadRight(3)
-        End Get
-    End Property
-    Public ReadOnly Property MealFlight As String
-        Get
-            Return mudtProps.MealFlight
-        End Get
-    End Property
-    Public ReadOnly Property MealSSR As String
-        Get
-            Return mudtProps.MealSSR
-        End Get
-    End Property
-    Public ReadOnly Property FlightNo() As String
-        Get
-
-            Return mudtProps.FlightNo.Trim
-
-        End Get
-    End Property
-    Public ReadOnly Property OffPoint() As String
-        Get
-
-            Return mudtProps.OffPoint.Trim
-
-        End Get
-    End Property
-    Public ReadOnly Property DepartTime() As Date
-        Get
-            Return mudtProps.DepartTime
+            Return WeekDaySeg(ArrivalDate)
         End Get
     End Property
     Public ReadOnly Property DepartTimeShort As String
         Get
-            Return Format(mudtProps.DepartTime, "HHmm")
+            Return Format(DepartTime, "HHmm")
         End Get
     End Property
     Public ReadOnly Property DepartTimeShort(ByVal Separator As String) As String
         Get
-            Return Format(mudtProps.DepartTime, "HH") & Separator & Format(mudtProps.DepartTime, "mm")
-        End Get
-    End Property
-    Public ReadOnly Property ArriveTime() As Date
-        Get
-            Return mudtProps.ArriveTime
+            Return Format(DepartTime, "HH") & Separator & Format(DepartTime, "mm")
         End Get
     End Property
     Public ReadOnly Property ArriveTimeShort As String
         Get
-            Return Format(mudtProps.ArriveTime, "HHmm")
+            Return Format(ArriveTime, "HHmm")
         End Get
     End Property
     Public ReadOnly Property ArriveTimeShort(ByVal Separator As String) As String
         Get
-            Return Format(mudtProps.ArriveTime, "HH") & Separator & Format(mudtProps.ArriveTime, "mm")
+            Return Format(ArriveTime, "HH") & Separator & Format(ArriveTime, "mm")
         End Get
     End Property
-    Public ReadOnly Property EstimatedFlyingTime As String
-        Get
-            Return mudtProps.EstimatedFlyingTime
-        End Get
-    End Property
-    Public ReadOnly Property AirlineLocator() As String
-        Get
-            Return mudtProps.AirlineLocator
-        End Get
-    End Property
-
-    Public ReadOnly Property Text() As String
-        Get
-            Return mudtProps.Text.Trim
-        End Get
-    End Property
-
-    Public ReadOnly Property Stopovers As String
-        Get
-            Return mudtProps.Stopovers
-        End Get
-    End Property
-    Public ReadOnly Property ArriveTerminal As String
-        Get
-            Return mudtProps.ArriveTerminal
-        End Get
-    End Property
-    Public ReadOnly Property DepartTerminal As String
-        Get
-            Return mudtProps.DepartTerminal
-        End Get
-    End Property
-    Public ReadOnly Property ArriveTerminalShort As String
-        Get
-            If mudtProps.ArriveTerminalShort = "" Then
-                Return "."
-            Else
-                Return mudtProps.ArriveTerminalShort
-            End If
-        End Get
-    End Property
-    Public ReadOnly Property DepartTerminalShort As String
-        Get
-            If mudtProps.DepartTerminalShort = "" Then
-                Return "."
-            Else
-                Return mudtProps.DepartTerminalShort
-            End If
-        End Get
-    End Property
-    Public ReadOnly Property OperatedBy As String
-        Get
-            If mudtProps.OperatedBy <> "" Then
-                Return mudtProps.OperatedBy
-            Else
-                OperatedBy = ""
-                For i = 81 To mudtProps.Text.Length Step 80
-                    If (mudtProps.Text & StrDup(80, " ")).Substring(i, 80).IndexOf("OPERATED BY") >= 0 Then
-                        If OperatedBy <> "" Then
-                            OperatedBy &= vbCrLf
-                        End If
-                        OperatedBy &= (mudtProps.Text.Trim & StrDup(80, " ")).Substring(i, 80)
-                    End If
-                Next
-            End If
-        End Get
-    End Property
-    Public ReadOnly Property ConnectTimeFromPrevious As String
-        Get
-            Return mudtProps.ConnectTimeFromPrevious
-        End Get
-    End Property
-    Public ReadOnly Property SurfaceSegment As Boolean
-        Get
-            Return mudtProps.SurfaceSegment
-        End Get
-    End Property
-    Public ReadOnly Property CO2 As Collections.Generic.List(Of CO2Item)
-        Get
-            Return mudtProps.CO2
-        End Get
-    End Property
-    Public ReadOnly Property ClassOfServiceDescription As ClassOfServiceItem
-        Get
-            Return mudtProps.ClassOfServiceDescription
-        End Get
-    End Property
-    Friend Sub SetSurfaceSegment(ByVal pElementNo As Integer)
-        With mudtProps
-            .ElementNo = pElementNo
-            .SurfaceSegment = True
-            .Airline = ""
-            .AirlineName = ""
-            .FlightNo = ""
-            .ClassOfService = ""
-            .DepartureDate = Date.MinValue
-            .ArrivalDate = Date.MinValue
-            .BoardPoint = ""
-            .BoardAirportName = ""
-            .BoardCityName = ""
-            .BoardAirportShortName = ""
-            .BoardCountryName = ""
-            .BoardCountryCode = ""
-            .OffPoint = ""
-            .OffPointAirportName = ""
-            .OffPointCityName = ""
-            .OffPointAirportShortName = ""
-            .OffPointCountryName = ""
-            .OffPointCountryCode = ""
-            .Status = ""
-            .DepartTime = Date.MinValue
-            .ArriveTime = Date.MinValue
-            .AirlineLocator = ""
-            .Equipment = ""
-            .MealFlight = ""
-            .MealSSR = ""
-            .AirlineLocator = ""
-            .Text = ""
-            .OperatedBy = ""
-            .DepartureDateIATA = Date.MinValue.ToString
-            .ArrivalDateIATA = Date.MinValue.ToString
-            .Stopovers = ""
-            .ArriveTerminal = ""
-            .DepartTerminal = ""
-            .EstimatedFlyingTime = ""
-            .ConnectTimeFromPrevious = ""
-            .CO2 = New List(Of CO2Item)
-            .ClassOfServiceDescription = New ClassOfServiceItem
-        End With
+    ''' <summary>
+    ''' Surface Segment
+    ''' </summary>
+    ''' <param name="pElementNo"></param>
+    Friend Sub New(ByVal pElementNo As Integer)
+        ElementNo = pElementNo
+        SurfaceSegment = True
     End Sub
-    Friend Sub SetValues(ByVal pAirline As String _
+    Friend Sub New(ByVal pAirline As String _
                        , ByVal pBoardPoint As String _
                        , ByVal pClass As String _
                        , ByVal pDepartureDate As Date _
@@ -436,91 +141,105 @@ Public Class GDSSegItem
                        , ByVal SVC As String() _
                        , ByVal pConnectTimeFromPrevious As String)
         ' Galileo
-        With mudtProps
-            .ElementNo = pElementNo
-            .Airline = pAirline
-            .AirlineName = Airlines.AirlineName(.Airline)
-            .FlightNo = pFlightNo
-            .ClassOfService = pClass
-            .DepartureDate = pDepartureDate
-            .ArrivalDate = pArrivalDate
-            .BoardPoint = pBoardPoint
-            .BoardAirportName = Airport.CityAirportName(.BoardPoint)
-            .BoardCityName = Airport.CityName(.BoardPoint)
-            .BoardAirportShortName = Airport.AirportShortname(.BoardPoint)
-            .BoardCountryName = Airport.CountryName(.BoardPoint)
-            .BoardCountryCode = Airport.CountryCode(.BoardPoint)
-            .OffPoint = pOffPoint
-            .OffPointAirportName = Airport.CityAirportName(.OffPoint)
-            .OffPointCityName = Airport.CityName(.OffPoint)
-            .OffPointAirportShortName = Airport.AirportShortname(.OffPoint)
-            .OffPointCountryName = Airport.CountryName(.OffPoint)
-            .OffPointCountryCode = Airport.CountryCode(.OffPoint)
-            .Status = pStatus
-            .DepartTime = pDepartTime
-            .ArriveTime = pArriveTime
-            .AirlineLocator = ""
-            .Equipment = pEquipment
-            .MealFlight = pMealFlight
-            .MealSSR = pMealSSR
-            If pVL.GetUpperBound(0) = 1 Then
-                If pVL(1).IndexOf("/") > 0 Then
-                    .AirlineLocator = pVL(1).Substring(5, pVL(1).IndexOf("/") - 5)
-                Else
-                    .AirlineLocator = pVL(1).Substring(5)
-                End If
+        SurfaceSegment = False
+        ElementNo = pElementNo
+        Airline = pAirline
+        AirlineName = Airlines.AirlineName(Airline)
+        FlightNo = pFlightNo
+        ClassOfService = pClass
+        DepartureDate = pDepartureDate
+        ArrivalDate = pArrivalDate
+        BoardPoint = pBoardPoint
+        BoardAirportName = Airport.CityAirportName(BoardPoint)
+        BoardCityName = Airport.CityName(BoardPoint)
+        BoardAirportShortName = Airport.AirportShortname(BoardPoint)
+        If BoardAirportShortName = "" Then
+            BoardAirportShortName = BoardCityName.Trim
+        End If
+
+        BoardCountryName = Airport.CountryName(BoardPoint)
+        BoardCountryCode = Airport.CountryCode(BoardPoint)
+        OffPoint = pOffPoint
+        OffPointAirportName = Airport.CityAirportName(OffPoint)
+        OffPointCityName = Airport.CityName(OffPoint)
+        OffPointAirportShortName = Airport.AirportShortname(OffPoint)
+        If OffPointAirportShortName = "" Then
+            OffPointAirportShortName = OffPointCityName.Trim
+        End If
+        OffPointCountryName = Airport.CountryName(OffPoint)
+        OffPointCountryCode = Airport.CountryCode(OffPoint)
+        Status = pStatus
+        DepartTime = pDepartTime
+        ArriveTime = pArriveTime
+        Equipment = pEquipment
+        MealFlight = pMealFlight
+        MealSSR = pMealSSR
+        AirlineLocator = ""
+        If pVL.GetUpperBound(0) = 1 Then
+            If pVL(1).IndexOf("/") > 0 Then
+                AirlineLocator = pVL(1).Substring(5, pVL(1).IndexOf("/") - 5)
             Else
+                AirlineLocator = pVL(1).Substring(5)
+            End If
+        Else
+            For iVL As Integer = 1 To pVL.GetUpperBound(0)
+                If pVL(iVL).Substring(5, 2) = Airline Then
+                    If pVL(iVL).IndexOf("/") > 0 Then
+                        AirlineLocator = pVL(iVL).Substring(5, pVL(iVL).IndexOf("/") - 5)
+                    Else
+                        AirlineLocator = pVL(iVL).Substring(5)
+                    End If
+                End If
+            Next
+            If AirlineLocator = "" Then
                 For iVL As Integer = 1 To pVL.GetUpperBound(0)
-                    If pVL(iVL).Substring(5, 2) = .Airline Then
+                    If pVL(iVL).Substring(5, 2) = "1A" Then
                         If pVL(iVL).IndexOf("/") > 0 Then
-                            .AirlineLocator = pVL(iVL).Substring(5, pVL(iVL).IndexOf("/") - 5)
+                            AirlineLocator = pVL(iVL).Substring(5, pVL(iVL).IndexOf("/") - 5)
                         Else
-                            .AirlineLocator = pVL(iVL).Substring(5)
+                            AirlineLocator = pVL(iVL).Substring(5)
                         End If
                     End If
                 Next
-                If .AirlineLocator = "" Then
-                    For iVL As Integer = 1 To pVL.GetUpperBound(0)
-                        If pVL(iVL).Substring(5, 2) = "1A" Then
-                            If pVL(iVL).IndexOf("/") > 0 Then
-                                .AirlineLocator = pVL(iVL).Substring(5, pVL(iVL).IndexOf("/") - 5)
-                            Else
-                                .AirlineLocator = pVL(iVL).Substring(5)
-                            End If
-                        End If
-                    Next
-                End If
             End If
-            .Text = pText
-            .OperatedBy = pOperatedBy
-            Try
-                mobjAirlineDate.IgnoreAmadeusRange = True
-                mobjAirlineDate.VBDate = .DepartureDate
-            Catch ex As Exception
-                mobjAirlineDate.VBDate = DateAdd(DateInterval.Year, -1, .DepartureDate)
-            End Try
-            .DepartureDateIATA = mobjAirlineDate.IATA
+        End If
+        Text = pText
+        OperatedBy = OperatedByBuilder(pOperatedBy)
 
-            Try
-                mobjAirlineDate.IgnoreAmadeusRange = True
-                mobjAirlineDate.VBDate = .ArrivalDate
-            Catch ex As Exception
-                mobjAirlineDate.VBDate = DateAdd(DateInterval.Year, -1, .ArrivalDate)
-            End Try
-            .ArrivalDateIATA = mobjAirlineDate.IATA
-            mudtProps.Stopovers = ""
-            mudtProps.ArriveTerminal = ""
-            mudtProps.DepartTerminal = ""
-            mudtProps.EstimatedFlyingTime = ""
-            .CO2 = New List(Of CO2Item)
-            AnalyzeSVC1G(SVC)
-            mudtProps.ConnectTimeFromPrevious = pConnectTimeFromPrevious
-            mudtProps.SurfaceSegment = False
-            .ClassOfServiceDescription = ReadClassOfService(Airline, BoardPoint, OffPoint, ClassOfService)
-        End With
+        Try
+            mobjAirlineDate.IgnoreAmadeusRange = True
+            mobjAirlineDate.VBDate = DepartureDate
+        Catch ex As Exception
+            mobjAirlineDate.VBDate = DateAdd(DateInterval.Year, -1, DepartureDate)
+        End Try
+        DepartureDateIATA = mobjAirlineDate.IATA
+
+        Try
+            mobjAirlineDate.IgnoreAmadeusRange = True
+            mobjAirlineDate.VBDate = ArrivalDate
+        Catch ex As Exception
+            mobjAirlineDate.VBDate = DateAdd(DateInterval.Year, -1, ArrivalDate)
+        End Try
+        ArrivalDateIATA = mobjAirlineDate.IATA
+        AnalyzeSVC1G(SVC)
+        ConnectTimeFromPrevious = pConnectTimeFromPrevious
+        ClassOfServiceDescription = ReadClassOfService(Airline, BoardPoint, OffPoint, ClassOfService)
     End Sub
-
-    Friend Sub SetValues(ByVal pAirline As String _
+    Private Function OperatedByBuilder(ByVal pOperatedBy As String) As String
+        Dim pResult As String = pOperatedBy
+        If pResult = "" Then
+            For i = 81 To Text.Length Step 80
+                If (Text & StrDup(80, " ")).Substring(i, 80).IndexOf("OPERATED BY") >= 0 Then
+                    If pResult <> "" Then
+                        pResult &= vbCrLf
+                    End If
+                    pResult &= (Text.Trim & StrDup(80, " ")).Substring(i, 80)
+                End If
+            Next
+        End If
+        Return pResult
+    End Function
+    Friend Sub New(ByVal pAirline As String _
                          , ByVal pBoardPoint As String _
                          , ByVal pClass As String _
                          , ByVal pDepartureDate As Date _
@@ -538,73 +257,67 @@ Public Class GDSSegItem
                          , ByVal SegDo As String _
                          , ByVal pConnectTimeFromPrevious As String)
         ' Amadeus
-        With mudtProps
-            .ElementNo = pElementNo
-            .Airline = pAirline
-            .AirlineName = Airlines.AirlineName(.Airline)
-            .FlightNo = pFlightNo
-            .ClassOfService = pClass
-            .DepartureDate = pDepartureDate
-            .ArrivalDate = pArrivalDate
-            .BoardPoint = pBoardPoint
-            .BoardAirportName = Airport.CityAirportName(.BoardPoint)
-            .BoardCityName = Airport.CityName(.BoardPoint)
-            .BoardAirportShortName = Airport.AirportShortname(.BoardPoint)
-            .BoardCountryName = Airport.CountryName(.BoardPoint)
-            .BoardCountryCode = Airport.CountryCode(.BoardPoint)
+        SurfaceSegment = False
+        ElementNo = pElementNo
+        Airline = pAirline
+        AirlineName = Airlines.AirlineName(Airline)
+        FlightNo = pFlightNo
+        ClassOfService = pClass
+        DepartureDate = pDepartureDate
+        ArrivalDate = pArrivalDate
+        BoardPoint = pBoardPoint
+        BoardAirportName = Airport.CityAirportName(BoardPoint)
+        BoardCityName = Airport.CityName(BoardPoint)
+        BoardAirportShortName = Airport.AirportShortname(BoardPoint)
+        If BoardAirportShortName = "" Then
+            BoardAirportShortName = BoardCityName.Trim
+        End If
+        BoardCountryName = Airport.CountryName(BoardPoint)
+        BoardCountryCode = Airport.CountryCode(BoardPoint)
 
-            .OffPoint = pOffPoint
-            .OffPointAirportName = Airport.CityAirportName(.OffPoint)
-            .OffPointCityName = Airport.CityName(.OffPoint)
-            .OffPointAirportShortName = Airport.AirportShortname(.OffPoint)
-            .OffPointCountryName = Airport.CountryName(.OffPoint)
-            .OffPointCountryCode = Airport.CountryCode(.OffPoint)
+        OffPoint = pOffPoint
+        OffPointAirportName = Airport.CityAirportName(OffPoint)
+        OffPointCityName = Airport.CityName(OffPoint)
+        OffPointAirportShortName = Airport.AirportShortname(OffPoint)
+        If OffPointAirportShortName = "" Then
+            OffPointAirportShortName = OffPointCityName.Trim
+        End If
+        OffPointCountryName = Airport.CountryName(OffPoint)
+        OffPointCountryCode = Airport.CountryCode(OffPoint)
 
-            .Status = pStatus
-            .DepartTime = pDepartTime
-            .ArriveTime = pArriveTime
-            .Equipment = pEquipment
-            .MealFlight = pMealFlight
-            .MealSSR = pMealSSR
-            If pText.Length > 63 Then
-                .AirlineLocator = pText.Substring(53, 10).Trim
-            ElseIf pText.Length > 53 Then
-                .AirlineLocator = pText.Substring(53).Trim
-            Else
-                .AirlineLocator = ""
-            End If
-            .Text = pText
-            .OperatedBy = ""
-            'If .Text.Substring(35).StartsWith("FLWN") Then
-            '    .DepartureDate = Date.MinValue
-            '    .ArrivalDate = Date.MinValue
-            'End If
-            Try
-                mobjAirlineDate.IgnoreAmadeusRange = True
-                mobjAirlineDate.VBDate = .DepartureDate
-            Catch ex As Exception
-                mobjAirlineDate.VBDate = DateAdd(DateInterval.Year, -1, .DepartureDate)
-            End Try
-            .DepartureDateIATA = mobjAirlineDate.IATA
+        Status = pStatus
+        DepartTime = pDepartTime
+        ArriveTime = pArriveTime
+        Equipment = pEquipment
+        MealFlight = pMealFlight
+        MealSSR = pMealSSR
+        If pText.Length > 63 Then
+            AirlineLocator = pText.Substring(53, 10).Trim
+        ElseIf pText.Length > 53 Then
+            AirlineLocator = pText.Substring(53).Trim
+        Else
+            AirlineLocator = ""
+        End If
+        Text = pText
+        OperatedBy = OperatedByBuilder("")
+        Try
+            mobjAirlineDate.IgnoreAmadeusRange = True
+            mobjAirlineDate.VBDate = DepartureDate
+        Catch ex As Exception
+            mobjAirlineDate.VBDate = DateAdd(DateInterval.Year, -1, DepartureDate)
+        End Try
+        DepartureDateIATA = mobjAirlineDate.IATA
 
-            Try
-                mobjAirlineDate.IgnoreAmadeusRange = True
-                mobjAirlineDate.VBDate = .ArrivalDate
-            Catch ex As Exception
-                mobjAirlineDate.VBDate = DateAdd(DateInterval.Year, -1, .ArrivalDate)
-            End Try
-            .ArrivalDateIATA = mobjAirlineDate.IATA
-            mudtProps.Stopovers = ""
-            mudtProps.ArriveTerminal = ""
-            mudtProps.DepartTerminal = ""
-            mudtProps.EstimatedFlyingTime = ""
-            .CO2 = New List(Of CO2Item)
-            AnalyseSegDo1A(SegDo)
-            .ConnectTimeFromPrevious = pConnectTimeFromPrevious
-            .SurfaceSegment = False
-            .ClassOfServiceDescription = ReadClassOfService(Airline, BoardPoint, OffPoint, ClassOfService)
-        End With
-
+        Try
+            mobjAirlineDate.IgnoreAmadeusRange = True
+            mobjAirlineDate.VBDate = ArrivalDate
+        Catch ex As Exception
+            mobjAirlineDate.VBDate = DateAdd(DateInterval.Year, -1, ArrivalDate)
+        End Try
+        ArrivalDateIATA = mobjAirlineDate.IATA
+        AnalyseSegDo1A(SegDo)
+        ConnectTimeFromPrevious = pConnectTimeFromPrevious
+        ClassOfServiceDescription = ReadClassOfService(Airline, BoardPoint, OffPoint, ClassOfService)
     End Sub
     Private Sub AnalyseSegDo1A(ByVal SegDo As String)
 
@@ -620,10 +333,10 @@ Public Class GDSSegItem
         Dim pBoardStarts As Integer = -1
         If pItinStarts >= 0 Then
             For i As Integer = pItinStarts To pSegDo.GetUpperBound(0)
-                If pSegDo(i).Length > 3 AndAlso pSegDo(i).Substring(0, 3) = mudtProps.BoardPoint Then
+                If pSegDo(i).Length > 3 AndAlso pSegDo(i).Substring(0, 3) = BoardPoint Then
                     pBoardStarts = i
                     If pSegDo(i).Length >= 44 Then
-                        mudtProps.Equipment = pSegDo(i).Substring(42, 3)
+                        _Equipment = pSegDo(i).Substring(42, 3)
                         ' TODO -Find And Decode Meal Codes also from SSR
                     End If
                     Exit For
@@ -633,36 +346,35 @@ Public Class GDSSegItem
         Dim pOffStarts As Integer = -1
         If pBoardStarts >= 0 Then
             For i As Integer = pBoardStarts + 1 To pSegDo.GetUpperBound(0)
-                If pSegDo(i).Length > 3 AndAlso pSegDo(i).Substring(0, 3) = mudtProps.OffPoint Then
+                If pSegDo(i).Length > 3 AndAlso pSegDo(i).Substring(0, 3) = OffPoint Then
                     pOffStarts = i
                     Exit For
                 End If
                 If pSegDo(i).Length > 3 AndAlso pSegDo(i).Substring(0, 3) <> "   " Then
-                    If mudtProps.Stopovers <> "" Then
-                        mudtProps.Stopovers &= vbCrLf
+                    If _Stopovers <> "" Then
+                        _Stopovers &= vbCrLf
                     End If
-                    mudtProps.Stopovers &= pSegDo(i).Substring(0, 3) & "-" & Airport.CityAirportName(pSegDo(i).Substring(0, 3))
+                    _Stopovers &= pSegDo(i).Substring(0, 3) & "-" & Airport.CityAirportName(pSegDo(i).Substring(0, 3))
                 End If
             Next
         End If
         If pOffStarts >= 0 Then
             If pSegDo(pOffStarts).Length > 63 Then
-                mudtProps.EstimatedFlyingTime = pSegDo(pOffStarts).Substring(pSegDo(pOffStarts).LastIndexOf(" ")).Trim.PadLeft(5)
+                _EstimatedFlyingTime = pSegDo(pOffStarts).Substring(pSegDo(pOffStarts).LastIndexOf(" ")).Trim.PadLeft(5)
             Else
-                mudtProps.EstimatedFlyingTime = ""
+                _EstimatedFlyingTime = ""
             End If
             For i As Integer = pOffStarts To pSegDo.GetUpperBound(0)
                 If pSegDo(i).Length > 16 AndAlso pSegDo(i).Substring(3, 3) = BoardPoint AndAlso pSegDo(i).IndexOf("- DEPARTS") > 0 Then
-                    mudtProps.DepartTerminal = pSegDo(i).Substring(pSegDo(i).IndexOf("- DEPARTS") + 2)
-                    mudtProps.DepartTerminalShort = mudtProps.DepartTerminal.Replace("DEPARTS TERMINAL ", "").Trim
+                    _DepartTerminal = pSegDo(i).Substring(pSegDo(i).IndexOf("- DEPARTS") + 2)
+                    _DepartTerminalShort = _DepartTerminal.Replace("DEPARTS TERMINAL ", "").Trim
                 ElseIf pSegDo(i).Length > 16 AndAlso pSegDo(i).Substring(7, 3) = OffPoint AndAlso pSegDo(i).IndexOf("- ARRIVES") > 0 Then
-                    mudtProps.ArriveTerminal = pSegDo(i).Substring(pSegDo(i).IndexOf("- ARRIVES") + 2)
-                    mudtProps.ArriveTerminalShort = mudtProps.ArriveTerminal.Replace("ARRIVES TERMINAL ", "").Trim
+                    _ArriveTerminal = pSegDo(i).Substring(pSegDo(i).IndexOf("- ARRIVES") + 2)
+                    _ArriveTerminalShort = _ArriveTerminal.Replace("ARRIVES TERMINAL ", "").Trim
                 ElseIf pSegDo(i).Length > 22 AndAlso pSegDo(i).Substring(15, 8) = " CO2/PAX" Then
-                    Dim pCO2Item As New CO2Item
-                    pCO2Item.SetValue(pSegDo(i))
-                    If Not mudtProps.CO2.Contains(pCO2Item) Then
-                        mudtProps.CO2.Add(pCO2Item)
+                    Dim pCO2Item As New CO2Item(pSegDo(i))
+                    If Not _CO2.Contains(pCO2Item) Then
+                        _CO2.Add(pCO2Item)
                     End If
 
                 End If
@@ -673,15 +385,15 @@ Public Class GDSSegItem
         '
         ' *SVC for specific FF entry
         ' 
-        mudtProps.Stopovers = ""
-        mudtProps.ArriveTerminal = ""
-        mudtProps.DepartTerminal = ""
-        mudtProps.ArriveTerminalShort = ""
-        mudtProps.DepartTerminalShort = ""
-        mudtProps.EstimatedFlyingTime = ""
-        mudtProps.Equipment = ""
-        mudtProps.MealFlight = ""
-        mudtProps.MealSSR = ""
+        _Stopovers = ""
+        _ArriveTerminal = ""
+        _DepartTerminal = ""
+        _ArriveTerminalShort = "."
+        _DepartTerminalShort = "."
+        _EstimatedFlyingTime = ""
+        _Equipment = ""
+        _MealFlight = ""
+        _MealSSR = ""
 
         Dim pSeg As Integer = 0
         Dim pOffPoint As String = ""
@@ -691,34 +403,33 @@ Public Class GDSSegItem
                 If pSeg > 0 Then
                     ' add new entry to tickets
                     pSeg = 0
-                    mudtProps.EstimatedFlyingTime = ""
-                    mudtProps.DepartTerminal = ""
-                    mudtProps.ArriveTerminal = ""
+                    _EstimatedFlyingTime = ""
+                    _DepartTerminal = ""
+                    _ArriveTerminal = ""
                 End If
 
                 pSeg = CInt(pSVC(iSVC).Trim.Substring(0, pSVC(iSVC).Trim.IndexOf(" ")))
-                mudtProps.EstimatedFlyingTime = pSVC(iSVC).Trim.Substring(pSVC(iSVC).Trim.LastIndexOf(" ") + 1).PadLeft(5, "0"c)
+                _EstimatedFlyingTime = pSVC(iSVC).Trim.Substring(pSVC(iSVC).Trim.LastIndexOf(" ") + 1).PadLeft(5, "0"c)
                 pOffPoint = pSVC(iSVC).Substring(17, 3)
-                pFlyingTime = TimeSerial(CInt(mudtProps.EstimatedFlyingTime.Substring(0, mudtProps.EstimatedFlyingTime.IndexOf(":"))), CInt(mudtProps.EstimatedFlyingTime.Substring(mudtProps.EstimatedFlyingTime.IndexOf(":") + 1, 2)), 0)
-                mudtProps.Equipment = pSVC(iSVC).Substring(21, 5).Trim
+                pFlyingTime = TimeSerial(CInt(EstimatedFlyingTime.Substring(0, EstimatedFlyingTime.IndexOf(":"))), CInt(EstimatedFlyingTime.Substring(EstimatedFlyingTime.IndexOf(":") + 1, 2)), 0)
+                _Equipment = pSVC(iSVC).Substring(21, 5).Trim
                 ' TODO -Find Equipment Code And Meal Code And dcecode meal - Also From SSR
             ElseIf pSVC(iSVC).Length > 14 AndAlso pSVC(iSVC).Substring(3, 5) = " CO2 " AndAlso pSVC(iSVC).Substring(7, 7) <> " TOTAL " Then
-                Dim pCO2Item As New CO2Item
-                pCO2Item.SetValue(pSVC(iSVC))
-                If Not mudtProps.CO2.Contains(pCO2Item) Then
-                    mudtProps.CO2.Add(pCO2Item)
+                Dim pCO2Item As New CO2Item(pSVC(iSVC))
+                If Not _CO2.Contains(pCO2Item) Then
+                    _CO2.Add(pCO2Item)
                 End If
             ElseIf pSeg > 0 Then
-                If pSVC(iSVC).StartsWith(Space(14)) And pSVC(iSVC).Substring(14, 6).Replace(" ", "").Length = 6 And pSVC(iSVC).Substring(20, 1) = Space(1) Then
-                    If mudtProps.Stopovers <> "" Then
-                        mudtProps.Stopovers &= vbCrLf
+                If pSVC(iSVC).StartsWith(Space(14)) AndAlso pSVC(iSVC).Length > 20 AndAlso pSVC(iSVC).Substring(14, 6).Replace(" ", "").Length = 6 AndAlso pSVC(iSVC).Substring(20, 1) = Space(1) Then
+                    If _Stopovers <> "" Then
+                        _Stopovers &= vbCrLf
                     End If
-                    mudtProps.Stopovers &= pOffPoint & "-" & Airport.CityAirportName(pOffPoint)
+                    _Stopovers &= pOffPoint & "-" & Airport.CityAirportName(pOffPoint)
                     pOffPoint = pSVC(iSVC).Substring(17, 3)
                     Dim pTime As String = pSVC(iSVC).Trim.Substring(pSVC(iSVC).Trim.LastIndexOf(" ") + 1).PadLeft(5, "0"c)
                     pFlyingTime = DateAdd(DateInterval.Hour, CDbl(pTime.Substring(0, pTime.IndexOf(":"))), pFlyingTime)
                     pFlyingTime = DateAdd(DateInterval.Minute, CDbl(pTime.Substring(pTime.IndexOf(":") + 1, 2)), pFlyingTime)
-                    mudtProps.EstimatedFlyingTime = Format(pFlyingTime, "HH:mm")
+                    _EstimatedFlyingTime = Format(pFlyingTime, "HH:mm")
                 End If
                 If pSVC(iSVC).IndexOf("DEPARTS") > 0 Or pSVC(iSVC).IndexOf("ARRIVES") > 0 Then
                     Dim pTerm() As String = pSVC(iSVC).Split({"-"}, StringSplitOptions.RemoveEmptyEntries)
@@ -727,11 +438,11 @@ Public Class GDSSegItem
                         For j = 0 To pElem.GetUpperBound(0) - 1
                             If pElem(j) = "TERMINAL" Then
                                 If pElem(0) = "DEPARTS" Then
-                                    mudtProps.DepartTerminal = pTerm(i).Trim
-                                    mudtProps.DepartTerminalShort = pElem(j + 1).Trim
+                                    _DepartTerminal = pTerm(i).Trim
+                                    _DepartTerminalShort = pElem(j + 1).Trim
                                 ElseIf pElem(0) = "ARRIVES" Then
-                                    mudtProps.ArriveTerminal = pTerm(i).Trim
-                                    mudtProps.ArriveTerminalShort = pElem(j + 1).Trim
+                                    _ArriveTerminal = pTerm(i).Trim
+                                    _ArriveTerminalShort = pElem(j + 1).Trim
                                 End If
                             End If
                         Next

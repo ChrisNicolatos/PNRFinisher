@@ -11,17 +11,17 @@ Public Class CustomerCollectionAll
             Return mintPCCBackoffice
         End Get
     End Property
-    Public ReadOnly Property GetCustomerByCode(ByVal pCode As String) As CustomerItem
-        Get
-            GetCustomerByCode = New CustomerItem
-            For Each pItem As CustomerItem In MyBase.Values
-                If pItem.Code = pCode Then
-                    GetCustomerByCode = pItem
-                    Exit For
-                End If
-            Next
-        End Get
-    End Property
+    'Public ReadOnly Property GetCustomerByCode(ByVal pCode As String) As CustomerItem
+    '    Get
+    '        GetCustomerByCode = New CustomerItem
+    '        For Each pItem As CustomerItem In MyBase.Values
+    '            If pItem.Code = pCode Then
+    '                GetCustomerByCode = pItem
+    '                Exit For
+    '            End If
+    '        Next
+    '    End Get
+    'End Property
     Public Sub Load(ByVal pBackOffice As Integer)
         Dim pCommandText As String
 
@@ -119,8 +119,7 @@ Public Class CustomerCollectionAll
 
         With pobjReader
             Do While .Read
-                pobjClass = New CustomerItem
-                pobjClass.SetValues(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")), CStr(.Item("Logo")), CInt(.Item("TFEntityKindLT")), mobjAlerts.AlertForFinisher(mintPCCBackoffice, CStr(.Item("Code"))), mobjAlerts.AlertForDownsell(mintPCCBackoffice, CStr(.Item("Code"))), CStr(.Item("GalileoTrackingCode")), CStr(.Item("OpsGroup")), CInt(.Item("CTCCount")), mintPCCBackoffice)
+                pobjClass = New CustomerItem(CInt(.Item("Id")), CStr(.Item("Code")), CStr(.Item("Name")), CStr(.Item("Logo")), CInt(.Item("TFEntityKindLT")), mobjAlerts.AlertForFinisher(mintPCCBackoffice, CStr(.Item("Code"))), mobjAlerts.AlertForDownsell(mintPCCBackoffice, CStr(.Item("Code"))), CStr(.Item("GalileoTrackingCode")), CStr(.Item("OpsGroup")), CInt(.Item("CTCCount")), mintPCCBackoffice)
                 MyBase.Add(pobjClass.ID, pobjClass)
             Loop
             .Close()

@@ -28,9 +28,8 @@ Public Class CloseOffEntriesCollection
         Dim pIndex As Integer = 0
         With pobjReader
             While pobjReader.Read
-                Dim pItem As New CloseOffEntriesItem
+                Dim pItem As New CloseOffEntriesItem(CStr(.Item("pfcEntry")))
                 pIndex += 1
-                pItem.SetValues(CStr(.Item("pfcEntry")))
                 MyBase.Add(pIndex, pItem)
             End While
             .Close()

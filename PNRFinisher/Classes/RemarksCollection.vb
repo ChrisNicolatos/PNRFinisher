@@ -23,8 +23,7 @@ Public Class RemarksCollection
 
         With pobjReader
             Do While .Read
-                pobjClass = New RemarksItem
-                pobjClass.SetValues(CInt(.Item("pnrrID")), CStr(.Item("pnrrTitle")), CStr(.Item("pnrrRemark")), CBool(.Item("pnrrInUse")))
+                pobjClass = New RemarksItem(CInt(.Item("pnrrID")), CStr(.Item("pnrrTitle")), CStr(.Item("pnrrRemark")), CBool(.Item("pnrrInUse")))
                 MyBase.Add(pobjClass.Id, pobjClass)
             Loop
             .Close()

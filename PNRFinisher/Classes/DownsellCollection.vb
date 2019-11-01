@@ -165,8 +165,7 @@ End"
             With pobjReader
                 Do While .Read
                     pID += 1
-                    pobjClass = New DownsellItem
-                    pobjClass.SetValues(CInt(.Item("OwnPNR")), CStr(.Item("doPCC")), CStr(.Item("doGDS")), CStr(.Item("doPNR")) _
+                    pobjClass = New DownsellItem(CInt(.Item("OwnPNR")), CStr(.Item("doPCC")), CStr(.Item("doGDS")), CStr(.Item("doPNR")) _
                           , CStr(.Item("doUserGdsId")), CDate(.Item("doDateLogged")), CStr(.Item("doDownsellDecision")), CStr(.Item("doClientCode")) _
                           , CStr(.Item("ClientName")), CStr(.Item("AlertForDownsell")), CStr(.Item("doPaxName")), CStr(.Item("doItinerary")), CDec(.Item("doTotal")), CDec(.Item("doDownsellTotal")) _
                           , CStr(.Item("doFareBasis")), CStr(.Item("doDownsellFareBasis")), CStr(.Item("doGDSCommand")), CStr(.Item("OpsGroup")))

@@ -29,9 +29,8 @@ Public Class ConditionalGDSEntryCollection
         Dim pIndex As Integer = 0
         With pobjReader
             While pobjReader.Read
-                Dim pItem As New ConditionalGDSEntryItem
+                Dim pItem As New ConditionalGDSEntryItem(CStr(.Item("pfcAmadeusEntry")), CStr(.Item("pfcGalileoEntry")))
                 pIndex += 1
-                pItem.SetValues(CStr(.Item("pfcAmadeusEntry")), CStr(.Item("pfcGalileoEntry")))
                 MyBase.Add(pIndex, pItem)
             End While
             .Close()
