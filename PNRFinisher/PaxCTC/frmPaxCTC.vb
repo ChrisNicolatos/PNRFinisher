@@ -8,8 +8,8 @@ Public Class frmPaxCTC
     Private mstrClientFilter As String = ""
     Private mstrVesselFilter As String = ""
     Private mstrPaxFilter As String = ""
-    Private mobjClients As New CustomerCollectionAll
-    Private mobjSelectedClient As CustomerItem
+    Private mobjClients As ClientCollectionAll
+    Private mobjSelectedClient As Client
     Private mobjSelectedVessel As VesselItem
     Private mobjCTC As New CTCPaxCollection
     Private WithEvents mobjCTCSelectedClient As CTCPax
@@ -41,16 +41,15 @@ Public Class frmPaxCTC
             PaxFromPNR = True
             mintBackOffice = pBackOfficeID
             mstrClientCode = pClientCode
-            mobjSelectedClient = New CustomerItem
-            mobjSelectedClient.Load(mstrClientCode, pBackOffice)
+            Dim pClientFromDB As New ClientFromDB(mstrClientCode, pBackOffice)
+            mobjSelectedClient = pClientFromDB.Client
             mstrClientName = mobjSelectedClient.Name
             mstrVesselName = pVesselName
             lstClient.Items.Clear()
             lstVessel.Items.Clear()
             lstPassenger.Items.Clear()
 
-            mobjSelectedVessel = New VesselItem
-            mobjSelectedVessel.Load(mstrClientCode, mstrVesselName, pBackOffice)
+            mobjSelectedVessel = New VesselItem(mstrClientCode, mstrVesselName, pBackOffice)
             mobjCTCSelectedPax = New CTCPax(mintBackOffice, mobjSelectedClient.ID)
 
             DisplayInformation()
@@ -95,7 +94,7 @@ Public Class frmPaxCTC
             chkPaxRefused.Checked = False
             txtPaxEmail.Text = ""
             txtPaxMobile.Text = ""
-            DisplaySelectedCustomerDetails()
+            DisplaySelectedClientDetails()
             SetReadOnlyVesselCTC(False)
             DisplayVesselCTC()
             SetReadOnlyPax(False)
@@ -119,7 +118,7 @@ Public Class frmPaxCTC
             If Not mflgLoading Then
                 If mintBackOffice <> 1 Then
                     mintBackOffice = 1
-                    mobjClients.Load(mintBackOffice)
+                    mobjClients = New ClientCollectionAll(mintBackOffice)
                     DisplayClients()
                 End If
             End If
@@ -133,7 +132,7 @@ Public Class frmPaxCTC
             If Not mflgLoading Then
                 If mintBackOffice <> 2 Then
                     mintBackOffice = 2
-                    mobjClients.Load(mintBackOffice)
+                    mobjClients = New ClientCollectionAll(mintBackOffice)
                     DisplayClients()
                 End If
             End If
@@ -145,7 +144,7 @@ Public Class frmPaxCTC
         Try
             mflgLoading = True
             lstClient.Items.Clear()
-            For Each pItem As CustomerItem In mobjClients.Values
+            For Each pItem As Client In mobjClients.Values
                 If (pItem.Code & pItem.Name).Replace(" ", "").ToUpper.IndexOf(mstrClientFilter.Replace(" ", "")) >= 0 Then
                     lstClient.Items.Add(pItem)
                 End If
@@ -160,8 +159,8 @@ Public Class frmPaxCTC
         Try
             If Not mflgLoading Then
                 If Not lstClient.SelectedItem Is Nothing Then
-                    mobjSelectedClient = CType(lstClient.SelectedItem, CustomerItem)
-                    DisplaySelectedCustomerDetails()
+                    mobjSelectedClient = CType(lstClient.SelectedItem, Client)
+                    DisplaySelectedClientDetails()
                 End If
             End If
         Catch ex As Exception
@@ -169,22 +168,22 @@ Public Class frmPaxCTC
         End Try
 
     End Sub
-    Private Sub DisplaySelectedCustomerDetails()
+    Private Sub DisplaySelectedClientDetails()
         Try
             mobjCTC.Load(mintBackOffice, mobjSelectedClient.ID)
             SetReadOnlyClientCTC(False)
             SetReadOnlyVesselCTC(True)
             SetReadOnlyPax(True)
             SetReadOnlyPaxCTC(True)
-            DisplaySelectedCustomer()
-            DisplayCustomerCTC()
-            DisplaySelectedCustomerVessels()
+            DisplaySelectedClient()
+            DisplayClientCTC()
+            DisplaySelectedClientVessels()
             DisplaySelectedClientPax()
         Catch ex As Exception
-            Throw New Exception("DisplaySelectedCustomerDetails()" & vbCrLf & ex.Message)
+            Throw New Exception("DisplaySelectedClientDetails()" & vbCrLf & ex.Message)
         End Try
     End Sub
-    Private Sub DisplaySelectedCustomer()
+    Private Sub DisplaySelectedClient()
         Try
             mflgLoading = True
             With mobjSelectedClient
@@ -192,12 +191,12 @@ Public Class frmPaxCTC
                 txtClientName.Text = .Name
             End With
         Catch ex As Exception
-            Throw New Exception("DisplaySelectedCustomer()" & vbCrLf & ex.Message)
+            Throw New Exception("DisplaySelectedClient()" & vbCrLf & ex.Message)
         Finally
             mflgLoading = False
         End Try
     End Sub
-    Private Sub DisplayCustomerCTC()
+    Private Sub DisplayClientCTC()
         Try
             mflgLoading = True
             mobjCTCSelectedClient = New CTCPax(mintBackOffice, mobjSelectedClient.ID)
@@ -228,25 +227,25 @@ Public Class frmPaxCTC
                 txtClientMobile.Text = mobjCTCSelectedClient.Mobile
             End If
         Catch ex As Exception
-            Throw New Exception("DisplayCustomerCTC()" & vbCrLf & ex.Message)
+            Throw New Exception("DisplayClientCTC()" & vbCrLf & ex.Message)
         Finally
             mflgLoading = False
         End Try
 
     End Sub
-    Private Sub DisplaySelectedCustomerVessels()
+    Private Sub DisplaySelectedClientVessels()
         Try
             mflgLoading = True
             Dim pVessels As New VesselCollection
             pVessels.Load(mobjSelectedClient.ID, mintBackOffice)
             lstVessel.Items.Clear()
             For Each pItem As VesselItem In pVessels.Values
-                If mstrVesselFilter = "" Or pItem.Name.Replace(" ", "").ToUpper.IndexOf(mstrVesselFilter) >= 0 Then
+                If mstrVesselFilter = "" Or pItem.VesselName.Replace(" ", "").ToUpper.IndexOf(mstrVesselFilter) >= 0 Then
                     lstVessel.Items.Add(pItem)
                 End If
             Next
         Catch ex As Exception
-            Throw New Exception("DisplaySelectedCustomerVessels()" & vbCrLf & ex.Message)
+            Throw New Exception("DisplaySelectedClientVessels()" & vbCrLf & ex.Message)
         Finally
             mflgLoading = False
         End Try
@@ -267,7 +266,7 @@ Public Class frmPaxCTC
         Try
             If Not mflgLoading Then
                 mstrVesselFilter = txtVesselFilter.Text.Replace(" ", "")
-                DisplaySelectedCustomerVessels()
+                DisplaySelectedClientVessels()
             End If
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -292,14 +291,14 @@ Public Class frmPaxCTC
         Try
             mflgLoading = True
             mobjCTCSelectedVessel = New CTCPax(mintBackOffice, mobjSelectedClient.ID) With {
-                .Vesselname = mobjSelectedVessel.Name
+                .Vesselname = mobjSelectedVessel.VesselName
             }
-            txtVessel.Text = mobjSelectedVessel.Name
+            txtVessel.Text = mobjSelectedVessel.VesselName
             chkVesselRefused.Checked = False
             txtVesselEmail.Text = ""
             txtVesselMobile.Text = ""
             For Each pItem As CTCPax In mobjCTC.Values
-                If pItem.Vesselname = mobjSelectedVessel.Name And pItem.FirstName = "" And pItem.Lastname = "" Then
+                If pItem.Vesselname = mobjSelectedVessel.VesselName And pItem.FirstName = "" And pItem.Lastname = "" Then
                     mobjCTCSelectedVessel = pItem
                     Exit For
                 End If
@@ -508,7 +507,7 @@ Public Class frmPaxCTC
         Try
             mobjCTCSelectedVessel.Update()
             cmdUpdateVessel.Enabled = False
-            DisplaySelectedCustomerDetails()
+            DisplaySelectedClientDetails()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
@@ -517,7 +516,7 @@ Public Class frmPaxCTC
         Try
             mobjCTCSelectedPax.Update()
             cmdUpdatePax.Enabled = False
-            DisplaySelectedCustomerDetails()
+            DisplaySelectedClientDetails()
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try

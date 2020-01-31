@@ -14,7 +14,7 @@ Public Class ConditionalGDSEntryItem
             Return MySettings.ConvertGDSValue(m1GEntry)
         End Get
     End Property
-    Friend Sub SetValues(ByVal p1AEntry As String, ByVal p1GEntry As String)
+    Public Sub SetValues(ByVal p1AEntry As String, ByVal p1GEntry As String)
         m1AEntry = p1AEntry
         m1GEntry = p1GEntry
     End Sub

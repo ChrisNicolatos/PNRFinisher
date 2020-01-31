@@ -1,44 +1,74 @@
 ﻿Option Strict Off
 Option Explicit On
 Module mod1A
-    Public Function airStatus1A(ByRef pSegment As Object) As String
+    '
+    ' THIS MODULE IS COMPILED WITH OPTION STRICT OFF
+    '
+    ' ALL REQUIREMENTS FROM GDS APIs THAT USE OBJECTS MUST BE ENTERED HERE
+    ' AND MUST BE STRICTLY VERIFIED MANUALLY
+    '
+    Public Function airStatus1A(ByVal pSegment As Object) As String
+        Try
+            Return pSegment.Text.substring(27, 2)
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
+        Catch ex As Exception
+            Return ""
+        End Try
+    End Function
+    Public Function airAirline1A(ByVal pSegment As Object) As String
+        Try
+            Return pSegment.Airline
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
+        Catch ex As Exception
+            Return ""
+        End Try
+    End Function
+    Public Function airAirline1A(ByVal pSegment As s1aPNR.AirFlownSegment) As String
+        Try
+            Return pSegment.Airline
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
+        Catch ex As Exception
+            Return ""
+        End Try
+    End Function
+    Public Function airAirline1A(ByVal pSegment As s1aPNR.AirSegment) As String
+        Try
+            Return pSegment.Airline
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
+        Catch ex As Exception
+            Return ""
+        End Try
+    End Function
+
+    Public Function airBoardPoint1A(ByVal pSegment As Object) As String
 
         Try
-            airStatus1A = pSegment.Text.substring(27, 2)
+            Return pSegment.Boardpoint
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
         Catch ex As Exception
-            airStatus1A = ""
+            Return ""
         End Try
 
     End Function
-    Public Function airAirline1A(ByRef pSegment As Object) As String
-        Try
-            airAirline1A = pSegment.Airline
-        Catch ex As Exception
-            airAirline1A = ""
-        End Try
-    End Function
 
-    Public Function airBoardPoint1A(ByRef pSegment As Object) As String
+    Public Function airClass1A(ByVal pSegment As Object) As String
 
         Try
-            airBoardPoint1A = pSegment.BoardPoint
+            Return pSegment.Class
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
         Catch ex As Exception
-            airBoardPoint1A = ""
+            Return ""
         End Try
 
     End Function
 
-    Public Function airClass1A(ByRef pSegment As Object) As String
-
-        Try
-            airClass1A = pSegment.Class
-        Catch ex As Exception
-            airClass1A = ""
-        End Try
-
-    End Function
-
-    Public Function airDepartureDate1A(ByRef pSegment As Object) As Date
+    Public Function airDepartureDate1A(ByVal pSegment As Object) As Date
 
         Dim pdteDate As Date
 
@@ -47,15 +77,16 @@ Module mod1A
             Do While pdteDate > DateAdd(Microsoft.VisualBasic.DateInterval.Year, 1, Today)
                 pdteDate = DateAdd(Microsoft.VisualBasic.DateInterval.Year, -1, pdteDate)
             Loop
-
-            airDepartureDate1A = pdteDate
+            Return pdteDate
+        Catch exMissingMember As System.MissingMemberException
+            Return Date.MinValue
         Catch ex As Exception
-            airDepartureDate1A = Date.MinValue
+            Return Date.MinValue
         End Try
 
     End Function
 
-    Public Function airArrivalDate1A(ByRef pSegment As Object) As Date
+    Public Function airArrivalDate1A(ByVal pSegment As Object) As Date
 
         Dim pdteDate As Date
 
@@ -64,79 +95,95 @@ Module mod1A
             Do While pdteDate > DateAdd(Microsoft.VisualBasic.DateInterval.Year, 1, Today)
                 pdteDate = DateAdd(Microsoft.VisualBasic.DateInterval.Year, -1, pdteDate)
             Loop
-
-            airArrivalDate1A = pdteDate
+            Return pdteDate
+        Catch exMissingMember As System.MissingMemberException
+            Return Date.MinValue
         Catch ex As Exception
-            airArrivalDate1A = Date.MinValue
+            Return Date.MinValue
         End Try
 
     End Function
-    Public Function airElementNo1A(ByRef pSegment As Object) As Integer
+    Public Function airElementNo1A(ByVal pSegment As Object) As Integer
 
         Try
-            airElementNo1A = pSegment.ElementNo
+            Return CInt(pSegment.ElementNo)
+        Catch exMissingMember As System.MissingMemberException
+            Return 0
         Catch ex As Exception
-            airElementNo1A = CShort("")
-        End Try
-
-    End Function
-
-    Public Function airFlightNo1A(ByRef pSegment As Object) As String
-
-        Try
-            airFlightNo1A = pSegment.FlightNo
-        Catch ex As Exception
-            airFlightNo1A = ""
+            Return 0
         End Try
 
     End Function
 
-    Public Function airOffPoint1A(ByRef pSegment As Object) As String
+    Public Function airFlightNo1A(ByVal pSegment As Object) As String
 
         Try
-            airOffPoint1A = pSegment.OffPoint
+            Return pSegment.FlightNo
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
         Catch ex As Exception
-            airOffPoint1A = ""
-        End Try
-
-    End Function
-    Public Function airDepartTime1A(ByRef pSegment As Object) As Date
-
-        Try
-            airDepartTime1A = pSegment.DepartureTime
-        Catch ex As Exception
-            airDepartTime1A = Date.MinValue
+            Return ""
         End Try
 
     End Function
 
-    Public Function airArriveTime1A(ByRef pSegment As Object) As Date
+    Public Function airOffPoint1A(ByVal pSegment As Object) As String
 
         Try
-            airArriveTime1A = pSegment.ArrivalTime
+            Return pSegment.Offpoint
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
         Catch ex As Exception
-            airArriveTime1A = Date.MinValue
+            Return ""
+        End Try
+
+    End Function
+    Public Function airDepartTime1A(ByVal pSegment As Object) As Date
+
+        Try
+            Return pSegment.DepartureTime
+        Catch exMissingMember As System.MissingMemberException
+            Return Date.MinValue
+        Catch ex As Exception
+            Return Date.MinValue
         End Try
 
     End Function
 
-    Public Function airText1A(ByRef pSegment As Object) As String
+    Public Function airArriveTime1A(ByVal pSegment As Object) As Date
 
         Try
-            airText1A = pSegment.Text
+            Return pSegment.ArrivalTime
+        Catch exMissingMember As System.MissingMemberException
+            Return Date.MinValue
         Catch ex As Exception
-            airText1A = ""
+            Return Date.MinValue
         End Try
 
     End Function
-    Public Function Equipment(ByRef pSegment As Object) As String
+
+    Public Function airText1A(ByVal pSegment As Object) As String
+
         Try
-            Equipment = pSegment.Equipment
-            If Equipment Is Nothing Then
-                Equipment = ""
+            Return pSegment.Text
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
+        Catch ex As Exception
+            Return ""
+        End Try
+
+    End Function
+    Public Function Equipment(ByVal pSegment As Object) As String
+        Try
+            If pSegment.Equipment Is Nothing Then
+                Return ""
+            Else
+                Return pSegment.Equipment
             End If
+        Catch exMissingMember As System.MissingMemberException
+            Return ""
         Catch ex As Exception
-            Equipment = ""
+            Return ""
         End Try
 
     End Function

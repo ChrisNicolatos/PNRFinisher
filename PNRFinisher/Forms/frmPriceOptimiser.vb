@@ -7,12 +7,8 @@ Public Class frmPriceOptimiser
     Private mstrPCC As String
     Private mstrUserID As String
     Private mobjDownsell As DownsellCollection
-    Private mflgExpanded As Boolean = True
-    Private mintParentHeight As Integer
-    Private mintParentWidth As Integer
+    'Private mflgExpanded As Boolean = True
     Private mintDisplayedContracted As Integer = 0
-    Private mintTop As Integer = 0
-    Private mintLeft As Integer = 0
     Private mstrPrevPNRs As String
     <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Auto)>
     Private Shared Function FindWindow(
@@ -134,43 +130,88 @@ Public Class frmPriceOptimiser
             .SelectionMode = DataGridViewSelectionMode.FullRowSelect
         End With
     End Sub
-    Public ReadOnly Property FormIsExpanded As Boolean
-        Get
-            Return mflgExpanded
-        End Get
-    End Property
-    Public Sub DisplayItems(ByVal pPCC As String, ByVal pUserId As String, ByVal pParentHeight As Integer, ByVal pParentWidth As Integer)
+    'Public ReadOnly Property FormIsExpanded As Boolean
+    '    Get
+    '        Return mflgExpanded
+    '    End Get
+    'End Property
+    Public Function DisplayItems(ByVal pPCC As String, ByVal pUserId As String) As Boolean ', ByVal pParentHeight As Integer, ByVal pParentWidth As Integer)
+        Try
+            Dim pobjDownSell As DownsellCollection
+            Dim pAreEqual As Boolean = False
+            mstrPCC = pPCC
+            mstrUserID = pUserId
+            If mobjDownsell Is Nothing Then
+                pobjDownSell = New DownsellCollection
+            Else
+                pobjDownSell = mobjDownsell
+            End If
+            mobjDownsell = New DownsellCollection
+            mobjDownsell.Load(mstrPCC, mstrUserID)
+            pAreEqual = (pobjDownSell.Count = mobjDownsell.Count)
+            If pAreEqual Then
+                For i As Integer = 1 To mobjDownsell.Count + 1
+                    If mobjDownsell.ContainsKey(i) AndAlso pobjDownSell.ContainsKey(i) AndAlso mobjDownsell.Item(i).Equals(pobjDownSell.Item(i)) Then
+                        pAreEqual = False
+                        Exit For
+                    End If
+                Next
+            End If
+            mintDisplayedContracted += 1
+            If Not pAreEqual Or mintDisplayedContracted > 10 Or txtAmadeusLastChecked.BackColor = Color.Orange Or txtGalileoLastChecked.BackColor = Color.Orange Then
+                lblPCCUser.Text = mstrPCC & "-" & mstrUserID
+                LoadDGV()
+                ExpandContractWindows()
+                mintDisplayedContracted = 0
+                Return True
+            Else
+                Return False
+            End If
+        Catch ex As Exception
+            Throw New Exception("frmPriceOptimiser.DisplayItems()" & vbCrLf & ex.Message)
+        End Try
+
+    End Function
+
+    'Private Sub DisplayItems(ByVal pPCC As String, ByVal pUserId As String)
+    '    mstrPCC = pPCC
+    '    mstrUserID = pUserId
+    '    mobjDownsell = New DownsellCollection
+    '    mobjDownsell.Load(mstrPCC, mstrUserID)
+    '    lblPCCUser.Text = mstrPCC & "-" & mstrUserID
+    '    LoadDGV()
+    'End Sub
+    Private Sub RefreshDisplay(ByVal pPCC As String, ByVal pUserId As String)
         mstrPCC = pPCC
         mstrUserID = pUserId
-        mintParentHeight = pParentHeight
-        mintParentWidth = pParentWidth
         mobjDownsell = New DownsellCollection
         mobjDownsell.Load(mstrPCC, mstrUserID)
         lblPCCUser.Text = mstrPCC & "-" & mstrUserID
         LoadDGV()
-        mintDisplayedContracted += 1
-        If mintDisplayedContracted > 10 Or txtAmadeusLastChecked.BackColor = Color.Orange Or txtGalileoLastChecked.BackColor = Color.Orange Then
-            mflgExpanded = True
-            ExpandContractWindows()
-            mintDisplayedContracted = 0
-        ElseIf dgvPNRs.RowCount = 0 Then
-            mflgExpanded = False
-            ExpandContractWindows()
+    End Sub
+    Private Sub CheckGDSFilesDownloadTime()
+        Dim pDirectory = "\\eudc-panasoft\Griffin\AIR\Successful\" & Format(Now, "yyyy.MM")
+        Dim pDate As Date = System.IO.Directory.GetLastWriteTime(pDirectory)
+        txtAmadeusAIRfile.Text = Format(pDate, "dd/MM/yyyy HH:mm") & " (" & DateDiff(DateInterval.Minute, pDate, Now).ToString & " minutes ago)"
+        If DateDiff(DateInterval.Minute, pDate, Now) > 60 Then
+            txtAmadeusAIRfile.BackColor = Color.Orange
+        Else
+            txtAmadeusAIRfile.BackColor = Color.White
         End If
+
+        pDirectory = "\\eudc-panasoft\Griffin\MIR\Successful\" & Format(Now, "yyyy.MM")
+        pDate = System.IO.Directory.GetLastWriteTime(pDirectory)
+        txtGalileoMIRfile.Text = Format(pDate, "dd/MM/yyyy HH:mm") & " (" & DateDiff(DateInterval.Minute, pDate, Now).ToString & " minutes ago)"
+        If DateDiff(DateInterval.Minute, pDate, Now) > 60 Then
+            txtGalileoMIRfile.BackColor = Color.Orange
+        Else
+            txtGalileoMIRfile.BackColor = Color.White
+        End If
+
     End Sub
-    Private Sub DisplayItems(ByVal pPCC As String, ByVal pUserId As String)
-        mstrPCC = pPCC
-        mstrUserID = pUserId
-        mobjDownsell = New DownsellCollection
-        mobjDownsell.Load(mstrPCC, mstrUserID)
-        lblPCCUser.Text = mstrPCC & "-" & mstrUserID
-        LoadDGV()
-    End Sub
-    Private Sub LoadDGV()
-        Dim pCurrPNR As String = ""
-        txtTimeChecked.Text = Format(Now, "dd/MM/yyyy HH:mm")
+    Private Sub CheckGDSDownsellCheckTime()
         txtAmadeusLastChecked.Text = Format(mobjDownsell.AmadeusLastCheck, "dd/MM/yyyy HH:mm") & " (" & DateDiff(DateInterval.Minute, mobjDownsell.AmadeusLastCheck, Now).ToString & " minutes ago)"
-        If DateDiff(DateInterval.Hour, mobjDownsell.AmadeusLastCheck, Now) > 1 Then
+        If DateDiff(DateInterval.Minute, mobjDownsell.AmadeusLastCheck, Now) > 60 Then
             txtAmadeusLastChecked.BackColor = Color.Orange
         Else
             txtAmadeusLastChecked.BackColor = Color.White
@@ -181,6 +222,14 @@ Public Class frmPriceOptimiser
         Else
             txtGalileoLastChecked.BackColor = Color.White
         End If
+
+    End Sub
+    Private Sub LoadDGV()
+
+        lblTimeNow.Text = "Time now is : " & Format(Now, "dd/MM/yyyy HH:mm")
+        CheckGDSFilesDownloadTime()
+        CheckGDSDownsellCheckTime()
+        Dim pCurrPNR As String = ""
         If dgvPNRs.ColumnCount = 0 Then
             PrepareDataGrid()
         End If
@@ -257,7 +306,7 @@ Public Class frmPriceOptimiser
             pCurrPNR &= pItem.PNR
         Next
         If pCurrPNR <> mstrPrevPNRs Then
-            mflgExpanded = True
+            'mflgExpanded = True
             mstrPrevPNRs = pCurrPNR
         End If
         lblPCCUser.Text = mstrPCC & "-" & mstrUserID & " : " & dgvPNRs.RowCount.ToString & " entries"
@@ -378,7 +427,7 @@ Public Class frmPriceOptimiser
 
     Private Sub cmdRefresh_Click(sender As Object, e As EventArgs) Handles cmdRefresh.Click
         Try
-            DisplayItems(mstrPCC, mstrUserID)
+            RefreshDisplay(mstrPCC, mstrUserID)
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
@@ -401,68 +450,23 @@ Public Class frmPriceOptimiser
 
     End Sub
 
-    Private Sub cmdMinMax_Click(sender As Object, e As EventArgs) Handles cmdMinMax.Click
+    'Private Sub cmdMinMax_Click(sender As Object, e As EventArgs) Handles cmdMinMax.Click
 
-        mflgExpanded = Not mflgExpanded
-        ExpandContractWindows()
+    '    mflgExpanded = Not mflgExpanded
+    '    ExpandContractWindows()
 
-    End Sub
+    'End Sub
     Private Sub ExpandContractWindows()
-        If mflgExpanded Then
-            Me.Location = New Point(0, 0)
-            Me.FormBorderStyle = FormBorderStyle.Sizable
-            Me.Width = mintParentWidth
-            Me.Height = mintParentHeight
-            Me.BackColor = Color.FromKnownColor(KnownColor.Control)
-            Me.TopMost = False
-            Me.ShowInTaskbar = True
-            cmdMinMax.Text = "Shrink window"
-            cmdTopLeft.Visible = False
-            cmdTopRight.Visible = False
-            cmdBottomLeft.Visible = False
-            cmdBottomRight.Visible = False
+        Dim pfrmMain As frm01Main
+        pfrmMain = DirectCast(Me.MdiParent, frm01Main)
+
+        If dgvPNRs.RowCount = 0 Then
+            pfrmMain.PriceOptimizerToolStripMenuItem.Text = "Price Optimizer"
+            pfrmMain.PriceOptimizerToolStripMenuItem.BackColor = Color.FromKnownColor(KnownColor.Control)
         Else
-            Me.Location = New Point(mintLeft, mintTop)
-            Me.FormBorderStyle = FormBorderStyle.None
-            Me.Width = cmdMinMax.Width + cmdMinMax.Location.X * 2
-            Me.Height = cmdMinMax.Height + cmdMinMax.Location.Y * 2
-            Me.ShowInTaskbar = False
-            If dgvPNRs.RowCount = 0 Then
-                Me.BackColor = Color.FromKnownColor(KnownColor.Control)
-            Else
-                Me.BackColor = Color.Red
-            End If
-            Me.TopMost = True
-            cmdMinMax.Text = "Price Optimiser Expand " & dgvPNRs.Rows.Count & " entries"
-            cmdTopLeft.Visible = True
-            cmdTopRight.Visible = True
-            cmdBottomLeft.Visible = True
-            cmdBottomRight.Visible = True
+            pfrmMain.PriceOptimizerToolStripMenuItem.Text = "Price Optimizer " & dgvPNRs.Rows.Count & " entries"
+            pfrmMain.PriceOptimizerToolStripMenuItem.BackColor = Color.Red
         End If
-    End Sub
-
-    Private Sub cmdTopRight_Click(sender As Object, e As EventArgs) Handles cmdTopRight.Click
-        mintTop = 0
-        mintLeft = My.Computer.Screen.WorkingArea.Width - cmdMinMax.Width - cmdMinMax.Location.X * 2
-        ExpandContractWindows()
-    End Sub
-
-    Private Sub cmdTopLeft_Click(sender As Object, e As EventArgs) Handles cmdTopLeft.Click
-        mintTop = 0
-        mintLeft = 0
-        ExpandContractWindows()
-    End Sub
-
-    Private Sub cmdBottomLeft_Click(sender As Object, e As EventArgs) Handles cmdBottomLeft.Click
-        mintTop = My.Computer.Screen.WorkingArea.Height - cmdMinMax.Height - cmdMinMax.Location.Y * 2
-        mintLeft = 0
-        ExpandContractWindows()
-    End Sub
-
-    Private Sub cmdBottomRight_Click(sender As Object, e As EventArgs) Handles cmdBottomRight.Click
-        mintTop = My.Computer.Screen.WorkingArea.Height - cmdMinMax.Height - cmdMinMax.Location.Y * 2
-        mintLeft = My.Computer.Screen.WorkingArea.Width - cmdMinMax.Width - cmdMinMax.Location.X * 2
-        ExpandContractWindows()
     End Sub
 
 End Class

@@ -58,7 +58,7 @@ Public Class AlertsItem
             Return mudtprops.AlertForDownsell
         End Get
     End Property
-    Friend Sub SetValues(ByVal pBackOfficeID As Integer, ByVal pClientCode As String, ByVal pAlertForFinisher As String, ByVal pOriginCountry As String, ByVal pDestinationCountry As String, ByVal pAirline As String, ByVal pAmadeusQueue As String, ByVal pGalileoQueue As String, ByVal pAlertForDownsell As String)
+    Public Sub SetValues(ByVal pBackOfficeID As Integer, ByVal pClientCode As String, ByVal pAlertForFinisher As String, ByVal pOriginCountry As String, ByVal pDestinationCountry As String, ByVal pAirline As String, ByVal pAmadeusQueue As String, ByVal pGalileoQueue As String, ByVal pAlertForDownsell As String)
         With mudtprops
             .BackOfficeId = pBackOfficeID
             .ClientCode = pClientCode

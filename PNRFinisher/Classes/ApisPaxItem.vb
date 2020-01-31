@@ -1,18 +1,18 @@
 ﻿Option Strict On
 Option Explicit On
 Public Class ApisPaxItem
-    Friend Event Valid(IsValid As Boolean)
+    Public Event Valid(IsValid As Boolean)
     Private Structure ClassProps
-        Friend Id As Integer
-        Friend Surname As String
-        Friend FirstName As String
-        Friend Birthdate As Date
-        Friend Gender As String
-        Friend IssuingCountry As String
-        Friend PassportNumber As String
-        Friend ExpiryDate As Date
-        Friend Nationality As String
-        Friend IsValid As Boolean
+        Dim Id As Integer
+        Dim Surname As String
+        Dim FirstName As String
+        Dim Birthdate As Date
+        Dim Gender As String
+        Dim IssuingCountry As String
+        Dim PassportNumber As String
+        Dim ExpiryDate As Date
+        Dim Nationality As String
+        Dim IsValid As Boolean
     End Structure
     Private mudtProps As ClassProps
     Public Sub New()

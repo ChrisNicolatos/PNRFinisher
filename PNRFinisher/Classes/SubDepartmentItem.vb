@@ -27,7 +27,7 @@ Public Class SubDepartmentItem
             Return mudtProps.Name
         End Get
     End Property
-    Friend Sub SetValues(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String)
+    Public Sub SetValues(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String)
         With mudtProps
             .ID = pID
             .Code = pCode

@@ -28,7 +28,7 @@ Public Class TicketElementItem
             Return mudtProps.Remark
         End Get
     End Property
-    Friend Sub SetValues(ByVal pElementNo As Integer, ByVal pPCC As String, ByVal pActionDateTime As Date, ByVal pRemark As String)
+    Public Sub SetValues(ByVal pElementNo As Integer, ByVal pPCC As String, ByVal pActionDateTime As Date, ByVal pRemark As String)
         With mudtProps
             .ElementNo = pElementNo
             .PCC = pPCC

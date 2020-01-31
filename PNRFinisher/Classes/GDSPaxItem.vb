@@ -63,7 +63,7 @@ Public Class GDSPaxItem
             Return mudtProps.Nationality
         End Get
     End Property
-    Friend Sub SetValues(ByRef pElementNo As Integer, ByRef pInitial As String, ByRef pLastName As String, ByRef pID As String)
+    Public Sub SetValues(ByRef pElementNo As Integer, ByRef pInitial As String, ByRef pLastName As String, ByRef pID As String)
 
         With mudtProps
             .ElementNo = pElementNo

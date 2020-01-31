@@ -27,14 +27,14 @@ Partial Class frmCostCentre
         Me.dgvCostCentres = New System.Windows.Forms.DataGridView()
         Me.mnuCostCentre = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.mnuCostCentreExport = New System.Windows.Forms.ToolStripMenuItem()
-        Me.lstCustomerGroup = New System.Windows.Forms.ListBox()
-        Me.lstCustomers = New System.Windows.Forms.ListBox()
+        Me.lstClientGroup = New System.Windows.Forms.ListBox()
+        Me.lstClients = New System.Windows.Forms.ListBox()
         Me.txtSearch = New System.Windows.Forms.TextBox()
         Me.Label3 = New System.Windows.Forms.Label()
-        Me.txtCustomerGroup = New System.Windows.Forms.TextBox()
+        Me.txtClientGroup = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
-        Me.txtCustomer = New System.Windows.Forms.TextBox()
-        Me.Label1 = New System.Windows.Forms.Label()
+        Me.txtClient = New System.Windows.Forms.TextBox()
+        Me.lblClient = New System.Windows.Forms.Label()
         Me.cmdCancel = New System.Windows.Forms.Button()
         Me.cmdAccept = New System.Windows.Forms.Button()
         Me.cmdSearch = New System.Windows.Forms.Button()
@@ -74,21 +74,21 @@ Partial Class frmCostCentre
         Me.mnuCostCentreExport.Size = New System.Drawing.Size(107, 22)
         Me.mnuCostCentreExport.Text = "Export"
         '
-        'lstCustomerGroup
+        'lstClientGroup
         '
-        Me.lstCustomerGroup.FormattingEnabled = True
-        Me.lstCustomerGroup.Location = New System.Drawing.Point(393, 43)
-        Me.lstCustomerGroup.Name = "lstCustomerGroup"
-        Me.lstCustomerGroup.Size = New System.Drawing.Size(337, 134)
-        Me.lstCustomerGroup.TabIndex = 16
+        Me.lstClientGroup.FormattingEnabled = True
+        Me.lstClientGroup.Location = New System.Drawing.Point(393, 43)
+        Me.lstClientGroup.Name = "lstClientGroup"
+        Me.lstClientGroup.Size = New System.Drawing.Size(337, 134)
+        Me.lstClientGroup.TabIndex = 16
         '
-        'lstCustomers
+        'lstClients
         '
-        Me.lstCustomers.FormattingEnabled = True
-        Me.lstCustomers.Location = New System.Drawing.Point(18, 43)
-        Me.lstCustomers.Name = "lstCustomers"
-        Me.lstCustomers.Size = New System.Drawing.Size(337, 134)
-        Me.lstCustomers.TabIndex = 13
+        Me.lstClients.FormattingEnabled = True
+        Me.lstClients.Location = New System.Drawing.Point(18, 43)
+        Me.lstClients.Name = "lstClients"
+        Me.lstClients.Size = New System.Drawing.Size(337, 134)
+        Me.lstClients.TabIndex = 13
         '
         'txtSearch
         '
@@ -109,13 +109,13 @@ Partial Class frmCostCentre
         Me.Label3.TabIndex = 17
         Me.Label3.Text = "Search"
         '
-        'txtCustomerGroup
+        'txtClientGroup
         '
-        Me.txtCustomerGroup.Font = New System.Drawing.Font("Courier New", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.txtCustomerGroup.Location = New System.Drawing.Point(393, 23)
-        Me.txtCustomerGroup.Name = "txtCustomerGroup"
-        Me.txtCustomerGroup.Size = New System.Drawing.Size(337, 20)
-        Me.txtCustomerGroup.TabIndex = 15
+        Me.txtClientGroup.Font = New System.Drawing.Font("Courier New", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
+        Me.txtClientGroup.Location = New System.Drawing.Point(393, 23)
+        Me.txtClientGroup.Name = "txtClientGroup"
+        Me.txtClientGroup.Size = New System.Drawing.Size(337, 20)
+        Me.txtClientGroup.TabIndex = 15
         '
         'Label2
         '
@@ -125,27 +125,27 @@ Partial Class frmCostCentre
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(337, 13)
         Me.Label2.TabIndex = 14
-        Me.Label2.Text = "Customer Group"
+        Me.Label2.Text = "Client Group"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'txtCustomer
+        'txtClient
         '
-        Me.txtCustomer.Font = New System.Drawing.Font("Courier New", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.txtCustomer.Location = New System.Drawing.Point(18, 23)
-        Me.txtCustomer.Name = "txtCustomer"
-        Me.txtCustomer.Size = New System.Drawing.Size(337, 20)
-        Me.txtCustomer.TabIndex = 12
+        Me.txtClient.Font = New System.Drawing.Font("Courier New", 8.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
+        Me.txtClient.Location = New System.Drawing.Point(18, 23)
+        Me.txtClient.Name = "txtClient"
+        Me.txtClient.Size = New System.Drawing.Size(337, 20)
+        Me.txtClient.TabIndex = 12
         '
-        'Label1
+        'lblClient
         '
-        Me.Label1.BackColor = System.Drawing.Color.Yellow
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.Label1.Location = New System.Drawing.Point(18, 10)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(337, 13)
-        Me.Label1.TabIndex = 11
-        Me.Label1.Text = "Customer"
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.lblClient.BackColor = System.Drawing.Color.Yellow
+        Me.lblClient.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
+        Me.lblClient.Location = New System.Drawing.Point(18, 10)
+        Me.lblClient.Name = "lblClient"
+        Me.lblClient.Size = New System.Drawing.Size(337, 13)
+        Me.lblClient.TabIndex = 11
+        Me.lblClient.Text = "Client"
+        Me.lblClient.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'cmdCancel
         '
@@ -186,14 +186,14 @@ Partial Class frmCostCentre
         Me.ClientSize = New System.Drawing.Size(748, 493)
         Me.Controls.Add(Me.cmdSearch)
         Me.Controls.Add(Me.dgvCostCentres)
-        Me.Controls.Add(Me.lstCustomerGroup)
-        Me.Controls.Add(Me.lstCustomers)
+        Me.Controls.Add(Me.lstClientGroup)
+        Me.Controls.Add(Me.lstClients)
         Me.Controls.Add(Me.txtSearch)
         Me.Controls.Add(Me.Label3)
-        Me.Controls.Add(Me.txtCustomerGroup)
+        Me.Controls.Add(Me.txtClientGroup)
         Me.Controls.Add(Me.Label2)
-        Me.Controls.Add(Me.txtCustomer)
-        Me.Controls.Add(Me.Label1)
+        Me.Controls.Add(Me.txtClient)
+        Me.Controls.Add(Me.lblClient)
         Me.Controls.Add(Me.cmdCancel)
         Me.Controls.Add(Me.cmdAccept)
         Me.Name = "frmCostCentre"
@@ -208,14 +208,14 @@ Partial Class frmCostCentre
     Friend WithEvents dgvCostCentres As DataGridView
     Friend WithEvents mnuCostCentre As ContextMenuStrip
     Friend WithEvents mnuCostCentreExport As ToolStripMenuItem
-    Friend WithEvents lstCustomerGroup As ListBox
-    Friend WithEvents lstCustomers As ListBox
+    Friend WithEvents lstClientGroup As ListBox
+    Friend WithEvents lstClients As ListBox
     Friend WithEvents txtSearch As TextBox
     Friend WithEvents Label3 As Label
-    Friend WithEvents txtCustomerGroup As TextBox
+    Friend WithEvents txtClientGroup As TextBox
     Friend WithEvents Label2 As Label
-    Friend WithEvents txtCustomer As TextBox
-    Friend WithEvents Label1 As Label
+    Friend WithEvents txtClient As TextBox
+    Friend WithEvents lblClient As Label
     Friend WithEvents cmdCancel As Button
     Friend WithEvents cmdAccept As Button
     Friend WithEvents cmdSearch As Button

@@ -23,10 +23,6 @@ Partial Class frmPriceOptimiser
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Me.cmdBottomRight = New System.Windows.Forms.Button()
-        Me.cmdBottomLeft = New System.Windows.Forms.Button()
-        Me.cmdTopLeft = New System.Windows.Forms.Button()
-        Me.cmdMinMax = New System.Windows.Forms.Button()
         Me.cmdRefresh = New System.Windows.Forms.Button()
         Me.lblPCCUser = New System.Windows.Forms.Label()
         Me.mnuOptimiserCopyData = New System.Windows.Forms.ToolStripMenuItem()
@@ -38,58 +34,26 @@ Partial Class frmPriceOptimiser
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.mnuOptimiserPNR = New System.Windows.Forms.ToolStripTextBox()
         Me.mnuOptimiser = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.cmdTopRight = New System.Windows.Forms.Button()
         Me.dgvPNRs = New System.Windows.Forms.DataGridView()
         Me.Label1 = New System.Windows.Forms.Label()
         Me.txtAmadeusLastChecked = New System.Windows.Forms.TextBox()
         Me.txtGalileoLastChecked = New System.Windows.Forms.TextBox()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.Label3 = New System.Windows.Forms.Label()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.txtTimeChecked = New System.Windows.Forms.TextBox()
+        Me.lblTimeNow = New System.Windows.Forms.Label()
+        Me.Label5 = New System.Windows.Forms.Label()
+        Me.Label6 = New System.Windows.Forms.Label()
+        Me.txtGalileoMIRfile = New System.Windows.Forms.TextBox()
+        Me.txtAmadeusAIRfile = New System.Windows.Forms.TextBox()
+        Me.Label7 = New System.Windows.Forms.Label()
+        Me.Label8 = New System.Windows.Forms.Label()
         Me.mnuOptimiser.SuspendLayout()
         CType(Me.dgvPNRs, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
-        'cmdBottomRight
-        '
-        Me.cmdBottomRight.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdBottomRight.Location = New System.Drawing.Point(72, 54)
-        Me.cmdBottomRight.Name = "cmdBottomRight"
-        Me.cmdBottomRight.Size = New System.Drawing.Size(58, 13)
-        Me.cmdBottomRight.TabIndex = 17
-        Me.cmdBottomRight.UseVisualStyleBackColor = True
-        '
-        'cmdBottomLeft
-        '
-        Me.cmdBottomLeft.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdBottomLeft.Location = New System.Drawing.Point(13, 54)
-        Me.cmdBottomLeft.Name = "cmdBottomLeft"
-        Me.cmdBottomLeft.Size = New System.Drawing.Size(58, 13)
-        Me.cmdBottomLeft.TabIndex = 15
-        Me.cmdBottomLeft.TextAlign = System.Drawing.ContentAlignment.BottomCenter
-        Me.cmdBottomLeft.UseVisualStyleBackColor = True
-        '
-        'cmdTopLeft
-        '
-        Me.cmdTopLeft.Location = New System.Drawing.Point(13, 7)
-        Me.cmdTopLeft.Name = "cmdTopLeft"
-        Me.cmdTopLeft.Size = New System.Drawing.Size(58, 13)
-        Me.cmdTopLeft.TabIndex = 14
-        Me.cmdTopLeft.UseVisualStyleBackColor = True
-        '
-        'cmdMinMax
-        '
-        Me.cmdMinMax.Location = New System.Drawing.Point(13, 20)
-        Me.cmdMinMax.Name = "cmdMinMax"
-        Me.cmdMinMax.Size = New System.Drawing.Size(117, 34)
-        Me.cmdMinMax.TabIndex = 13
-        Me.cmdMinMax.Text = "Expand"
-        Me.cmdMinMax.UseVisualStyleBackColor = True
-        '
         'cmdRefresh
         '
-        Me.cmdRefresh.Location = New System.Drawing.Point(163, 21)
+        Me.cmdRefresh.Location = New System.Drawing.Point(12, 21)
         Me.cmdRefresh.Name = "cmdRefresh"
         Me.cmdRefresh.Size = New System.Drawing.Size(117, 34)
         Me.cmdRefresh.TabIndex = 12
@@ -157,15 +121,6 @@ Partial Class frmPriceOptimiser
         Me.mnuOptimiser.Name = "mnuOptimiser"
         Me.mnuOptimiser.Size = New System.Drawing.Size(261, 135)
         '
-        'cmdTopRight
-        '
-        Me.cmdTopRight.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdTopRight.Location = New System.Drawing.Point(72, 7)
-        Me.cmdTopRight.Name = "cmdTopRight"
-        Me.cmdTopRight.Size = New System.Drawing.Size(58, 13)
-        Me.cmdTopRight.TabIndex = 16
-        Me.cmdTopRight.UseVisualStyleBackColor = True
-        '
         'dgvPNRs
         '
         Me.dgvPNRs.AllowUserToAddRows = False
@@ -177,13 +132,13 @@ Partial Class frmPriceOptimiser
         Me.dgvPNRs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvPNRs.ContextMenuStrip = Me.mnuOptimiser
         Me.dgvPNRs.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically
-        Me.dgvPNRs.Location = New System.Drawing.Point(12, 75)
+        Me.dgvPNRs.Location = New System.Drawing.Point(12, 82)
         Me.dgvPNRs.MultiSelect = False
         Me.dgvPNRs.Name = "dgvPNRs"
         Me.dgvPNRs.ReadOnly = True
         Me.dgvPNRs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
         Me.dgvPNRs.ShowEditingIcon = False
-        Me.dgvPNRs.Size = New System.Drawing.Size(1450, 260)
+        Me.dgvPNRs.Size = New System.Drawing.Size(1450, 253)
         Me.dgvPNRs.TabIndex = 10
         '
         'Label1
@@ -198,14 +153,14 @@ Partial Class frmPriceOptimiser
         '
         'txtAmadeusLastChecked
         '
-        Me.txtAmadeusLastChecked.Location = New System.Drawing.Point(755, 26)
+        Me.txtAmadeusLastChecked.Location = New System.Drawing.Point(755, 36)
         Me.txtAmadeusLastChecked.Name = "txtAmadeusLastChecked"
         Me.txtAmadeusLastChecked.Size = New System.Drawing.Size(246, 20)
         Me.txtAmadeusLastChecked.TabIndex = 18
         '
         'txtGalileoLastChecked
         '
-        Me.txtGalileoLastChecked.Location = New System.Drawing.Point(755, 46)
+        Me.txtGalileoLastChecked.Location = New System.Drawing.Point(755, 56)
         Me.txtGalileoLastChecked.Name = "txtGalileoLastChecked"
         Me.txtGalileoLastChecked.Size = New System.Drawing.Size(246, 20)
         Me.txtGalileoLastChecked.TabIndex = 19
@@ -213,7 +168,7 @@ Partial Class frmPriceOptimiser
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(610, 30)
+        Me.Label2.Location = New System.Drawing.Point(610, 40)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(115, 13)
         Me.Label2.TabIndex = 20
@@ -222,46 +177,93 @@ Partial Class frmPriceOptimiser
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(610, 50)
+        Me.Label3.Location = New System.Drawing.Point(610, 60)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(103, 13)
         Me.Label3.TabIndex = 21
         Me.Label3.Text = "Galileo last checked"
         '
-        'Label4
+        'lblTimeNow
         '
-        Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(610, 10)
-        Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(53, 13)
-        Me.Label4.TabIndex = 23
-        Me.Label4.Text = "Time now"
+        Me.lblTimeNow.BackColor = System.Drawing.Color.Aqua
+        Me.lblTimeNow.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblTimeNow.Location = New System.Drawing.Point(610, 10)
+        Me.lblTimeNow.Name = "lblTimeNow"
+        Me.lblTimeNow.Size = New System.Drawing.Size(785, 13)
+        Me.lblTimeNow.TabIndex = 23
+        Me.lblTimeNow.Text = "Time now"
+        Me.lblTimeNow.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'txtTimeChecked
+        'Label5
         '
-        Me.txtTimeChecked.Location = New System.Drawing.Point(755, 6)
-        Me.txtTimeChecked.Name = "txtTimeChecked"
-        Me.txtTimeChecked.Size = New System.Drawing.Size(246, 20)
-        Me.txtTimeChecked.TabIndex = 22
+        Me.Label5.AutoSize = True
+        Me.Label5.Location = New System.Drawing.Point(1013, 60)
+        Me.Label5.Name = "Label5"
+        Me.Label5.Size = New System.Drawing.Size(110, 13)
+        Me.Label5.TabIndex = 27
+        Me.Label5.Text = "Latest Galileo MIR file"
+        '
+        'Label6
+        '
+        Me.Label6.AutoSize = True
+        Me.Label6.Location = New System.Drawing.Point(1013, 40)
+        Me.Label6.Name = "Label6"
+        Me.Label6.Size = New System.Drawing.Size(120, 13)
+        Me.Label6.TabIndex = 26
+        Me.Label6.Text = "Latest Amadeus AIR file"
+        '
+        'txtGalileoMIRfile
+        '
+        Me.txtGalileoMIRfile.Location = New System.Drawing.Point(1149, 56)
+        Me.txtGalileoMIRfile.Name = "txtGalileoMIRfile"
+        Me.txtGalileoMIRfile.Size = New System.Drawing.Size(246, 20)
+        Me.txtGalileoMIRfile.TabIndex = 25
+        '
+        'txtAmadeusAIRfile
+        '
+        Me.txtAmadeusAIRfile.Location = New System.Drawing.Point(1149, 36)
+        Me.txtAmadeusAIRfile.Name = "txtAmadeusAIRfile"
+        Me.txtAmadeusAIRfile.Size = New System.Drawing.Size(246, 20)
+        Me.txtAmadeusAIRfile.TabIndex = 24
+        '
+        'Label7
+        '
+        Me.Label7.BackColor = System.Drawing.Color.Yellow
+        Me.Label7.Location = New System.Drawing.Point(1013, 23)
+        Me.Label7.Name = "Label7"
+        Me.Label7.Size = New System.Drawing.Size(382, 13)
+        Me.Label7.TabIndex = 28
+        Me.Label7.Text = "Travel Force GDS Import Check"
+        Me.Label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'Label8
+        '
+        Me.Label8.BackColor = System.Drawing.Color.Yellow
+        Me.Label8.Location = New System.Drawing.Point(610, 23)
+        Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(391, 13)
+        Me.Label8.TabIndex = 29
+        Me.Label8.Text = "Price Optimization"
+        Me.Label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'frmPriceOptimiser
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1474, 342)
-        Me.Controls.Add(Me.Label4)
-        Me.Controls.Add(Me.txtTimeChecked)
+        Me.Controls.Add(Me.Label8)
+        Me.Controls.Add(Me.Label7)
+        Me.Controls.Add(Me.Label5)
+        Me.Controls.Add(Me.Label6)
+        Me.Controls.Add(Me.txtGalileoMIRfile)
+        Me.Controls.Add(Me.txtAmadeusAIRfile)
+        Me.Controls.Add(Me.lblTimeNow)
         Me.Controls.Add(Me.Label3)
         Me.Controls.Add(Me.Label2)
         Me.Controls.Add(Me.txtGalileoLastChecked)
         Me.Controls.Add(Me.txtAmadeusLastChecked)
-        Me.Controls.Add(Me.cmdBottomRight)
-        Me.Controls.Add(Me.cmdBottomLeft)
-        Me.Controls.Add(Me.cmdTopLeft)
-        Me.Controls.Add(Me.cmdMinMax)
         Me.Controls.Add(Me.cmdRefresh)
         Me.Controls.Add(Me.lblPCCUser)
-        Me.Controls.Add(Me.cmdTopRight)
         Me.Controls.Add(Me.dgvPNRs)
         Me.Controls.Add(Me.Label1)
         Me.Name = "frmPriceOptimiser"
@@ -273,11 +275,6 @@ Partial Class frmPriceOptimiser
         Me.PerformLayout()
 
     End Sub
-
-    Friend WithEvents cmdBottomRight As Button
-    Friend WithEvents cmdBottomLeft As Button
-    Friend WithEvents cmdTopLeft As Button
-    Friend WithEvents cmdMinMax As Button
     Friend WithEvents cmdRefresh As Button
     Friend WithEvents lblPCCUser As Label
     Friend WithEvents mnuOptimiserCopyData As ToolStripMenuItem
@@ -289,13 +286,17 @@ Partial Class frmPriceOptimiser
     Friend WithEvents ToolStripSeparator1 As ToolStripSeparator
     Friend WithEvents mnuOptimiserPNR As ToolStripTextBox
     Friend WithEvents mnuOptimiser As ContextMenuStrip
-    Friend WithEvents cmdTopRight As Button
     Friend WithEvents dgvPNRs As DataGridView
     Friend WithEvents Label1 As Label
     Friend WithEvents txtAmadeusLastChecked As TextBox
     Friend WithEvents txtGalileoLastChecked As TextBox
     Friend WithEvents Label2 As Label
     Friend WithEvents Label3 As Label
-    Friend WithEvents Label4 As Label
-    Friend WithEvents txtTimeChecked As TextBox
+    Friend WithEvents lblTimeNow As Label
+    Friend WithEvents Label5 As Label
+    Friend WithEvents Label6 As Label
+    Friend WithEvents txtGalileoMIRfile As TextBox
+    Friend WithEvents txtAmadeusAIRfile As TextBox
+    Friend WithEvents Label7 As Label
+    Friend WithEvents Label8 As Label
 End Class

@@ -30,15 +30,18 @@
                 pString.AppendLine("<span style='font-size:10.0pt;font-family:arial'>")
                 pString.AppendLine(MySettings.FormalOfficeName & "<br />")
                 pString.AppendLine("Flight routing information<br />")
-                If .ClientName.Trim <> "" Then
-                    pString.AppendLine("For: " & .ClientName)
+                If Not mobjPNR.ExistingElements Is Nothing Then
+                    If .ExistingElements.ClientName.Trim <> "" Then
+                        pString.AppendLine("For: " & .ExistingElements.ClientName)
+                    End If
                 End If
                 pString.AppendLine("<br /><br />")
                 pString.AppendLine("Date: " & Format(Now, "dd/MM/yyyy") & "<br /><br />")
-                If mobjPNR.VesselName <> "" Then
-                    pString.AppendLine("<b><u>VESSEL:</u></b><br />" & mobjPNR.VesselName & "<br /><br />")
+                If Not mobjPNR.ExistingElements Is Nothing Then
+                    If mobjPNR.ExistingElements.VesselName <> "" Then
+                        pString.AppendLine("<b><u>VESSEL:</u></b><br />" & mobjPNR.ExistingElements.VesselName & "<br /><br />")
+                    End If
                 End If
-
                 If mobjPNR.Passengers.Count > 0 Then
                     pString.AppendLine("<b><u>")
                     If mobjPNR.Passengers.Count = 1 Then
@@ -82,7 +85,7 @@
                 Dim pPrevOff As String = ""
                 For Each pobjSeg As GDSSegItem In .Segments.Values
                     iSegCount = iSegCount + 1
-                    If iSegCount > 1 And pPrevOff <> pobjSeg.BoardPoint Then
+                    If iSegCount > 1 And pPrevOff <> pobjSeg.Origin.AirportCode Then
                         pString.AppendLine("<tr>")
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;</td>")
 
@@ -96,7 +99,7 @@
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;</td>")
                         pString.AppendLine("</tr>")
                     End If
-                    pPrevOff = pobjSeg.OffPoint
+                    pPrevOff = pobjSeg.Destination.AirportCode
                     pString.AppendLine("<tr>")
                     pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & iSegCount & "</td>")
                     pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.Airline & "-" & pobjSeg.AirlineName)
@@ -105,24 +108,24 @@
                     End If
                     pString.AppendLine("</td>")
                     pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.FlightNo & "</td>")
-                    pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & Format(pobjSeg.DepartureDate, "dd/MM/yyyy") & "<br><span style='font-size:6.0pt;font-family:arial'>" & pobjSeg.DepartureDay & "</span></td>")
-                    pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.BoardPoint & " " & pobjSeg.BoardCityName.PadRight(.MaxCityNameLength + 1, " "c).Substring(0, .MaxCityNameLength + 1) & " - " &
-                    pobjSeg.OffPoint & " " & pobjSeg.OffPointCityName.PadRight(.MaxCityNameLength + 1, " "c).Substring(0, .MaxCityNameLength + 1) & "</td>")
+                    pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & Format(pobjSeg.Departure.SegDate, "dd/MM/yyyy") & "<br><span style='font-size:6.0pt;font-family:arial'>" & pobjSeg.Departure.DayOfTheWeek & "</span></td>")
+                    pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.Origin.AirportCode & " " & pobjSeg.Origin.CityName.PadRight(.Segments.MaxCityNameLength + 1, " "c).Substring(0, .Segments.MaxCityNameLength + 1) & " - " &
+                    pobjSeg.Destination.AirportCode & " " & pobjSeg.Destination.CityName.PadRight(.Segments.MaxCityNameLength + 1, " "c).Substring(0, .Segments.MaxCityNameLength + 1) & "</td>")
                     If pobjSeg.Text.Length > 35 AndAlso pobjSeg.Text.Substring(35, 4) = "FLWN" Then
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>FLOWN</td>")
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;</td>")
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;</td>")
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;</td>")
                     Else
-                        pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.DepartTimeShort(":") & "</td>")
-                        Dim pDateDiff As Long = DateDiff(DateInterval.Day, pobjSeg.DepartureDate, pobjSeg.ArrivalDate)
+                        pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.Departure.TimeShort(":") & "</td>")
+                        Dim pDateDiff As Long = DateDiff(DateInterval.Day, pobjSeg.Departure.SegDate, pobjSeg.Arrival.SegDate)
                         If pDateDiff = 0 Then
-                            pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.ArriveTimeShort(":") & "</td>")
+                            pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.Arrival.TimeShort(":") & "</td>")
                         Else
-                            pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.ArriveTimeShort(":") & " " & Format(pDateDiff, "+0;-0") & "</td>")
+                            pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>" & pobjSeg.Arrival.TimeShort(":") & " " & Format(pDateDiff, "+0;-0") & "</td>")
                         End If
                         pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;" & pobjSeg.AirlineLocator & "</td>")
-                        pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;" & .AllowanceForSegment(pobjSeg.BoardPoint, pobjSeg.OffPoint, pobjSeg.Airline, pobjSeg.FlightNo, pobjSeg.ClassOfService, pobjSeg.DepartureDateIATA, pobjSeg.DepartTimeShort) & "</td>")
+                        pString.AppendLine("<td style='font-size:10.0pt;font-family:arial'>&nbsp;" & .AllowanceForSegment(pobjSeg.Origin.AirportCode, pobjSeg.Destination.AirportCode, pobjSeg.Airline, pobjSeg.FlightNo, pobjSeg.ClassOfService, pobjSeg.Departure.DateIATA, pobjSeg.Departure.TimeShort) & "</td>")
 
                     End If
                     pString.AppendLine("</tr>")
@@ -164,13 +167,16 @@
                     For Each tkt As GDSTicketItem In .Tickets.Values
                         If tkt.Pax.Trim = pobjPax.PaxName.Trim Then
                             If tkt.TicketType = "PAX" Then
-                                Dim pFF As String = mobjPNR.FrequentFlyerNumber(tkt.AirlineCode, tkt.Pax.Substring(0, tkt.Pax.Length - 2).Trim)
-                                If pFF <> "" Then
-                                    pFF = "Frequent Flyer Number: " & pFF
+                                Dim pff As String = ""
+                                If Not mobjPNR.ExistingElements Is Nothing Then
+                                    pff = mobjPNR.ExistingElements.FrequentFlyerNumber(tkt.AirlineCode, tkt.Pax.Substring(0, tkt.Pax.Length - 2).Trim)
+                                    If pff <> "" Then
+                                        pff = "Frequent Flyer Number: " & pff
+                                    End If
                                 End If
-                                pString.AppendLine(tkt.IssuingAirline & "-" & tkt.Document & " " & tkt.AirlineCode & " " & pFF & "<br />")
+                                pString.AppendLine(tkt.IssuingAirline & "-" & tkt.Document & " " & tkt.AirlineCode & " " & pff & "<br />")
+                                End If
                             End If
-                        End If
                     Next
                 Next
                 pString.AppendLine("<br />")

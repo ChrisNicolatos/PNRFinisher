@@ -85,15 +85,15 @@ Public Class ItnRTBDoc
                 iSegCount = iSegCount + 1
                 Dim pSeg As New System.Text.StringBuilder
                 pSeg.Append(pobjSeg.Airline & pobjSeg.FlightNo.PadLeft(4) & " ")
-                pSeg.Append(pobjSeg.DepartureDateIATA & " ")
-                pSeg.Append(pobjSeg.BoardPoint & ("T" & pobjSeg.DepartTerminalShort).PadLeft(8) & "/")
-                pSeg.Append(pobjSeg.OffPoint & ("T" & pobjSeg.ArriveTerminalShort).PadLeft(8) & " ")
+                pSeg.Append(pobjSeg.Departure.DateIATA & " ")
+                pSeg.Append(pobjSeg.Origin.AirportCode & ("T" & pobjSeg.DepartTerminalShort).PadLeft(8) & "/")
+                pSeg.Append(pobjSeg.Destination.AirportCode & ("T" & pobjSeg.ArriveTerminalShort).PadLeft(8) & " ")
                 If pobjSeg.Text.Length > 35 AndAlso pobjSeg.Text.Substring(35, 4) = "FLWN" Then
                     pSeg.Append("FLWN")
                 Else
-                    pSeg.Append(pobjSeg.DepartTimeShort & "  ")
-                    pSeg.Append(pobjSeg.ArriveTimeShort & "  ")
-                    pSeg.Append("/" & mobjPNR.AllowanceForSegment(pobjSeg.BoardPoint, pobjSeg.OffPoint, pobjSeg.Airline, pobjSeg.FlightNo, pobjSeg.ClassOfService, pobjSeg.DepartureDateIATA, pobjSeg.DepartTimeShort))
+                    pSeg.Append(pobjSeg.Departure.TimeShort & "  ")
+                    pSeg.Append(pobjSeg.Arrival.TimeShort & "  ")
+                    pSeg.Append("/" & mobjPNR.AllowanceForSegment(pobjSeg.Origin.AirportCode, pobjSeg.Destination.AirportCode, pobjSeg.Airline, pobjSeg.FlightNo, pobjSeg.ClassOfService, pobjSeg.Departure.DateIATA, pobjSeg.Departure.TimeShort))
 
                 End If
 
@@ -162,12 +162,15 @@ Public Class ItnRTBDoc
                                 pHeader = ""
                             End If
 
-                            Dim pFF As String = mobjPNR.FrequentFlyerNumber(tkt.AirlineCode, tkt.Pax.PadRight(3).Substring(0, tkt.Pax.PadRight(3).Length - 2).Trim)
-                            If pFF <> "" Then
-                                If Not pFFAll.Contains(pFF) Then
-                                    pFFAll.Add(pFF)
+                            Dim pFF As String = ""
+                            If Not mobjPNR.ExistingElements Is Nothing Then
+                                pFF = mobjPNR.ExistingElements.FrequentFlyerNumber(tkt.AirlineCode, tkt.Pax.PadRight(3).Substring(0, tkt.Pax.PadRight(3).Length - 2).Trim)
+                                If pFF <> "" Then
+                                    If Not pFFAll.Contains(pFF) Then
+                                        pFFAll.Add(pFF)
+                                    End If
+                                    pFF = " - " & pFFTitle & ": " & pFF
                                 End If
-                                pFF = " - " & pFFTitle & ": " & pFF
                             End If
 
                             Dim pTemp As String = tkt.IssuingAirline & "-" & tkt.Document & If(tkt.Books > 1, tkt.Conjunction, "") & "  "
@@ -197,26 +200,28 @@ Public Class ItnRTBDoc
                     Next
                 Next
             End If
-            If MySettings.ShowTickets Then
-                For Each pFFItem As FrequentFlyerItem In mobjPNR.FrequentFlyernumberCollection
-                    Dim pFF As String = mobjPNR.FrequentFlyerNumber(pFFItem.Airline, pFFItem.PaxName)
-                    If Not pFFAll.Contains(pFF) Then
-                        pFFAll.Add(pFF)
-                        pString.AppendLine(pFFTitle & ": " & pFF)
-                    End If
-                Next
-            End If
-            If mobjPNR.Seats <> "" Then
-                If Not MySettings.FormatStyle = EnumItnFormat.Plain Then
-                    pString.AppendLine(StrDup(mintHeaderLength, "-"))
-                End If
-                pString.AppendLine("Seat Assignment")
-                If Not MySettings.FormatStyle = EnumItnFormat.Plain Then
-                    pString.AppendLine(StrDup(mintHeaderLength, "-"))
-                End If
-                pString.AppendLine(mobjPNR.Seats & vbCrLf)
-            End If
+            If Not mobjPNR.ExistingElements Is Nothing Then
 
+                If MySettings.ShowTickets Then
+                    For Each pFFItem As FrequentFlyerItem In mobjPNR.ExistingElements.FrequentFlyerNumberCollection
+                        Dim pFF As String = mobjPNR.ExistingElements.FrequentFlyerNumber(pFFItem.Airline, pFFItem.PaxName)
+                        If Not pFFAll.Contains(pFF) Then
+                            pFFAll.Add(pFF)
+                            pString.AppendLine(pFFTitle & ": " & pFF)
+                        End If
+                    Next
+                End If
+                If mobjPNR.ExistingElements.Seats <> "" Then
+                    If Not MySettings.FormatStyle = EnumItnFormat.Plain Then
+                        pString.AppendLine(StrDup(mintHeaderLength, "-"))
+                    End If
+                    pString.AppendLine("Seat Assignment")
+                    If Not MySettings.FormatStyle = EnumItnFormat.Plain Then
+                        pString.AppendLine(StrDup(mintHeaderLength, "-"))
+                    End If
+                    pString.AppendLine(mobjPNR.ExistingElements.Seats & vbCrLf)
+                End If
+            End If
             Return vbCrLf & pString.ToString
         Catch ex As Exception
             Throw New Exception("MakeRTBDocTicketsAimeryMoxie()" & vbCrLf & ex.Message)
@@ -280,14 +285,18 @@ Public Class ItnRTBDoc
             pString.Clear()
             pString.Clear()
             Dim pTemp As String = ""
-            If Not (MySettings.FormatStyle = EnumItnFormat.SeaChefs Or MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode Or MySettings.FormatStyle = EnumItnFormat.Fleet) And MySettings.ShowVessel And mobjPNR.VesselName <> "" Then
-                pTemp &= Vessel()
-            End If
-            If Not (MySettings.FormatStyle = EnumItnFormat.SeaChefs Or MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode Or MySettings.FormatStyle = EnumItnFormat.Fleet) And MySettings.ShowCostCentre And mobjPNR.CostCentre <> "" Then
-                If pTemp <> "" Then
-                    pTemp &= vbCrLf
+            If Not mobjPNR.ExistingElements Is Nothing AndAlso mobjPNR.ExistingElements.VesselName <> "" Then
+                If Not (MySettings.FormatStyle = EnumItnFormat.SeaChefs Or MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode Or MySettings.FormatStyle = EnumItnFormat.Fleet) And MySettings.ShowVessel Then
+                    pTemp &= Vessel()
                 End If
-                pTemp &= CostCentre()
+            End If
+            If Not mobjPNR.ExistingElements Is Nothing AndAlso mobjPNR.ExistingElements.CostCentre <> "" Then
+                If Not (MySettings.FormatStyle = EnumItnFormat.SeaChefs Or MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode Or MySettings.FormatStyle = EnumItnFormat.Fleet) And MySettings.ShowCostCentre Then
+                    If pTemp <> "" Then
+                        pTemp &= vbCrLf
+                    End If
+                    pTemp &= CostCentre()
+                End If
             End If
             If pTemp <> "" Then
                 pString.AppendLine(" ")
@@ -306,13 +315,13 @@ Public Class ItnRTBDoc
                     Case 0
                         pHeader.Append("Org Dest")
                     Case 1
-                        pHeader.Append("Origin " & StrDup(mobjPNR.MaxAirportNameLength - 5, " ") & "Destination" & StrDup(mobjPNR.MaxAirportNameLength - 9, " "))
+                        pHeader.Append("Origin " & StrDup(mobjPNR.Segments.MaxAirportNameLength - 5, " ") & "Destination" & StrDup(mobjPNR.Segments.MaxAirportNameLength - 9, " "))
                     Case 2
-                        pHeader.Append("Origin " & StrDup(mobjPNR.MaxAirportNameLength - 1, " ") & "Destination" & StrDup(mobjPNR.MaxAirportNameLength - 5, " "))
+                        pHeader.Append("Origin " & StrDup(mobjPNR.Segments.MaxAirportNameLength - 1, " ") & "Destination" & StrDup(mobjPNR.Segments.MaxAirportNameLength - 5, " "))
                     Case 3
-                        pHeader.Append("Origin " & StrDup(mobjPNR.MaxAirportShortNameLength - 5, " ") & "Destination" & StrDup(mobjPNR.MaxAirportShortNameLength - 9, " "))
+                        pHeader.Append("Origin " & StrDup(mobjPNR.Segments.MaxAirportShortNameLength - 5, " ") & "Destination" & StrDup(mobjPNR.Segments.MaxAirportShortNameLength - 9, " "))
                     Case 4
-                        pHeader.Append("Origin " & StrDup(mobjPNR.MaxAirportShortNameLength - 1, " ") & "Destination" & StrDup(mobjPNR.MaxAirportShortNameLength - 5, " "))
+                        pHeader.Append("Origin " & StrDup(mobjPNR.Segments.MaxAirportShortNameLength - 1, " ") & "Destination" & StrDup(mobjPNR.Segments.MaxAirportShortNameLength - 5, " "))
                 End Select
                 pHeader.Append("Dep   ")
                 pHeader.Append("Arr   ")
@@ -338,9 +347,9 @@ Public Class ItnRTBDoc
                 pHeader.Append("Flight ")
                 pHeader.Append("Date  ")
                 If MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode Then
-                    pHeader.Append("Org    " & StrDup(mobjPNR.MaxAirportShortNameLength - 1, " ") & "Dest       " & StrDup(mobjPNR.MaxAirportShortNameLength - 5, " "))
+                    pHeader.Append("Org    " & StrDup(mobjPNR.Segments.MaxAirportShortNameLength - 1, " ") & "Dest       " & StrDup(mobjPNR.Segments.MaxAirportShortNameLength - 5, " "))
                 Else
-                    pHeader.Append("Org    " & StrDup(mobjPNR.MaxAirportShortNameLength - 5, " ") & "Dest       " & StrDup(mobjPNR.MaxAirportShortNameLength - 9, " "))
+                    pHeader.Append("Org    " & StrDup(mobjPNR.Segments.MaxAirportShortNameLength - 5, " ") & "Dest       " & StrDup(mobjPNR.Segments.MaxAirportShortNameLength - 9, " "))
                 End If
                 pHeader.Append("Dep   ")
                 pHeader.Append("Arr   ")
@@ -361,40 +370,41 @@ Public Class ItnRTBDoc
                 Else
                     iSegCount = iSegCount + 1
                     Dim pSeg As New System.Text.StringBuilder
+                    Dim pSeg2 As New System.Text.StringBuilder
                     If pobjSeg.ConnectTimeFromPrevious <> "" And MySettings.FormatStyle = EnumItnFormat.Fleet Then
-                        If pPrevOff = "" Or pPrevOff = pobjSeg.BoardPoint Then
-                            pConnectingTimes &= vbCrLf & pobjSeg.BoardPoint & " CONNECTING TIME: " & pobjSeg.ConnectTimeFromPrevious
+                        If pPrevOff = "" Or pPrevOff = pobjSeg.Origin.AirportCode Then
+                            pConnectingTimes &= vbCrLf & pobjSeg.Origin.AirportCode & " CONNECTING TIME: " & pobjSeg.ConnectTimeFromPrevious
                         Else
-                            pConnectingTimes &= vbCrLf & pPrevOff & "-" & pobjSeg.BoardPoint & " CONNECTING TIME: " & pobjSeg.ConnectTimeFromPrevious
+                            pConnectingTimes &= vbCrLf & pPrevOff & "-" & pobjSeg.Origin.AirportCode & " CONNECTING TIME: " & pobjSeg.ConnectTimeFromPrevious
                         End If
 
                     End If
                     If MySettings.FormatStyle = EnumItnFormat.SeaChefs Or MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode Or MySettings.FormatStyle = EnumItnFormat.Fleet Then
                         pSeg.Append(pobjSeg.Airline & pobjSeg.FlightNo.PadLeft(4) & " ")
-                        pSeg.Append(pobjSeg.DepartureDateIATA & " ")
+                        pSeg.Append(pobjSeg.Departure.DateIATA & " ")
                         If MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode Then
-                            pSeg.Append(pobjSeg.BoardPoint & " " & pobjSeg.BoardAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength + 1) & " ")
-                            pSeg.Append(pobjSeg.OffPoint & " " & pobjSeg.OffPointAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength + 1) & " ")
+                            pSeg.Append(pobjSeg.Origin.AirportCode & " " & pobjSeg.Origin.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength + 1) & " ")
+                            pSeg.Append(pobjSeg.Destination.AirportCode & " " & pobjSeg.Destination.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength + 1) & " ")
                         ElseIf MySettings.FormatStyle = EnumItnFormat.Fleet Then
-                            Dim pBoard As String = pobjSeg.BoardAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength - 5)
-                            pBoard = (pBoard.Trim & " (" & pobjSeg.BoardPoint & ")").PadRight(mobjPNR.MaxAirportShortNameLength + 2, " "c)
-                            Dim pOff As String = pobjSeg.OffPointAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength - 5)
-                            pOff = (pOff.Trim & " (" & pobjSeg.OffPoint & ")").PadRight(mobjPNR.MaxAirportShortNameLength + 2, " "c)
+                            Dim pBoard As String = pobjSeg.Origin.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength - 5)
+                            pBoard = (pBoard.Trim & " (" & pobjSeg.Origin.AirportCode & ")").PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 2, " "c)
+                            Dim pOff As String = pobjSeg.Destination.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength - 5)
+                            pOff = (pOff.Trim & " (" & pobjSeg.Destination.AirportCode & ")").PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 2, " "c)
                             pSeg.Append(pBoard)
                             pSeg.Append(pOff)
                         Else
-                            pSeg.Append(pobjSeg.BoardAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength + 1) & " ")
-                            pSeg.Append(pobjSeg.OffPointAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength + 1) & " ")
+                            pSeg.Append(pobjSeg.Origin.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength + 1) & " ")
+                            pSeg.Append(pobjSeg.Destination.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength + 1) & " ")
                         End If
                         If pobjSeg.Text.Length > 35 AndAlso pobjSeg.Text.Substring(35, 4) = "FLWN" Then
                             pSeg.Append("FLWN")
                         Else
-                            pSeg.Append(pobjSeg.DepartTimeShort & "  ")
-                            pSeg.Append(pobjSeg.ArriveTimeShort)
-                            If DateDiff(DateInterval.Day, pobjSeg.DepartureDate, pobjSeg.ArrivalDate) > 0 Then
-                                pSeg.Append("+" & DateDiff(DateInterval.Day, pobjSeg.DepartureDate, pobjSeg.ArrivalDate) & " ")
-                            ElseIf DateDiff(DateInterval.Day, pobjSeg.DepartureDate, pobjSeg.ArrivalDate) < 0 Then
-                                pSeg.Append(DateDiff(DateInterval.Day, pobjSeg.DepartureDate, pobjSeg.ArrivalDate) & " ")
+                            pSeg.Append(pobjSeg.Departure.TimeShort & "  ")
+                            pSeg.Append(pobjSeg.Arrival.TimeShort)
+                            If DateDiff(DateInterval.Day, pobjSeg.Departure.SegDate, pobjSeg.Arrival.SegDate) > 0 Then
+                                pSeg.Append("+" & DateDiff(DateInterval.Day, pobjSeg.Departure.SegDate, pobjSeg.Arrival.SegDate) & " ")
+                            ElseIf DateDiff(DateInterval.Day, pobjSeg.Departure.SegDate, pobjSeg.Arrival.SegDate) < 0 Then
+                                pSeg.Append(DateDiff(DateInterval.Day, pobjSeg.Departure.SegDate, pobjSeg.Arrival.SegDate) & " ")
                             Else
                                 pSeg.Append("   ")
                             End If
@@ -412,7 +422,7 @@ Public Class ItnRTBDoc
                             Else
                                 pSeg.Append("      OK")
                             End If
-                            pSeg.Append(mobjPNR.AllowanceForSegment(pobjSeg.BoardPoint, pobjSeg.OffPoint, pobjSeg.Airline, pobjSeg.FlightNo, pobjSeg.ClassOfService, pobjSeg.DepartureDateIATA, pobjSeg.DepartTimeShort).PadLeft(8))
+                            pSeg.Append(mobjPNR.AllowanceForSegment(pobjSeg.Origin.AirportCode, pobjSeg.Destination.AirportCode, pobjSeg.Airline, pobjSeg.FlightNo, pobjSeg.ClassOfService, pobjSeg.Departure.DateIATA, pobjSeg.Departure.TimeShort).PadLeft(8))
                             If pAirlineLocator.IndexOf(pobjSeg.AirlineLocator.Trim) = -1 Then
                                 If pAirlineLocator = "" Then
                                     pAirlineLocator = "AIRLINE REF: " & pobjSeg.AirlineLocator.Trim '& "(" & pobjSeg.Airline & " " & pobjSeg.AirlineName & ")"
@@ -426,51 +436,63 @@ Public Class ItnRTBDoc
                         If MySettings.ShowClassOfService Then
                             pSeg.Append(pobjSeg.ClassOfService & " ")
                         End If
-                        pSeg.Append(pobjSeg.DepartureDateIATA & " ")
+                        pSeg.Append(pobjSeg.Departure.DateIATA & " ")
                         Select Case MySettings.AirportName
                             Case 0 'code
-                                pSeg.Append(pobjSeg.BoardPoint & " " & pobjSeg.OffPoint & " ")
+                                pSeg.Append(pobjSeg.Origin.AirportCode & " " & pobjSeg.Destination.AirportCode & " ")
                             Case 1 'airport name
-                                pSeg.Append(pobjSeg.BoardAirportName.PadRight(mobjPNR.MaxAirportNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportNameLength + 1) & " " &
-                                                pobjSeg.OffPointAirportName.PadRight(mobjPNR.MaxAirportNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportNameLength + 1) & " ")
+                                pSeg.Append(pobjSeg.Origin.AirportName.PadRight(mobjPNR.Segments.MaxAirportNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportNameLength + 1) & " " &
+                                                pobjSeg.Destination.AirportName.PadRight(mobjPNR.Segments.MaxAirportNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportNameLength + 1) & " ")
                             Case 2 'code and airport
-                                pSeg.Append(pobjSeg.BoardPoint & " " & pobjSeg.BoardAirportName.PadRight(mobjPNR.MaxAirportNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportNameLength + 1) & " " &
-                                                pobjSeg.OffPoint & " " & pobjSeg.OffPointAirportName.PadRight(mobjPNR.MaxAirportNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportNameLength + 1) & " ")
+                                pSeg.Append(pobjSeg.Origin.AirportCode & " " & pobjSeg.Origin.AirportName.PadRight(mobjPNR.Segments.MaxAirportNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportNameLength + 1) & " " &
+                                                pobjSeg.Destination.AirportCode & " " & pobjSeg.Destination.AirportName.PadRight(mobjPNR.Segments.MaxAirportNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportNameLength + 1) & " ")
                             Case 3 'city name
-                                pSeg.Append(pobjSeg.BoardAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength + 1) & " " &
-                                                pobjSeg.OffPointAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength + 1) & " ")
+                                pSeg.Append(pobjSeg.Origin.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength + 1) & " " &
+                                                pobjSeg.Destination.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength + 1) & " ")
                             Case 4 'code and city
-                                pSeg.Append(pobjSeg.BoardPoint & " " & pobjSeg.BoardAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength + 1) & " " &
-                                                pobjSeg.OffPoint & " " & pobjSeg.OffPointAirportShortName.PadRight(mobjPNR.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.MaxAirportShortNameLength + 1) & " ")
+                                pSeg.Append(pobjSeg.Origin.AirportCode & " " & pobjSeg.Origin.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength + 1) & " " &
+                                                pobjSeg.Destination.AirportCode & " " & pobjSeg.Destination.AirportShortName.PadRight(mobjPNR.Segments.MaxAirportShortNameLength + 1, " "c).Substring(0, mobjPNR.Segments.MaxAirportShortNameLength + 1) & " ")
                         End Select
                         If pobjSeg.Text.Length > 35 AndAlso pobjSeg.Text.Substring(35, 4) = "FLWN" Then
                             pSeg.Append("FLWN")
                         Else
-                            pSeg.Append(pobjSeg.DepartTimeShort & "  ")
-                            pSeg.Append(pobjSeg.ArriveTimeShort & "  ")
+                            pSeg.Append(pobjSeg.Departure.TimeShort & "  ")
+                            pSeg.Append(pobjSeg.Arrival.TimeShort & "  ")
                             If MySettings.ShowFlyingTime Then
                                 pSeg.Append(pobjSeg.EstimatedFlyingTime & " ")
                             End If
-                            pSeg.Append(pobjSeg.ArrivalDateIATA & "   ")
+                            pSeg.Append(pobjSeg.Arrival.DateIATA & "   ")
                             If MySettings.ShowEquipmentCode Then
                                 pSeg.Append(pobjSeg.Equipment & " ")
                             End If
                             pSeg.Append(If(MySettings.ShowAirlineLocator, pobjSeg.AirlineLocator.PadRight(9, " "c), ""))
-                            pSeg.Append(" - " & mobjPNR.AllowanceForSegment(pobjSeg.BoardPoint, pobjSeg.OffPoint, pobjSeg.Airline, pobjSeg.FlightNo, pobjSeg.ClassOfService, pobjSeg.DepartureDateIATA, pobjSeg.DepartTimeShort).PadLeft(5))
+                            pSeg.Append(" - " & mobjPNR.AllowanceForSegment(pobjSeg.Origin.AirportCode, pobjSeg.Destination.AirportCode, pobjSeg.Airline, pobjSeg.FlightNo, pobjSeg.ClassOfService, pobjSeg.Departure.DateIATA, pobjSeg.Departure.TimeShort).PadLeft(5))
                             If pobjSeg.Status = "HL" Then
                                 pSeg.Append("   WAITLISTED")
                             End If
+
                             If MySettings.ShowCabinDescription Then
-                                pSeg.Append(" " & pobjSeg.ClassOfServiceDescription.CabinDescription)
+                                pSeg.Append(" " & pobjSeg.ClassOfServiceDescription.CabinDescription.PadRight(8))
                             End If
 
-                            If MySettings.ShowTerminal And pobjSeg.DepartTerminal <> "" Then
-                                pSeg.Append("   " & pobjSeg.DepartTerminal)
+                            If MySettings.ShowTerminal Then
+                                If pobjSeg.DepartTerminal <> "" Then
+                                    If pobjSeg.ArriveTerminal <> "" Then
+                                        pSeg2.Append(Space(pSeg.Length) & "   " & pobjSeg.ArriveTerminal)
+                                    End If
+                                    pSeg.Append("   " & pobjSeg.DepartTerminal)
+                                ElseIf pobjSeg.ArriveTerminal <> "" Then
+                                    pSeg.Append("   " & pobjSeg.ArriveTerminal)
+                                End If
                             End If
+
                         End If
                     End If
 
                     pString.AppendLine(pSeg.ToString)
+                    If pSeg2.Length > 0 Then
+                        pString.AppendLine(pSeg2.ToString)
+                    End If
                     If pobjSeg.Equipment = "TRN" Then
                         pString.AppendLine("             ***     TRAIN     ****  ")
                     End If
@@ -487,7 +509,7 @@ Public Class ItnRTBDoc
                     If pSeg.ToString.Length > mintMaxString Then
                         mintMaxString = pSeg.ToString.Length
                     End If
-                    pPrevOff = pobjSeg.OffPoint
+                    pPrevOff = pobjSeg.Destination.AirportCode
                 End If
             Next pobjSeg
 
@@ -523,10 +545,10 @@ Public Class ItnRTBDoc
         Return "ATPI REF   : " & mobjPNR.GDSAbbreviation & "/" & mobjPNR.RequestedPNR
     End Function
     Private Function Vessel() As String
-        Return "VESSEL     : " & mobjPNR.VesselName
+        Return "VESSEL     : " & mobjPNR.ExistingElements.VesselName
     End Function
     Private Function CostCentre() As String
-        Return "COST CENTRE: " & mobjPNR.CostCentre
+        Return "COST CENTRE: " & mobjPNR.ExistingElements.CostCentre
     End Function
     Private Function MakeRTBDocTickets() As String
         Try
@@ -547,7 +569,7 @@ Public Class ItnRTBDoc
                     For Each tkt As GDSTicketItem In mobjPNR.Tickets.Values
                         If tkt.TicketType = "PAX" Then
                             If tkt.Pax.Trim = pobjPax.PaxName.Trim Or tkt.Pax.Trim.StartsWith(pobjPax.PaxName.Trim) Or pobjPax.PaxName.Trim.StartsWith(tkt.Pax.Trim) Then
-                                Dim pFF As String = mobjPNR.FrequentFlyerNumber(tkt.AirlineCode, tkt.Pax.Substring(0, tkt.Pax.Length - 2).Trim)
+                                Dim pFF As String = mobjPNR.ExistingElements.FrequentFlyerNumber(tkt.AirlineCode, tkt.Pax.Substring(0, tkt.Pax.Length - 2).Trim)
                                 If pFF <> "" Then
                                     If Not pFFAll.Contains(pFF) Then
                                         pFFAll.Add(pFF)
@@ -597,7 +619,7 @@ Public Class ItnRTBDoc
                                 pHeader = ""
                             End If
                             If MySettings.ShowPaxSegPerTkt Then
-                                Dim pFF As String = mobjPNR.FrequentFlyerNumber(tkt.AirlineCode, tkt.Pax.PadRight(3).Substring(0, tkt.Pax.PadRight(3).Length - 2).Trim)
+                                Dim pFF As String = mobjPNR.ExistingElements.FrequentFlyerNumber(tkt.AirlineCode, tkt.Pax.PadRight(3).Substring(0, tkt.Pax.PadRight(3).Length - 2).Trim)
                                 If pFF <> "" Then
                                     If Not pFFAll.Contains(pFF) Then
                                         pFFAll.Add(pFF)
@@ -642,25 +664,28 @@ Public Class ItnRTBDoc
                     Next
                 Next
             End If
-            If MySettings.ShowTickets Then
-                For Each pFFItem As FrequentFlyerItem In mobjPNR.FrequentFlyernumberCollection
-                    Dim pFF As String = mobjPNR.FrequentFlyerNumber(pFFItem.Airline, pFFItem.PaxName)
-                    If Not pFFAll.Contains(pFF) Then
-                        pFFAll.Add(pFF)
-                        pString.AppendLine(pFFTitle & ": " & pFF)
+            If Not mobjPNR.ExistingElements Is Nothing Then
+
+                If MySettings.ShowTickets Then
+                    For Each pFFItem As FrequentFlyerItem In mobjPNR.ExistingElements.FrequentFlyerNumberCollection
+                        Dim pFF As String = mobjPNR.ExistingElements.FrequentFlyerNumber(pFFItem.Airline, pFFItem.PaxName)
+                        If Not pFFAll.Contains(pFF) Then
+                            pFFAll.Add(pFF)
+                            pString.AppendLine(pFFTitle & ": " & pFF)
+                        End If
+                    Next
+                End If
+                If MySettings.FormatStyle = EnumItnFormat.SeaChefs Or MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode Or MySettings.FormatStyle = EnumItnFormat.Fleet Or MySettings.ShowSeating Then
+                    If mobjPNR.ExistingElements.Seats <> "" Then
+                        If Not MySettings.FormatStyle = EnumItnFormat.Plain Then
+                            pString.AppendLine(StrDup(mintHeaderLength, "-"))
+                        End If
+                        pString.AppendLine("Seat Assignment")
+                        If Not MySettings.FormatStyle = EnumItnFormat.Plain Then
+                            pString.AppendLine(StrDup(mintHeaderLength, "-"))
+                        End If
+                        pString.AppendLine(mobjPNR.ExistingElements.Seats & vbCrLf)
                     End If
-                Next
-            End If
-            If MySettings.FormatStyle = EnumItnFormat.SeaChefs Or MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode Or MySettings.FormatStyle = EnumItnFormat.Fleet Or MySettings.ShowSeating Then
-                If mobjPNR.Seats <> "" Then
-                    If Not MySettings.FormatStyle = EnumItnFormat.Plain Then
-                        pString.AppendLine(StrDup(mintHeaderLength, "-"))
-                    End If
-                    pString.AppendLine("Seat Assignment")
-                    If Not MySettings.FormatStyle = EnumItnFormat.Plain Then
-                        pString.AppendLine(StrDup(mintHeaderLength, "-"))
-                    End If
-                    pString.AppendLine(mobjPNR.Seats & vbCrLf)
                 End If
             End If
 

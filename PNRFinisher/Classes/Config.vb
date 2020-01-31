@@ -1,6 +1,6 @@
 ﻿Option Strict On
 Option Explicit On
-Friend Class Config
+Public Class Config
     Private Structure ClassProps
         Dim PCCId As Integer
         Dim OfficeCityCode As String
@@ -9,11 +9,9 @@ Friend Class Config
         Dim CityName As String
         Dim Phone As String
         Dim AOHPhone As String
-        Dim PCCBackOffice As Integer
-
+        Dim PCCBackOffice As EnumBOCode
         Dim pCCIATANumber As String
         Dim PCCFormalOfficeName As String
-
         Dim AgentId As Integer
         Dim AgentQueue As String
         Dim AgentOPQueue As String
@@ -51,19 +49,15 @@ Friend Class Config
     Private mobjGDSUser As GDSUser
     Private ReadOnly mflgIsDirtyPCC As Boolean
     Private mflgIsDirtyUser As Boolean
-    Private mGDSReferences As New GDS_BOReferenceCollection
+    Private mGDSReferences As GDS_BOReferenceCollection
     Public Sub New()
     End Sub
-    Public Sub New(mGDSUser As GDSUser, ByVal pBackOffice As Integer)
+    Public Sub New(mGDSUser As GDSUser)
         Try
             mobjGDSUser = mGDSUser
             mflgIsDirtyPCC = False
             mflgIsDirtyUser = False
-            mGDSReferences.Clear()
             DBReadPCC()
-            If pBackOffice <> 0 Then
-                mudtProps.PCCBackOffice = pBackOffice
-            End If
             If PCCId = 0 Then
                 If mobjGDSUser.GDSCode = EnumGDSCode.Amadeus Then
                     Throw New Exception("You are signed in to Amadeus PCC : " & mobjGDSUser.PCC & vbCrLf & "This PCC is not registered in the PNR FInisher" & vbCrLf & "Please contact your system administrator")
@@ -91,15 +85,17 @@ Friend Class Config
                     Throw New Exception("You are signed in to PCC : " & mobjGDSUser.PCC & " as user : " & mobjGDSUser.User & vbCrLf & "This user is not registered in the PNR FInisher" & vbCrLf & "Please contact your system administrator")
                 End If
             End If
-            LoadGDSReferences(PCCBackOffice, mobjGDSUser.GDSCode)
-
+            'LoadGDSReferences(PCCBackOffice, mobjGDSUser.GDSCode)
         Catch ex As Exception
             Throw New Exception(ex.Message)
         End Try
-
     End Sub
-    Public Sub LoadGDSReferences(ByVal pBackOffice As Integer, ByVal pGDSCode As EnumGDSCode)
+
+    Private Sub LoadGDSReferences(ByVal pBackOffice As Integer, ByVal pGDSCode As EnumGDSCode)
         Try
+            If mGDSReferences Is Nothing Then
+                mGDSReferences = New GDS_BOReferenceCollection
+            End If
             mGDSReferences.Read(pBackOffice, pGDSCode)
         Catch ex As Exception
             Throw New Exception("Config.LoadGDSReference()" & vbCrLf & ex.Message)
@@ -348,10 +344,13 @@ Friend Class Config
             Return mudtProps.OfficeCityCode.ToUpper
         End Get
     End Property
-    Public ReadOnly Property CountryCode As String
+    Public Property CountryCode As String
         Get
             Return mudtProps.CountryCode.ToUpper
         End Get
+        Set(value As String)
+            mudtProps.CountryCode = value.ToUpper
+        End Set
     End Property
     Public ReadOnly Property OfficeName As String
         Get
@@ -378,7 +377,7 @@ Friend Class Config
             Return mudtProps.AOHPhone.ToUpper
         End Get
     End Property
-    Public ReadOnly Property PCCBackOffice As Integer
+    Public ReadOnly Property PCCBackOffice As EnumBOCode
         Get
             Return mudtProps.PCCBackOffice
         End Get
@@ -488,7 +487,7 @@ Friend Class Config
                 mudtProps.CityName = CStr(.Item("pfpCityName"))
                 mudtProps.Phone = CStr(.Item("pfpOfficePhone"))
                 mudtProps.AOHPhone = CStr(.Item("pfpAOHPhone"))
-                mudtProps.PCCBackOffice = CInt(.Item("pfpBO_fkey"))
+                mudtProps.PCCBackOffice = CType(.Item("pfpBO_fkey"), EnumBOCode)
                 mudtProps.pCCIATANumber = CStr(.Item("pfpIATANumber"))
                 mudtProps.PCCFormalOfficeName = CStr(.Item("pfpFormalOfficeName"))
             Else
@@ -577,7 +576,6 @@ Friend Class Config
                 .Parameters.Add("@OSMLOGPerPax", SqlDbType.Bit).Value = If(OSMLoGPerPax, 1, 0)
                 .Parameters.Add("@OSMLOGOnSigner", SqlDbType.Bit).Value = If(OSMLoGOnSigner, 1, 0)
                 .Parameters.Add("@OSMLOGPath", SqlDbType.NVarChar, 255).Value = OSMLoGPath
-
                 .CommandText = " UPDATE AmadeusReports.dbo.PNRFinisherUsers
                                   SET pfAgentQueue =  @AgentQueue    
                                      ,pfAgentOPQueue =  @AgentOPQueue   
@@ -620,10 +618,8 @@ Friend Class Config
         Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
-
         pobjConn.Open()
         pobjComm = pobjConn.CreateCommand
-
         With pobjComm
             .CommandType = CommandType.Text
             .Parameters.Add("@PCC", SqlDbType.NVarChar, 9).Value = mobjGDSUser.PCC
@@ -733,11 +729,8 @@ Friend Class Config
             .Close()
         End With
         pobjConn.Close()
-
     End Sub
-
     Public Sub Save()
-
         Try
             If mflgIsDirtyPCC Then
                 DBUpdatePCC()
@@ -745,31 +738,37 @@ Friend Class Config
             If mflgIsDirtyUser Then
                 DBUpdateUser()
             End If
-
         Catch ex As Exception
             Throw New Exception("Config.Save()" & vbCrLf & ex.Message)
         End Try
-
     End Sub
-    Public ReadOnly Property GDSValue(ByVal Key As String) As String
+    Public ReadOnly Property GDSValue(ByVal pBackOffice As Integer, ByVal Key As String) As String
         Get
             Try
-                Return ConvertGDSValue(mGDSReferences.Item(Key).Value)
+                If mGDSReferences Is Nothing OrElse pBackOffice <> mGDSReferences.BackOffice Then
+                    LoadGDSReferences(pBackOffice, mobjGDSUser.GDSCode)
+                End If
+                If mGDSReferences.ContainsKey(Key) Then
+                    Return ConvertGDSValue(mGDSReferences.Item(Key).Value)
+                Else
+                    Return ""
+                End If
             Catch ex As Exception
                 Throw New Exception("Key:" & Key & " not found in the collection")
             End Try
         End Get
-
     End Property
-    Public ReadOnly Property GDSElement(ByVal Key As String) As String
+    Public ReadOnly Property GDSElement(ByVal pBackOffice As Integer, ByVal Key As String) As String
         Get
             Try
+                If mGDSReferences Is Nothing OrElse pBackOffice <> mGDSReferences.BackOffice Then
+                    LoadGDSReferences(pBackOffice, mobjGDSUser.GDSCode)
+                End If
                 Return ConvertGDSValue(mGDSReferences.Item(Key).Element)
             Catch ex As Exception
                 Throw New Exception("Key:" & Key & " not found in the collection")
             End Try
         End Get
-
     End Property
     Public Function ConvertGDSValue(ByVal ValueToConvert As String) As String
 

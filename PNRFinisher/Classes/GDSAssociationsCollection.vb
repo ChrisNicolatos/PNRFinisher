@@ -23,7 +23,7 @@ Public Class GDSAssociationsCollection
                 Next
             End If
             mPaxCollection = New Collections.ObjectModel.ReadOnlyCollection(Of Integer)(pPaxCollection)
-
+            mSegCollection = New Collections.ObjectModel.ReadOnlyCollection(Of Integer)(pSegCollection)
         Catch ex As Exception
         End Try
     End Sub

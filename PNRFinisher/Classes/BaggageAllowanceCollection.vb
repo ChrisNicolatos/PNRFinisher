@@ -35,7 +35,7 @@ Public Class BaggageAllowanceCollection
         Try
             Dim pItem As New BaggageAllowanceItem
             With pSegment
-                pItem.SetValues(.BoardPoint, .OffPoint, .Airline, .FlightNo, .ClassOfService, .DepartureDateIATA, .DepartTimeShort, pBaggageAllowance)
+                pItem.SetValues(.Origin.AirportCode, .Destination.AirportCode, .Airline, .FlightNo, .ClassOfService, .Departure.DateIATA, .Departure.TimeShort, pBaggageAllowance)
                 If Not MyBase.ContainsKey(pItem.Key) Then
                     MyBase.Add(pItem.Key, pItem)
                 End If

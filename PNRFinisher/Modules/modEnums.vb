@@ -1,6 +1,6 @@
 ﻿Option Strict On
 Option Explicit On
-Module modEnums
+Public Module modEnums
     Public Enum EnumItnFormat
         DefaultFormat = 0
         Plain = 1
@@ -15,32 +15,37 @@ Module modEnums
         Amadeus = 1
         Galileo = 2
     End Enum
-    Public Enum EnumCustomPropertyID As Integer
-        None = 0
-        BookedBy = 1
-        Department = 2
-        ReasonFortravel = 4
-        CostCentre = 5
-        Savings = 6
-        Losses = 7
-        SavingsLossesReason = 8
-        TravelDefinition = 9
-        VesselCostCentre = 10
-        RequisitionNumber = 11
-        PassengerID = 12
-        OPT = 13
-        TRId = 14
-        SubDepartment = 901
-        CRM = 902
-        Reference = 903
+    Public Enum EnumBOCode
+        Unknown = 0
+        ATH = 1
+        QLI = 2
     End Enum
+    'Public Enum EnumClientReferenceID As Integer
+    '    None = 0
+    '    BookedBy = 1
+    '    Department = 2
+    '    ReasonFortravel = 4
+    '    CostCentre = 5
+    '    Savings = 6
+    '    Losses = 7
+    '    SavingsLossesReason = 8
+    '    TravelDefinition = 9
+    '    VesselCostCentre = 10
+    '    RequisitionNumber = 11
+    '    PassengerID = 12
+    '    OPT = 13
+    '    TRId = 14
+    '    SubDepartment = 901
+    '    CRM = 902
+    '    Reference = 903
+    'End Enum
     Public Enum EnumTicketDocType
         NONE = 0
         ETKT = 1
         VCHR = 2
         INTR = 3
     End Enum
-    Public Enum CustomPropertyRequiredType
+    Public Enum ClientReferenceRequiredType
         PropertyNone = 0
         PropertyOptional = 613
         PropertyReqToSave = 614

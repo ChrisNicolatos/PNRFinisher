@@ -22,7 +22,7 @@ Public Class EmailItem
             Return mudtProps.EmailComment
         End Get
     End Property
-    Friend Sub SetValues(ByVal pElementNo As Integer, ByVal pEmailAddress As String, ByVal pEmailComment As String)
+    Public Sub SetValues(ByVal pElementNo As Integer, ByVal pEmailAddress As String, ByVal pEmailComment As String)
         With mudtProps
             .ElementNo = pElementNo
             .EmailAddress = pEmailAddress

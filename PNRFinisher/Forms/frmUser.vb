@@ -2,7 +2,7 @@
 Option Explicit On
 Public Class frmUser
     Private WithEvents mobjDBUser As DBUser
-    Friend Sub New(ByVal pGDS As EnumGDSCode, ByVal pPCC As String, pUserID As String)
+    Public Sub New(ByVal pGDS As EnumGDSCode, ByVal pPCC As String, pUserID As String)
 
         ' This call is required by the designer.
         InitializeComponent()

@@ -3,12 +3,12 @@ Option Explicit On
 Public Class frmCostCentre
 
     Private mintBackOffice As Integer
-    Private mobjCustomers As CustomerCollection
-    Private mobjCustomerGroups As CustomerGroupCollection
+    Private mobjClients As ClientCollection
+    Private mobjClientGroups As ClientGroupCollection
     Private SearchString As String = ""
     Private mflgLoading As Boolean = False
-    Private mobjCustomerSelected As CustomerItem
-    Private mobjCustomerGroupSelected As CustomerGroupItem
+    Private mobjClientSelected As Client
+    Private mobjClientGroupSelected As ClientGroup
     Private mobjCostCentres As New CostCentreLookupCollection
 
     Private mSearchString As String = ""
@@ -48,8 +48,8 @@ Public Class frmCostCentre
             mCodeSelected = ""
             mVesselSelected = ""
             mCostCentreSelected = ""
-            LoadCustomers()
-            LoadCustomerGroups()
+            LoadClients()
+            LoadClientGroups()
         Catch ex As Exception
 
         Finally
@@ -58,44 +58,43 @@ Public Class frmCostCentre
 
     End Sub
 
-    Private Sub LoadCustomers()
+    Private Sub LoadClients()
 
-        mobjCustomers = New CustomerCollection
-        mobjCustomers.Load("", mintBackOffice)
-        lstCustomers.Items.Clear()
-        For Each pCustomer As CustomerItem In mobjCustomers.Values
-            If SearchString = "" Or pCustomer.ToString.ToUpper.Contains(SearchString.ToUpper) Then
-                lstCustomers.Items.Add(pCustomer)
+        mobjClients = New ClientCollection("", mintBackOffice)
+        lstClients.Items.Clear()
+        For Each pClient As Client In mobjClients.Values
+            If SearchString = "" Or pClient.ToString.ToUpper.Contains(SearchString.ToUpper) Then
+                lstClients.Items.Add(pClient)
             End If
         Next
 
     End Sub
 
-    Private Sub txtCustomer_TextChanged(sender As Object, e As EventArgs) Handles txtCustomer.TextChanged
+    Private Sub txtClient_TextChanged(sender As Object, e As EventArgs) Handles txtClient.TextChanged
 
         If Not mflgLoading Then
-            PopulateCustomerList(txtCustomer.Text)
+            PopulateClientList(txtClient.Text)
         End If
 
     End Sub
 
-    Private Sub PopulateCustomerList(ByVal pSearchString As String)
+    Private Sub PopulateClientList(ByVal pSearchString As String)
 
-        mobjCustomers.Load(pSearchString, mintBackOffice)
+        mobjClients = New ClientCollection(pSearchString, mintBackOffice)
 
-        lstCustomers.Items.Clear()
-        For Each pCustomer As CustomerItem In mobjCustomers.Values
-            If pSearchString = "" Or pCustomer.ToString.ToUpper.Contains(pSearchString.ToUpper) Then
-                lstCustomers.Items.Add(pCustomer)
+        lstClients.Items.Clear()
+        For Each pClient As Client In mobjClients.Values
+            If pSearchString = "" Or pClient.ToString.ToUpper.Contains(pSearchString.ToUpper) Then
+                lstClients.Items.Add(pClient)
             End If
         Next
 
-        If lstCustomers.Items.Count = 1 Then
+        If lstClients.Items.Count = 1 Then
             Try
                 mflgLoading = True
 
-                SelectCustomer(CType(lstCustomers.Items(0), CustomerItem))
-                txtCustomer.Text = lstCustomers.Items(0).ToString
+                SelectClient(CType(lstClients.Items(0), Client))
+                txtClient.Text = lstClients.Items(0).ToString
             Catch ex As Exception
                 MessageBox.Show(ex.Message)
             Finally
@@ -105,12 +104,12 @@ Public Class frmCostCentre
 
     End Sub
 
-    Private Sub SelectCustomer(ByVal pCustomer As CustomerItem)
+    Private Sub SelectClient(ByVal pClient As Client)
         'TODO
-        mobjCustomerSelected = pCustomer
-        txtCustomer.Text = pCustomer.ToString
+        mobjClientSelected = pClient
+        txtClient.Text = pClient.ToString
 
-        mobjCostCentres.LoadCustomer(mobjCustomerSelected.ID, mintBackOffice)
+        mobjCostCentres.LoadClient(mobjClientSelected.ID, mintBackOffice)
         PopulateCostCentres()
 
         SetEnabled()
@@ -156,13 +155,13 @@ Public Class frmCostCentre
 
     End Sub
 
-    Private Sub lstCustomers_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstCustomers.SelectedIndexChanged
+    Private Sub lstClients_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstClients.SelectedIndexChanged
 
         Try
-            If lstCustomers.SelectedIndex >= 0 Then
+            If lstClients.SelectedIndex >= 0 Then
                 mflgLoading = True
-                SelectCustomer(CType(lstCustomers.SelectedItem, CustomerItem))
-                txtCustomer.Text = lstCustomers.SelectedItem.ToString
+                SelectClient(CType(lstClients.SelectedItem, Client))
+                txtClient.Text = lstClients.SelectedItem.ToString
             End If
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -172,42 +171,41 @@ Public Class frmCostCentre
 
     End Sub
 
-    Private Sub txtCustomerGroup_TextChanged(sender As Object, e As EventArgs) Handles txtCustomerGroup.TextChanged
+    Private Sub txtClientGroup_TextChanged(sender As Object, e As EventArgs) Handles txtClientGroup.TextChanged
 
         If Not mflgLoading Then
-            PopulateCustomerGroupList(txtCustomerGroup.Text)
+            PopulateClientGroupList(txtClientGroup.Text)
         End If
 
     End Sub
-    Private Sub LoadCustomerGroups()
+    Private Sub LoadClientGroups()
 
-        mobjCustomerGroups = New CustomerGroupCollection
-        mobjCustomerGroups.Load(txtCustomerGroup.Text, mintBackOffice)
-        lstCustomerGroup.Items.Clear()
-        For Each pGroup As CustomerGroupItem In mobjCustomerGroups.Values
+        mobjClientGroups = New ClientGroupCollection(txtClientGroup.Text, mintBackOffice)
+        lstClientGroup.Items.Clear()
+        For Each pGroup As ClientGroup In mobjClientGroups.Values
             If SearchString = "" Or pGroup.ToString.ToUpper.Contains(SearchString.ToUpper) Then
-                lstCustomerGroup.Items.Add(pGroup)
+                lstClientGroup.Items.Add(pGroup)
             End If
         Next
     End Sub
 
-    Private Sub PopulateCustomerGroupList(ByVal pSearchString As String)
+    Private Sub PopulateClientGroupList(ByVal pSearchString As String)
 
-        mobjCustomers.Load(pSearchString, mintBackOffice)
+        mobjClients = New ClientCollection(pSearchString, mintBackOffice)
 
-        lstCustomers.Items.Clear()
-        For Each pCustomerGroup As CustomerGroupItem In mobjCustomerGroups.Values
-            If pSearchString = "" Or pCustomerGroup.ToString.ToUpper.Contains(pSearchString.ToUpper) Then
-                lstCustomerGroup.Items.Add(pCustomerGroup)
+        lstClients.Items.Clear()
+        For Each pClientGroup As ClientGroup In mobjClientGroups.Values
+            If pSearchString = "" Or pClientGroup.ToString.ToUpper.Contains(pSearchString.ToUpper) Then
+                lstClientGroup.Items.Add(pClientGroup)
             End If
         Next
 
-        If lstCustomers.Items.Count = 1 Then
+        If lstClients.Items.Count = 1 Then
             Try
                 mflgLoading = True
 
-                SelectCustomerGroup(CType(lstCustomerGroup.Items(0), CustomerGroupItem))
-                txtCustomerGroup.Text = lstCustomerGroup.Items(0).ToString
+                SelectClientGroup(CType(lstClientGroup.Items(0), ClientGroup))
+                txtClientGroup.Text = lstClientGroup.Items(0).ToString
             Catch ex As Exception
                 MessageBox.Show(ex.Message)
             Finally
@@ -217,25 +215,25 @@ Public Class frmCostCentre
 
     End Sub
 
-    Private Sub SelectCustomerGroup(ByVal pCustomerGroup As CustomerGroupItem)
+    Private Sub SelectClientGroup(ByVal pClientGroup As ClientGroup)
         'TODO
-        mobjCustomerGroupSelected = pCustomerGroup
-        txtCustomerGroup.Text = pCustomerGroup.ToString
+        mobjClientGroupSelected = pClientGroup
+        txtClientGroup.Text = pClientGroup.ToString
 
-        mobjCostCentres.LoadCustomerGroup(mobjCustomerGroupSelected.ID, mintBackOffice)
+        mobjCostCentres.LoadClientGroup(mobjClientGroupSelected.ID, mintBackOffice)
         PopulateCostCentres()
 
         SetEnabled()
 
     End Sub
 
-    Private Sub lstCustomerGroup_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstCustomerGroup.SelectedIndexChanged
+    Private Sub lstClientGroup_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstClientGroup.SelectedIndexChanged
 
         Try
-            If lstCustomerGroup.SelectedIndex >= 0 Then
+            If lstClientGroup.SelectedIndex >= 0 Then
                 mflgLoading = True
-                SelectCustomerGroup(CType(lstCustomerGroup.SelectedItem, CustomerGroupItem))
-                txtCustomerGroup.Text = lstCustomerGroup.SelectedItem.ToString
+                SelectClientGroup(CType(lstClientGroup.SelectedItem, ClientGroup))
+                txtClientGroup.Text = lstClientGroup.SelectedItem.ToString
             End If
         Catch ex As Exception
             MessageBox.Show(ex.Message)

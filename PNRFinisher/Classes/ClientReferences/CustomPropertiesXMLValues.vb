@@ -6,7 +6,7 @@ Public Class CustomPropertiesXMLValues
 
     Private mstrID As String
 
-    Public Sub ReadValues(ByVal pCustomPropertyID As Integer, ByVal pTfEntityID As Integer, ByVal pBackOffice As Integer)
+    Public Sub New(ByVal pCustomPropertyID As Integer, ByVal pTfEntityID As Integer, ByVal pBackOffice As Integer)
 
         Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(pBackOffice))
         Dim pobjComm As New SqlClient.SqlCommand

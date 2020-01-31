@@ -2,51 +2,53 @@
 Option Explicit On
 Public Class GDSNewCollection
     Public Event NewItemCreated()
-    Private mobjOpenSegment As New GDSNewItem
-    Private mobjPhoneElement As New GDSNewItem
-    Private mobjEmailElement As New GDSNewItem
-    Private mobjTicketElement As New GDSNewItem
 
-    Private mobjOptionQueueElement As New GDSNewItem
-    Private mobjAOH As New GDSNewItem
-    Private mobjAgentID As New GDSNewItem
-    Private mobjSavingsElement As New GDSNewItem
-    Private mobjLossElement As New GDSNewItem
+    Private mstrClientQueue As String
 
-    Private mobjCustomerCodeAI As New GDSNewItem
-    Private mobjCustomerCode As New GDSNewItem
-    Private mobjCustomerName As New GDSNewItem
-    Private mstrCustomerQueue As String
-    Private mobjSubDepartmentCode As New GDSNewItem
-    Private mobjSubDepartmentName As New GDSNewItem
-    Private mobjCRMCode As New GDSNewItem
-    Private mobjCRMName As New GDSNewItem
-    Private mobjVesselName As New GDSNewItem
-    Private mobjVesselFlag As New GDSNewItem
-    Private mobjVesselOSI As New GDSNewItem
-    Private mobjReference As New GDSNewItem
-    Private mobjBookedBy As New GDSNewItem
-    Private mobjDepartment As New GDSNewItem
-    Private mobjReasonForTravel As New GDSNewItem
-    Private mobjCostCentre As New GDSNewItem
-    Private mobjTRId As New GDSNewItem
+    Private ReadOnly mstrOfficeOfResponsibility As String
+    Private ReadOnly mdteDepartureDate As Date
+    Private ReadOnly mintNumberOfPax As Integer
+    Private ReadOnly mGDSCode As EnumGDSCode
+    Public Property OpenSegment As GDSNewItem
+    Public Property PhoneElement As GDSNewItem
+    Public Property EmailElement As GDSNewItem
+    Public Property TicketElement As GDSNewItem
+    Public Property OptionQueueElement As GDSNewItem
+    Public Property AOH As GDSNewItem
+    Public Property AgentID As GDSNewItem
+    Public Property ClientCodeAIItem As GDSNewItem
+    Public Property ClientCodeItem As GDSNewItem
+    Public Property SavingsElement As GDSNewItem
+    Public Property LossElement As GDSNewItem
+    Public Property ClientNameItem As GDSNewItem
+    Public Property SubDepartmentCode As GDSNewItem
+    Public Property SubDepartmentName As GDSNewItem
+    Public Property CRMCode As GDSNewItem
+    Public Property CRMName As GDSNewItem
+    Public Property VesselName As GDSNewItem
+    Public Property VesselFlag As GDSNewItem
+    Public Property VesselOSI As GDSNewItem
+    Public Property VesselNameForPNR As GDSNewItem
+    Public Property VesselFlagForPNR As GDSNewItem
+    Public Property Reference As GDSNewItem
+    Public Property GalileoTrackingCode As GDSNewItem
+    'Public ReadOnly Property BookedBy As New GDSNewItem
+    'Public ReadOnly Property Department As New GDSNewItem
+    'Public ReadOnly Property ReasonForTravel As New GDSNewItem
+    'Public ReadOnly Property CostCentre As New GDSNewItem
+    'Public ReadOnly Property TRId As New GDSNewItem
+    Public ReadOnly Property ClientQueue As String
+        Get
+            Return mstrClientQueue
+        End Get
+    End Property
 
-    Private mobjVesselNameForPNR As New GDSNewItem
-    Private mobjVesselFlagForPNR As New GDSNewItem
-
-    Private mobjGalTracking As New GDSNewItem
-
-    Private mstrOfficeOfResponsibility As String
-    Private mdteDepartureDate As Date
-    Private mintNumberOfPax As Integer
-    Private mGDSCode As EnumGDSCode
-
-    Friend Sub New(ByVal pOfficeOfResponsibility As String, ByVal pDepartureDate As Date, ByVal pNumberOfPax As Integer, ByVal pGDSCode As EnumGDSCode)
+    Public Sub New(ByVal pOfficeOfResponsibility As String, ByVal pDepartureDate As Date, ByVal pNumberOfPax As Integer, ByVal pGDSCode As EnumGDSCode, ByVal pBackOffice As Integer)
         mstrOfficeOfResponsibility = pOfficeOfResponsibility
         mdteDepartureDate = pDepartureDate
         mintNumberOfPax = pNumberOfPax
         mGDSCode = pGDSCode
-        PrepareCommands()
+        PrepareCommands(pBackOffice)
     End Sub
     Public Sub New()
         mstrOfficeOfResponsibility = ""
@@ -54,306 +56,155 @@ Public Class GDSNewCollection
         mintNumberOfPax = 0
         mGDSCode = EnumGDSCode.Unknown
     End Sub
-    Public ReadOnly Property OpenSegment As GDSNewItem
-        Get
-            Return mobjOpenSegment
-        End Get
-    End Property
-    Public ReadOnly Property PhoneElement As GDSNewItem
-        Get
-            Return mobjPhoneElement
-        End Get
-    End Property
-    Public ReadOnly Property EmailElement As GDSNewItem
-        Get
-            Return mobjEmailElement
-        End Get
-    End Property
-    Public ReadOnly Property TicketElement As GDSNewItem
-        Get
-            Return mobjTicketElement
-        End Get
-    End Property
-    Public ReadOnly Property OptionQueueElement As GDSNewItem
-        Get
-            Return mobjOptionQueueElement
-        End Get
-    End Property
-    Public ReadOnly Property AOH As GDSNewItem
-        Get
-            Return mobjAOH
-        End Get
-    End Property
-    Public ReadOnly Property AgentID As GDSNewItem
-        Get
-            Return mobjAgentID
-        End Get
-    End Property
-    Public ReadOnly Property CustomerCodeAI As GDSNewItem
-        Get
-            Return mobjCustomerCodeAI
-        End Get
-    End Property
-    Public ReadOnly Property CustomerCode As GDSNewItem
-        Get
-            Return mobjCustomerCode
-        End Get
-    End Property
-    Public ReadOnly Property CustomerQueue As String
-        Get
-            Return mstrCustomerQueue
-        End Get
-    End Property
-    Public ReadOnly Property SavingsElement As GDSNewItem
-        Get
-            Return mobjSavingsElement
-        End Get
-    End Property
-    Public ReadOnly Property LossElement As GDSNewItem
-        Get
-            Return mobjLossElement
-        End Get
-    End Property
-    Public ReadOnly Property CustomerName As GDSNewItem
-        Get
-            Return mobjCustomerName
-        End Get
-    End Property
-    Public ReadOnly Property SubDepartmentCode As GDSNewItem
-        Get
-            Return mobjSubDepartmentCode
-        End Get
-    End Property
-    Public ReadOnly Property SubDepartmentName As GDSNewItem
-        Get
-            Return mobjSubDepartmentName
-        End Get
-    End Property
-    Public ReadOnly Property CRMCode As GDSNewItem
-        Get
-            Return mobjCRMCode
-        End Get
-    End Property
-    Public ReadOnly Property CRMName As GDSNewItem
-        Get
-            Return mobjCRMName
-        End Get
-    End Property
-    Public ReadOnly Property VesselName As GDSNewItem
-        Get
-            Return mobjVesselName
-        End Get
-    End Property
-    Public ReadOnly Property VesselFlag As GDSNewItem
-        Get
-            Return mobjVesselFlag
-        End Get
-    End Property
-    Public ReadOnly Property VesselOSI As GDSNewItem
-        Get
-            Return mobjVesselOSI
-        End Get
-    End Property
-    Public ReadOnly Property VesselNameForPNR As GDSNewItem
-        Get
-            Return mobjVesselNameForPNR
-        End Get
-    End Property
-    Public ReadOnly Property VesselFlagForPNR As GDSNewItem
-        Get
-            Return mobjVesselFlagForPNR
-        End Get
-    End Property
-    Public ReadOnly Property Reference As GDSNewItem
-        Get
-            Return mobjReference
-        End Get
-    End Property
-    Public ReadOnly Property BookedBy As GDSNewItem
-        Get
-            Return mobjBookedBy
-        End Get
-    End Property
-    Public ReadOnly Property GalileoTrackingCode As GDSNewItem
-        Get
-            Return mobjGalTracking
-        End Get
-    End Property
-    Public ReadOnly Property Department As GDSNewItem
-        Get
-            Return mobjDepartment
-        End Get
-    End Property
-    Public ReadOnly Property ReasonForTravel As GDSNewItem
-        Get
-            Return mobjReasonForTravel
-        End Get
-    End Property
-    Public ReadOnly Property CostCentre As GDSNewItem
-        Get
-            Return mobjCostCentre
-        End Get
-    End Property
-    Public ReadOnly Property TRId As GDSNewItem
-        Get
-            Return mobjTRId
-        End Get
-    End Property
 
-    Public Sub SetItem(ByVal Item As CustomerItem, ByVal pBackOffice As Integer)
+    Public Sub SetClient(ByVal pBackOffice As Integer, ByVal Item As Client)
 
-        mobjCustomerCodeAI.Clear()
-        mobjCustomerCode.Clear()
-        mobjCustomerName.Clear()
-        mstrCustomerQueue = ""
+        mstrClientQueue = ""
         If Not Item Is Nothing Then
-            If Item.Code <> "" Then
-                mobjCustomerCode.SetText(Item.Code, MySettings.GDSValue("TextCLN") & Item.Code)
-                mobjCustomerCodeAI.SetText(Item.Code, MySettings.GDSValue("TextAI") & Item.Code)
-            End If
-            If Item.Name <> "" Then
-                mobjCustomerName.SetText(Item.Name, MySettings.GDSValue("TextCLA") & GreekToLatin.Convert(Item.Name))
-            End If
-            If Item.GalileoTrackingCode <> "" Then
-                mobjGalTracking.SetText(Item.GalileoTrackingCode, MySettings.GDSValue("TextGalTrackingCode") & Item.GalileoTrackingCode)
-            End If
-            ReadCustomerQueue(Item.Code, pBackOffice)
+            ClientCodeItem = New GDSNewItem(Item.Code, MySettings.GDSValue(pBackOffice, "TextCLN") & Item.Code)
+            ClientCodeAIItem = New GDSNewItem(Item.Code, MySettings.GDSValue(pBackOffice, "TextAI") & Item.Code)
+            ClientNameItem = New GDSNewItem(Item.Name, MySettings.GDSValue(pBackOffice, "TextCLA") & GreekToLatin.Convert(Item.Name))
+            GalileoTrackingCode = New GDSNewItem(Item.GalileoTrackingCode, MySettings.GDSValue(pBackOffice, "TextGalTrackingCode") & Item.GalileoTrackingCode)
+            ReadClientQueue(Item.Code, pBackOffice)
             RaiseEvent NewItemCreated()
+        Else
+            ClientCodeItem = New GDSNewItem()
+            ClientCodeAIItem = New GDSNewItem
+            ClientNameItem = New GDSNewItem
+            GalileoTrackingCode = New GDSNewItem
         End If
 
     End Sub
-    Private Sub ReadCustomerQueue(ByVal ClientCode As String, ByVal pBackOffice As Integer)
+    Private Sub ReadClientQueue(ByVal ClientCode As String, ByVal pBackOffice As Integer)
 
         Dim pAlerts As New AlertsCollection
         If mGDSCode = EnumGDSCode.Amadeus Then
-            mstrCustomerQueue = pAlerts.AmadeusAlertForClientQueue(pBackOffice, ClientCode)
+            mstrClientQueue = pAlerts.AmadeusAlertForClientQueue(pBackOffice, ClientCode)
         ElseIf mGDSCode = EnumGDSCode.Galileo Then
-            mstrCustomerQueue = pAlerts.GalileoAlertForClientQueue(pBackOffice, ClientCode)
+            mstrClientQueue = pAlerts.GalileoAlertForClientQueue(pBackOffice, ClientCode)
         Else
-            mstrCustomerQueue = ""
+            mstrClientQueue = ""
         End If
 
 
     End Sub
-    Public Sub SetSubDepartment(ByVal Id As Integer, ByVal Code As String, ByVal Name As String)
-        mobjSubDepartmentCode.Clear()
-        mobjSubDepartmentName.Clear()
+    Public Sub SetSubDepartment(ByVal pBackOffice As Integer, ByVal Id As Integer, ByVal Code As String, ByVal Name As String)
         If Id > 0 And Name <> "" Then
-            mobjSubDepartmentCode.SetText(Code, MySettings.GDSValue("TextSBN") & Id)
-            mobjSubDepartmentName.SetText(Name, MySettings.GDSValue("TextSBA") & GreekToLatin.Convert(Name))
+            SubDepartmentCode = New GDSNewItem(Code, MySettings.GDSValue(pBackOffice, "TextSBN") & Id)
+            SubDepartmentName = New GDSNewItem(Name, MySettings.GDSValue(pBackOffice, "TextSBA") & GreekToLatin.Convert(Name))
             RaiseEvent NewItemCreated()
+        Else
+            SubDepartmentCode = New GDSNewItem
+            SubDepartmentName = New GDSNewItem
         End If
     End Sub
-    Public Sub SetCRM(ByVal Id As Integer, ByVal Code As String, ByVal Name As String)
+    Public Sub SetCRM(ByVal pBackOffice As Integer, ByVal Id As Integer, ByVal Code As String, ByVal Name As String)
 
-        mobjCRMCode.Clear()
-        mobjCRMName.Clear()
         If Id > 0 And Name <> "" Then
-            mobjCRMCode.SetText(Code, MySettings.GDSValue("TextCRN") & Code)
-            mobjCRMName.SetText(Name, MySettings.GDSValue("TextCRA") & GreekToLatin.Convert(Name))
+            CRMCode = New GDSNewItem(Code, MySettings.GDSValue(pBackOffice, "TextCRN") & Code)
+            CRMName = New GDSNewItem(Name, MySettings.GDSValue(pBackOffice, "TextCRA") & GreekToLatin.Convert(Name))
             RaiseEvent NewItemCreated()
+        Else
+            CRMCode = New GDSNewItem
+            CRMName = New GDSNewItem
         End If
 
     End Sub
-    Public Sub SetItem(ByVal Item As VesselItem)
+    Public Sub SetVessel(ByVal pBackOffice As Integer, ByVal Item As VesselItem)
 
-        mobjVesselName.Clear()
-        mobjVesselFlag.Clear()
         If Not Item Is Nothing Then
-            mobjVesselName.SetText(Item.Name, MySettings.GDSValue("TextVSL") & Item.Name)
-            If Item.Flag <> "" Then
-                mobjVesselFlag.SetText(Item.Flag, MySettings.GDSValue("TextVSR") & Item.Flag)
+            VesselName = New GDSNewItem(Item.VesselName, MySettings.GDSValue(pBackOffice, "TextVSL") & Item.VesselName)
+            If Item.VesselRegistration <> "" Then
+                VesselFlag = New GDSNewItem(Item.VesselRegistration, MySettings.GDSValue(pBackOffice, "TextVSR") & Item.VesselRegistration)
             End If
-            mobjVesselOSI.SetText("", MySettings.GDSValue("TextVOS") & Item.Name)
-            mobjVesselNameForPNR.Clear()
-            mobjVesselFlagForPNR.Clear()
+            VesselOSI = New GDSNewItem("OSI", MySettings.GDSValue(pBackOffice, "TextVOS") & Item.VesselName)
+            VesselNameForPNR = New GDSNewItem
+            VesselFlagForPNR = New GDSNewItem
             RaiseEvent NewItemCreated()
+        Else
+            VesselName = New GDSNewItem
+            VesselFlag = New GDSNewItem
+
         End If
 
     End Sub
-    Public Sub SetVesselForPNR(ByVal pVesselName As String, ByVal pVesselFlag As String)
+    Public Sub SetVesselForPNR(ByVal pBackOffice As Integer, ByVal pVesselName As String, ByVal pVesselFlag As String)
 
-        mobjVesselName.Clear()
-        mobjVesselFlag.Clear()
+
         If pVesselName <> "" Then
-            mobjVesselName.SetText("", MySettings.GDSValue("TextVSL") & mobjVesselNameForPNR.TextRequested)
-            mobjVesselOSI.SetText("", MySettings.GDSValue("TextVOS") & mobjVesselNameForPNR.TextRequested)
+            VesselName = New GDSNewItem("VSL", MySettings.GDSValue(pBackOffice, "TextVSL") & VesselNameForPNR.TextRequested)
+            VesselOSI = New GDSNewItem("VOS", MySettings.GDSValue(pBackOffice, "TextVOS") & VesselNameForPNR.TextRequested)
             If pVesselFlag <> "" Then
-                mobjVesselFlag.SetText("", MySettings.GDSValue("TextVSR") & mobjVesselFlagForPNR.TextRequested)
-                If mobjVesselOSI.GDSCommand <> "" Then
-                    mobjVesselOSI.SetText("", MySettings.GDSValue("TextVOS") & mobjVesselFlagForPNR.TextRequested)
+                VesselFlag = New GDSNewItem("VSR", MySettings.GDSValue(pBackOffice, "TextVSR") & VesselFlagForPNR.TextRequested)
+                If VesselOSI.GDSCommand <> "" Then
+                    VesselOSI = New GDSNewItem("VOS", MySettings.GDSValue(pBackOffice, "TextVOS") & VesselFlagForPNR.TextRequested)
                 End If
             End If
+        Else
+            VesselName = New GDSNewItem
+            VesselFlag = New GDSNewItem
         End If
 
-        mobjVesselNameForPNR.SetText(pVesselName)
-        mobjVesselFlagForPNR.SetText(pVesselFlag)
+        VesselNameForPNR.SetText(pVesselName)
+        VesselFlagForPNR.SetText(pVesselFlag)
         RaiseEvent NewItemCreated()
     End Sub
-    Public Sub SetReference(ByVal Text As String)
+    Public Sub SetReference(ByVal pBackOffice As Integer, ByVal Text As String)
         Text = Text.Trim
-        If Text <> "" Then
-            mobjReference.SetText(Text, MySettings.GDSValue("TextREF") & Text)
-        Else
-            mobjReference.Clear()
-        End If
+        Reference = New GDSNewItem(Text, MySettings.GDSValue(pBackOffice, "TextREF") & Text)
         RaiseEvent NewItemCreated()
     End Sub
-    Public Sub SetBookedBy(ByVal Text As String)
+    Public Sub SetGalileoTracking(ByVal pBackOffice As Integer, ByVal Text As String)
         Text = Text.Trim
-        If Text <> "" Then
-            mobjBookedBy.SetText(Text, MySettings.GDSValue("TextBBY") & Text)
-        Else
-            mobjBookedBy.Clear()
-        End If
+        GalileoTrackingCode = New GDSNewItem(Text, MySettings.GDSValue(pBackOffice, "TextGalTrackingCode") & Text)
         RaiseEvent NewItemCreated()
     End Sub
-    Public Sub SetGalileoTracking(ByVal Text As String)
-        Text = Text.Trim
-        If Text <> "" Then
-            mobjGalTracking.SetText(Text, MySettings.GDSValue("TextGalTrackingCode") & Text)
-        Else
-            mobjGalTracking.Clear()
-        End If
-        RaiseEvent NewItemCreated()
-    End Sub
-    Public Sub SetDepartment(ByVal Text As String)
-        Text = Text.Trim
-        If Text <> "" Then
-            mobjDepartment.SetText(Text, MySettings.GDSValue("TextDPT") & Text)
-        Else
-            mobjDepartment.Clear()
-        End If
-        RaiseEvent NewItemCreated()
-    End Sub
-    Public Sub SetReasonForTravel(ByVal Text As String)
-        Text = Text.Trim
-        If Text <> "" Then
-            mobjReasonForTravel.SetText(Text, MySettings.GDSValue("TextRFT") & Text)
-        Else
-            mobjReasonForTravel.Clear()
-        End If
-        RaiseEvent NewItemCreated()
-    End Sub
-    Public Sub SetCostCentre(ByVal Text As String)
-        Text = Text.Trim
-        If Text <> "" Then
-            mobjCostCentre.SetText(Text, MySettings.GDSValue("TextCC") & Text)
-        Else
-            mobjCostCentre.Clear()
-        End If
-        RaiseEvent NewItemCreated()
-    End Sub
-    Public Sub SetTRId(ByVal Text As String)
-        Text = Text.Trim
-        If Text <> "" Then
-            mobjTRId.SetText(Text, MySettings.GDSValue("TextTRID") & Text)
-        Else
-            mobjTRId.Clear()
-        End If
-        RaiseEvent NewItemCreated()
-    End Sub
-    Private Sub PrepareCommands()
+    'Public Sub SetBookedBy(ByVal pBackOffice As Integer, ByVal Text As String)
+    '    Text = Text.Trim
+    '    If Text <> "" Then
+    '        BookedBy.SetText(Text, MySettings.GDSValue(pBackOffice, "TextBBY") & Text)
+    '    Else
+    '        BookedBy.Clear()
+    '    End If
+    '    RaiseEvent NewItemCreated()
+    'End Sub
+    'Public Sub SetDepartment(ByVal pBackOffice As Integer, ByVal Text As String)
+    '    Text = Text.Trim
+    '    If Text <> "" Then
+    '        Department.SetText(Text, MySettings.GDSValue(pBackOffice, "TextDPT") & Text)
+    '    Else
+    '        Department.Clear()
+    '    End If
+    '    RaiseEvent NewItemCreated()
+    'End Sub
+    'Public Sub SetReasonForTravel(ByVal pBackOffice As Integer, ByVal Text As String)
+    '    Text = Text.Trim
+    '    If Text <> "" Then
+    '        ReasonForTravel.SetText(Text, MySettings.GDSValue(pBackOffice, "TextRFT") & Text)
+    '    Else
+    '        ReasonForTravel.Clear()
+    '    End If
+    '    RaiseEvent NewItemCreated()
+    'End Sub
+    'Public Sub SetCostCentre(ByVal pBackOffice As Integer, ByVal Text As String)
+    '    Text = Text.Trim
+    '    If Text <> "" Then
+    '        CostCentre.SetText(Text, MySettings.GDSValue(pBackOffice, "TextCC") & Text)
+    '    Else
+    '        CostCentre.Clear()
+    '    End If
+    '    RaiseEvent NewItemCreated()
+    'End Sub
+    'Public Sub SetTRId(ByVal pBackOffice As Integer, ByVal Text As String)
+    '    Text = Text.Trim
+    '    If Text <> "" Then
+    '        TRId.SetText(Text, MySettings.GDSValue(pBackOffice, "TextTRID") & Text)
+    '    Else
+    '        TRId.Clear()
+    '    End If
+    '    RaiseEvent NewItemCreated()
+    'End Sub
+    Private Sub PrepareCommands(ByVal pbackOffice As Integer)
 
         Dim pDateTimeLimit As New s1aAirlineDate.clsAirlineDate
         Dim pDateReminder As New s1aAirlineDate.clsAirlineDate
@@ -385,70 +236,65 @@ Public Class GDSNewCollection
             pDateRetain.VBDate = Today
         End Try
 
-        mobjPhoneElement.SetText("", (MySettings.GDSValue("TextAP").Replace("  ", " ")))
-        mobjEmailElement.SetText("", MySettings.GDSValue("TextAPE"))
-        mobjAgentID.SetText("", MySettings.GDSValue("TextAGT"))
+        PhoneElement = New GDSNewItem("AP", (MySettings.GDSValue(pbackOffice, "TextAP").Replace("  ", " ")))
+        EmailElement = New GDSNewItem("APE", MySettings.GDSValue(pbackOffice, "TextAPE"))
+        AgentID = New GDSNewItem("AGT", MySettings.GDSValue(pbackOffice, "TextAGT"))
 
         If mGDSCode = EnumGDSCode.Amadeus Then
             Dim pTTLString As String
             If mstrOfficeOfResponsibility <> MySettings.GDSPcc Then
-                pTTLString = MySettings.GDSValue("TextTTL") & pDateTimeLimit.IATA & "/" & MySettings.GDSPcc
+                pTTLString = MySettings.GDSValue(pbackOffice, "TextTTL") & pDateTimeLimit.IATA & "/" & MySettings.GDSPcc
             Else
-                pTTLString = MySettings.GDSValue("TextTTL") & pDateTimeLimit.IATA
+                pTTLString = MySettings.GDSValue(pbackOffice, "TextTTL") & pDateTimeLimit.IATA
             End If
-            mobjTicketElement.SetText("", pTTLString)
-            mobjOpenSegment.SetText("",
-                                MySettings.GDSValue("TextMISSegmentCommand") &
+            TicketElement = New GDSNewItem("TTL", pTTLString)
+            OpenSegment = New GDSNewItem("MIS",
+                                MySettings.GDSValue(pbackOffice, "TextMISSegmentCommand") &
                                 IIf(mintNumberOfPax = 0, 1, mintNumberOfPax).ToString & " " &
                                 MySettings.OfficeCityCode & " " &
-                                pDateRetain.IATA & "-" & MySettings.GDSValue("TextMISSegmentText"))
-            mobjOptionQueueElement.SetText("", MySettings.GDSValue("TextOP") & MySettings.GDSPcc & "/" & pDateReminder.IATA & "/" & MySettings.AgentOPQueue)
+                                pDateRetain.IATA & "-" & MySettings.GDSValue(pbackOffice, "TextMISSegmentText"))
+            OptionQueueElement = New GDSNewItem("OP", MySettings.GDSValue(pbackOffice, "TextOP") & MySettings.GDSPcc & "/" & pDateReminder.IATA & "/" & MySettings.AgentOPQueue)
         ElseIf mGDSCode = EnumGDSCode.Galileo Then
-            mobjTicketElement.SetText("", MySettings.GDSValue("TextTTL") & pDateTimeLimit.IATA)
-            mobjOpenSegment.SetText("", MySettings.GDSValue("TextMISSegmentCommand") & pDateRetain.IATA & "*" & MySettings.GDSValue("TextMISSegmentText"))
-            mobjOptionQueueElement.SetText("", MySettings.GDSValue("TextOP") & "/" & pDateReminder.IATA & "/0001/Q" & MySettings.AgentOPQueue)
+            TicketElement = New GDSNewItem("TTL", MySettings.GDSValue(pbackOffice, "TextTTL") & pDateTimeLimit.IATA)
+            OpenSegment = New GDSNewItem("MIS", MySettings.GDSValue(pbackOffice, "TextMISSegmentCommand") & pDateRetain.IATA & "*" & MySettings.GDSValue(pbackOffice, "TextMISSegmentText"))
+            OptionQueueElement = New GDSNewItem("OP", MySettings.GDSValue(pbackOffice, "TextOP") & "/" & pDateReminder.IATA & "/0001/Q" & MySettings.AgentOPQueue)
         Else
             Throw New Exception("GDSNew.PrepareCommands()" & vbCrLf & "GDS Not selected")
         End If
-        mobjAOH.SetText("", MySettings.GDSValue("TextAOH"))
+        AOH = New GDSNewItem("AOH", MySettings.GDSValue(pbackOffice, "TextAOH"))
 
     End Sub
     Public Sub Clear()
 
-        mobjOpenSegment.Clear()
-        mobjPhoneElement.Clear()
-        mobjEmailElement.Clear()
-        mobjTicketElement.Clear()
+        OpenSegment = New GDSNewItem
+        PhoneElement = New GDSNewItem
+        EmailElement = New GDSNewItem
+        TicketElement = New GDSNewItem
 
-        mobjOptionQueueElement.Clear()
-        mobjAOH.Clear()
-        mobjAgentID.Clear()
-        mobjSavingsElement.Clear()
-        mobjLossElement.Clear()
+        OptionQueueElement = New GDSNewItem
+        AOH = New GDSNewItem
+        AgentID = New GDSNewItem
+        SavingsElement = New GDSNewItem
+        LossElement = New GDSNewItem
 
-        ClearCustomerElements()
+        ClearClientElements()
 
     End Sub
-    Public Sub ClearCustomerElements()
-        mobjCustomerCodeAI.Clear()
-        mobjCustomerCode.Clear()
-        mstrCustomerQueue = ""
-        mobjCustomerName.Clear()
-        mobjSubDepartmentCode.Clear()
-        mobjSubDepartmentName.Clear()
-        mobjCRMCode.Clear()
-        mobjCRMName.Clear()
-        mobjVesselName.Clear()
-        mobjVesselFlag.Clear()
-        mobjVesselOSI.Clear()
-        mobjReference.Clear()
-        mobjBookedBy.Clear()
-        mobjGalTracking.Clear()
-        mobjDepartment.Clear()
-        mobjReasonForTravel.Clear()
-        mobjCostCentre.Clear()
-        mobjVesselNameForPNR.Clear()
-        mobjVesselFlagForPNR.Clear()
-        mobjTRId.Clear()
+    Public Sub ClearClientElements()
+        ClientCodeAIItem = New GDSNewItem
+        ClientCodeItem = New GDSNewItem
+        mstrClientQueue = ""
+        ClientNameItem = New GDSNewItem
+        SubDepartmentCode = New GDSNewItem
+        SubDepartmentName = New GDSNewItem
+        CRMCode = New GDSNewItem
+        CRMName = New GDSNewItem
+        VesselName = New GDSNewItem
+        VesselFlag = New GDSNewItem
+        VesselOSI = New GDSNewItem
+        Reference = New GDSNewItem
+        GalileoTrackingCode = New GDSNewItem
+        VesselNameForPNR = New GDSNewItem
+        VesselFlagForPNR = New GDSNewItem
     End Sub
 End Class

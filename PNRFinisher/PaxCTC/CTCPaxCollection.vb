@@ -7,7 +7,7 @@ Public Class CTCPaxCollection
     Private WithEvents mItem As CTCPax
     Private mintBackOfficeID As Integer
     Private mintClientID As Integer
-    Public Sub AddNewItem(ByVal pId As Integer, ByVal pLastName As String, ByVal pFirstName As String)
+    Public Sub AddNewItem(ByVal pId As Integer)
         Dim pItem As New CTCPax(mintBackOfficeID, mintClientID)
         pItem.SetValues(pId, mintBackOfficeID, mintClientID, "", "", "", "", "", False)
         MyBase.Add(pItem.Id, pItem)

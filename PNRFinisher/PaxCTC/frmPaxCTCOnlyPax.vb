@@ -72,7 +72,7 @@
         If e.ColumnIndex > 1 Then
             If Not dgvPax.Rows(e.RowIndex).Tag Is Nothing Then
                 If Not mobjCTCPaxCollection.ContainsKey(dgvPax.Rows(e.RowIndex).Tag) Then
-                    mobjCTCPaxCollection.AddNewItem(dgvPax.Rows(e.RowIndex).Tag, dgvPax.Rows(e.RowIndex).Cells(0).Value, dgvPax.Rows(e.RowIndex).Cells(1).Value)
+                    mobjCTCPaxCollection.AddNewItem(dgvPax.Rows(e.RowIndex).Tag)
                 End If
                 If dgvPax.Columns(e.ColumnIndex).Name = "Email" Then
                     mobjCTCPaxCollection(dgvPax.Rows(e.RowIndex).Tag).Email = e.FormattedValue

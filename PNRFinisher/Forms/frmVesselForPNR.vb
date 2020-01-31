@@ -19,7 +19,7 @@ Public Class frmVesselForPNR
 
     Private Sub frmVesselForPNR_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
-        lblNotice.Text = "Use only for vessels which will be used once. For new vessels not in the customer's list contact IT or the accounts department."
+        lblNotice.Text = "Use only for vessels which will be used once. For new vessels not in the client's list contact IT or the accounts department."
         mstrVesselName = ""
         mstrRegistration = ""
         ShowEnabled()

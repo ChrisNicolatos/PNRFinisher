@@ -5,40 +5,40 @@ Public Class GDSReadPNR1G
     Private Structure PaxFFProps
         Dim PaxNumber As Integer
         Dim Paxname As String
-        Private _TicketNumber As String
+        'Private _TicketNumber As String
         Private _DocumentNumber As String
         Private _Airline As String
         Dim Books As Integer
-        Property TicketNumber As String
-            Get
-                Return _TicketNumber
-            End Get
-            Set(value As String)
-                value = value.Trim
-                If value.Length = 10 Then
-                    _TicketNumber = value
-                    _DocumentNumber = value
-                    _Airline = ""
-                    Books = 1
-                ElseIf value.Length = 13 AndAlso IsNumeric(value) Then
-                    _TicketNumber = value
-                    _DocumentNumber = value.Substring(3)
-                    _Airline = value.Substring(0, 3)
-                    Books = 1
-                ElseIf value.Length = 17 AndAlso value.Substring(13, 1) = "-" Then
-                    _TicketNumber = value
-                    _DocumentNumber = value.Substring(3, 10)
-                    _Airline = value.Substring(0, 3)
-                    Dim pTemp As String = _DocumentNumber.Substring(0, 7) & value.Substring(14, 3)
-                    Books = CInt(CDbl(pTemp) - CDbl(_DocumentNumber) + 1)
-                Else
-                    _TicketNumber = ""
-                    _DocumentNumber = ""
-                    _Airline = ""
-                    Books = 0
-                End If
-            End Set
-        End Property
+        'Property TicketNumber As String
+        '    Get
+        '        Return _TicketNumber
+        '    End Get
+        '    Set(value As String)
+        '        value = value.Trim
+        '        If value.Length = 10 Then
+        '            _TicketNumber = value
+        '            _DocumentNumber = value
+        '            _Airline = ""
+        '            Books = 1
+        '        ElseIf value.Length = 13 AndAlso IsNumeric(value) Then
+        '            _TicketNumber = value
+        '            _DocumentNumber = value.Substring(3)
+        '            _Airline = value.Substring(0, 3)
+        '            Books = 1
+        '        ElseIf value.Length = 17 AndAlso value.Substring(13, 1) = "-" Then
+        '            _TicketNumber = value
+        '            _DocumentNumber = value.Substring(3, 10)
+        '            _Airline = value.Substring(0, 3)
+        '            Dim pTemp As String = _DocumentNumber.Substring(0, 7) & value.Substring(14, 3)
+        '            Books = CInt(CDbl(pTemp) - CDbl(_DocumentNumber) + 1)
+        '        Else
+        '            _TicketNumber = ""
+        '            _DocumentNumber = ""
+        '            _Airline = ""
+        '            Books = 0
+        '        End If
+        '    End Set
+        'End Property
         ReadOnly Property DocumentNumber As String
             Get
                 If _DocumentNumber Is Nothing Then
@@ -219,8 +219,8 @@ Public Class GDSReadPNR1G
 
         Dim pPax() As String = SendTerminalCommand("*N")
         Dim pAllPax As String = ""
-        If pPax(0).IndexOf(".") >= 1 And pPax(0).IndexOf(".") <= 2 Then
-            mstrPNRNumber = "New PNR"
+        If pPax(0).IndexOf(".") >= 1 And pPax(0).IndexOf(".") <= 3 Then
+            mstrPNRNumber = "NEWPNR"
         Else
             mstrPNRNumber = pPax(0).Substring(0, 6)
             For i As Integer = 0 To pPax.GetUpperBound(0)
@@ -320,6 +320,9 @@ Public Class GDSReadPNR1G
                     pFlightNumber = .Substring(pStart + 5, 4).Trim
                     pClassOfService = .Substring(pStart + 10, 1).Trim
                     pDepartureDate = DateFromIATA(.Substring(pStart + 13, 5))
+                    Do While DateDiff(DateInterval.Day, pDepartureDate, Now) > 3
+                        pDepartureDate = DateAdd(DateInterval.Year, 1, pDepartureDate)
+                    Loop
                     pOrigin = .Substring(pStart + 19, 3).Trim
                     pDestination = .Substring(pStart + 22, 3).Trim
                     pStatus = .Substring(pStart + 26, 2).Trim
@@ -360,17 +363,17 @@ Public Class GDSReadPNR1G
                 End With
                 With pobjSeg
                     If mstrItinerary = "" Then
-                        mstrItinerary = .BoardPoint & "-" & .OffPoint
+                        mstrItinerary = .Origin.AirportCode & "-" & .Destination.AirportCode
                     Else
-                        If .BoardPoint = pOff Then
-                            mstrItinerary &= "-" & .OffPoint
+                        If .Origin.AirportCode = pOff Then
+                            mstrItinerary &= "-" & .Destination.AirportCode
                         Else
-                            mstrItinerary &= "-***-" & .BoardPoint & "-" & .OffPoint
+                            mstrItinerary &= "-***-" & .Origin.AirportCode & "-" & .Destination.AirportCode
                         End If
                     End If
-                    pOff = .OffPoint
+                    pOff = .Destination.AirportCode
                     If mdteDepartureDate = Date.MinValue Then
-                        mdteDepartureDate = .DepartureDate
+                        mdteDepartureDate = .Departure.SegDate
                     End If
                 End With
             ElseIf pStart >= 1 And pSegs(i).Length > 10 AndAlso pSegs(i).Substring(7, 4) = "ARNK" Then
@@ -647,7 +650,7 @@ Public Class GDSReadPNR1G
                         pPax(0).PaxNumber += 1
                         ReDim Preserve pPax(pPax(0).PaxNumber)
                         pPax(pPax(0).PaxNumber).PaxNumber = CShort(pFFx(iPFF).Substring(2, pFFx(iPFF).IndexOf(" ", 2)))
-                        pPax(pPax(0).PaxNumber).TicketNumber = ""
+                        'pPax(pPax(0).PaxNumber).TicketNumber = ""
 
                         If pFFx(iPFF).IndexOf(" ", 5) > 5 Then
                             pPax(pPax(0).PaxNumber).Paxname = pFFx(iPFF).Substring(5, pFFx(iPFF).IndexOf(" ", 5) - 4).Trim
@@ -670,12 +673,12 @@ Public Class GDSReadPNR1G
                             AndAlso IsNumeric(pTemp1) AndAlso Not IsNumeric(pTemp2) Then
 
                             ' if the next line starts with spaces, then the ticket number might be on the next line
-                            pPax(pPax(0).PaxNumber).TicketNumber = pFFx(iPFF + 1).Trim.Substring(pFFx(iPFF + 1).Trim.LastIndexOf(" ")).Trim
+                            'pPax(pPax(0).PaxNumber).TicketNumber = pFFx(iPFF + 1).Trim.Substring(pFFx(iPFF + 1).Trim.LastIndexOf(" ")).Trim
                             pFFx(iPFF + 1) = ""
                         ElseIf IsNumeric(pFFx(iPFF).Trim.Substring(pFFx(iPFF).Trim.Length - 2)) Then
-                            pPax(pPax(0).PaxNumber).TicketNumber = pFFx(iPFF).Trim.Substring(pFFx(iPFF).LastIndexOf(" "))
+                            'pPax(pPax(0).PaxNumber).TicketNumber = pFFx(iPFF).Trim.Substring(pFFx(iPFF).LastIndexOf(" "))
                         Else
-                            pPax(pPax(0).PaxNumber).TicketNumber = ""
+                            'pPax(pPax(0).PaxNumber).TicketNumber = ""
                         End If
                     ElseIf pFFx(iPFF).Length > 7 AndAlso pFFx(iPFF).StartsWith(" S") AndAlso pFFx(iPFF).Substring(3, 3) = Space(3) AndAlso IsNumeric(pFFx(iPFF).Substring(2, 1)) Then
                         pSegNo = CInt(pFFx(iPFF).Substring(2, pFFx(iPFF).IndexOf(" ", 2)))
@@ -709,7 +712,7 @@ Public Class GDSReadPNR1G
                             If pTktSeg <> "" Then
                                 pTktSeg &= vbCrLf
                             End If
-                            pTktSeg &= mobjSegments(pSeg(j1).SegNo).BoardPoint & " " & mobjSegments(pSeg(j1).SegNo).Airline & " " & mobjSegments(pSeg(j1).SegNo).OffPoint
+                            pTktSeg &= mobjSegments(pSeg(j1).SegNo).Origin.AirportCode & " " & mobjSegments(pSeg(j1).SegNo).Airline & " " & mobjSegments(pSeg(j1).SegNo).Destination.AirportCode
                             mobjBaggageAllowance.AddItem(mobjSegments(pSeg(j1).SegNo), pSeg(j1).BaggageAllowance)
                         Catch ex As Exception
 
@@ -756,7 +759,7 @@ Public Class GDSReadPNR1G
                 ReDim Preserve pPax(pPax(0).PaxNumber)
                 pPax(pPax(0).PaxNumber).PaxNumber = pPax(0).PaxNumber
                 pPax(pPax(0).PaxNumber).Paxname = pTE(i1).Substring(31).Trim
-                pPax(pPax(0).PaxNumber).TicketNumber = pTE(i1).Substring(5, 20).Replace(" ", "")
+                'pPax(pPax(0).PaxNumber).TicketNumber = pTE(i1).Substring(5, 20).Replace(" ", "")
             ElseIf pTE(i1).Length > 32 AndAlso pTE(i1).Substring(3, 4) <> "VOID" AndAlso pTE(i1).Substring(3, 4) <> "RFND" AndAlso pTE(i1).StartsWith(Space(3)) And Not pTE(i1).StartsWith("   USE  CR FLT") And Not pTE(i1).StartsWith(Space(10)) Then
                 pItin = pTE(i1).Substring(26, 3) & " " & pTE(i1).Substring(8, 2) & " " & pTE(i1).Substring(29, 3)
                 If pTktSeg <> "" Then
@@ -775,7 +778,7 @@ Public Class GDSReadPNR1G
                 Dim pItems() As String = pHTE.Substring(10).Split({" "}, StringSplitOptions.RemoveEmptyEntries)
                 If pItems.GetUpperBound(0) > 0 Then
                     pPax(pPax(0).PaxNumber).Paxname = pItems(0)
-                    pPax(pPax(0).PaxNumber).TicketNumber = pItems(1)
+                    'pPax(pPax(0).PaxNumber).TicketNumber = pItems(1)
                 End If
             End If
             If pPax(0).PaxNumber > 0 Then
@@ -802,7 +805,7 @@ Public Class GDSReadPNR1G
                         Else
                             pPax(pPax(0).PaxNumber).Paxname = pTemp(1)
                         End If
-                        pPax(pPax(0).PaxNumber).TicketNumber = pTemp(0)
+                        'pPax(pPax(0).PaxNumber).TicketNumber = pTemp(0)
                         pEMDDescription = pEMDD(2).Substring(4, 29).Trim
                         mobjTickets.addTicket("FA", 1, CDec("0" & pPax(pPax(0).PaxNumber).DocumentNumber), pPax(pPax(0).PaxNumber).Books, pPax(pPax(0).PaxNumber).Airline, Airlines.AirlineCode(pPax(pPax(0).PaxNumber).Airline), False, "", pPax(pPax(0).PaxNumber).Paxname, "EMD", pEMDDescription)
                     End If

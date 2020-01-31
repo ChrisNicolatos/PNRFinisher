@@ -39,7 +39,7 @@ Partial Class frmVesselForPNR
         Me.lblNotice.Name = "lblNotice"
         Me.lblNotice.Size = New System.Drawing.Size(350, 103)
         Me.lblNotice.TabIndex = 7
-        Me.lblNotice.Text = "NOTE: This vessel will not be added to the customer's vessels and is used only in" &
+        Me.lblNotice.Text = "NOTE: This vessel will not be added to the client's vessels and is used only in" &
     " this PNR"
         '
         'cmdCancel

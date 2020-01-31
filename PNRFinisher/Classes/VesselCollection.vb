@@ -4,16 +4,12 @@ Public Class VesselCollection
     Inherits Collections.Generic.Dictionary(Of String, VesselItem)
     Private mlngEntityID As Integer
     Private mintBackOffice As Integer
-    'Public Sub Load(ByVal pEntityID As Integer)
-    '    mintBackOffice = MySettings.PCCBackOffice
-    '    Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString)
-    '    ReadDB(pEntityID, pobjConn)
-
-    'End Sub
     Public Sub Load(ByVal pEntityID As Integer, ByVal BackOffice As Integer)
-        mintBackOffice = BackOffice
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(mintBackOffice))
-        ReadDB(pEntityID, pobjConn)
+        If BackOffice = 1 Then
+            mintBackOffice = BackOffice
+            Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(mintBackOffice))
+            ReadDB(pEntityID, pobjConn)
+        End If
     End Sub
     Private Sub ReadDB(ByVal pEntityID As Integer, ByRef pobjConn As SqlClient.SqlConnection)
         Dim pobjComm As New SqlClient.SqlCommand
@@ -34,8 +30,7 @@ Public Class VesselCollection
 
         With pobjReader
             Do While .Read
-                pobjClass = New VesselItem
-                pobjClass.SetValues(CStr(.Item("Name")), CStr(.Item("Flag")))
+                pobjClass = New VesselItem(CStr(.Item("Name")), CStr(.Item("Flag")))
                 If pobjClass.ToString <> "" And Not MyBase.ContainsKey(pobjClass.ToString) Then
                     MyBase.Add(pobjClass.ToString, pobjClass)
                 End If

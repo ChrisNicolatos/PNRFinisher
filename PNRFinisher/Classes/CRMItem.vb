@@ -34,7 +34,7 @@ Public Class CRMItem
             Return mudtProps.Alert
         End Get
     End Property
-    Friend Sub SetValues(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String, ByVal pAlert As String)
+    Public Sub SetValues(ByVal pID As Integer, ByVal pCode As String, ByVal pName As String, ByVal pAlert As String)
         With mudtProps
             .ID = pID
             .Code = pCode

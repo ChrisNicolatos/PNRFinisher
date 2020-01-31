@@ -3,11 +3,11 @@ Option Explicit On
 Public Class CostCentreLookupCollection
     Inherits Collections.Generic.Dictionary(Of Integer, CostCentreLookupItem)
 
-    Public Sub LoadCustomerGroup(ByVal CustomerGroup As Integer, ByVal pBackOffice As Integer)
-        Load(True, CustomerGroup, pBackOffice)
+    Public Sub LoadClientGroup(ByVal ClientGroup As Integer, ByVal pBackOffice As Integer)
+        Load(True, ClientGroup, pBackOffice)
     End Sub
-    Public Sub LoadCustomer(ByVal CustomerID As Integer, ByVal pBackOffice As Integer)
-        Load(False, CustomerID, pBackOffice)
+    Public Sub LoadClient(ByVal ClientID As Integer, ByVal pBackOffice As Integer)
+        Load(False, ClientID, pBackOffice)
     End Sub
 
     Private Sub Load(ByVal byGroup As Boolean, ByVal Id As Integer, ByVal pBackOffice As Integer)

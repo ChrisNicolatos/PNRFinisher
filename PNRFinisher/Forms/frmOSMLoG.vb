@@ -8,7 +8,7 @@ Public Class frmOSMLoG
     Private mobjAgent As OSMEmailItem
     Private mobjPNR As GDSReadPNR
 
-    Friend Sub New(ByRef pPNR As GDSReadPNR)
+    Public Sub New(ByRef pPNR As GDSReadPNR)
 
         ' This call is required by the designer.
         InitializeComponent()
@@ -74,7 +74,7 @@ Public Class frmOSMLoG
     Private Sub ShowPNRDetails()
 
         With mobjPNR
-            lblPNR.Text = "PNR: " & .RequestedPNR & vbCrLf & "Client Code: " & .ClientCode & vbCrLf & .ClientName & vbCrLf & .VesselName
+            lblPNR.Text = "PNR: " & .RequestedPNR & vbCrLf & "Client Code: " & .ExistingElements.ClientCode & vbCrLf & .ExistingElements.ClientName & vbCrLf & .ExistingElements.VesselName
             If .Passengers.Count > 1 Then
                 lblPax.Text = .Passengers.Count & " Passengers" & vbCrLf
             Else
@@ -87,13 +87,13 @@ Public Class frmOSMLoG
             lblSegs.Text = ""
             For Each pSeg As GDSSegItem In .Segments.Values
                 With pSeg
-                    lblSegs.Text &= .Airline & " " & .FlightNo.PadLeft(5) & " " & .DepartureDateIATA.PadLeft(6) & " " & .BoardPoint & " " & .OffPoint & " " & .DepartTimeShort & vbCrLf
+                    lblSegs.Text &= .Airline & " " & .FlightNo.PadLeft(5) & " " & .Departure.DateIATA.PadLeft(6) & " " & .Origin.AirportCode & " " & .Destination.AirportCode & " " & .Departure.TimeShort & vbCrLf
                 End With
             Next
-            If .BookedBy.IndexOf("-") > 0 Then
-                txtSignedBy.Text = .BookedBy.Substring(0, .BookedBy.IndexOf("-"))
+            If .ExistingElements.BookedBy.IndexOf("-") > 0 Then
+                txtSignedBy.Text = .ExistingElements.BookedBy.Substring(0, .ExistingElements.BookedBy.IndexOf("-"))
             Else
-                txtSignedBy.Text = .BookedBy
+                txtSignedBy.Text = .ExistingElements.BookedBy
             End If
 
         End With
@@ -197,10 +197,10 @@ Public Class frmOSMLoG
         If Not lstOfficeAddress Is Nothing Then
             mobjAddressSelected = CType(lstOfficeAddress.SelectedItem, OSMAddressItem)
             If mobjAddressSelected.SignedByName = "" Then
-                If mobjPNR.BookedBy.IndexOf("-") > 0 Then
-                    mobjAddressSelected.SignedByName = mobjPNR.BookedBy.Substring(0, mobjPNR.BookedBy.IndexOf("-"))
+                If mobjPNR.ExistingElements.BookedBy.IndexOf("-") > 0 Then
+                    mobjAddressSelected.SignedByName = mobjPNR.ExistingElements.BookedBy.Substring(0, mobjPNR.ExistingElements.BookedBy.IndexOf("-"))
                 Else
-                    mobjAddressSelected.SignedByName = mobjPNR.BookedBy
+                    mobjAddressSelected.SignedByName = mobjPNR.ExistingElements.BookedBy
                 End If
             End If
             DisplayAddress()
@@ -216,19 +216,41 @@ Public Class frmOSMLoG
             txtPCArea.Text = .PCArea
             txtCountry.Text = .Country
             txtTelephone.Text = .Telephone
+            optSignatoryCoversExpenses.Text = .CompanyName & " covers expenses"
+            optClientCoversExpenses.Text = mobjPNR.ExistingElements.ClientName & " covers expenses"
+            If .SignatorysExpenses Then
+                optSignatoryCoversExpenses.Checked = True
+            Else
+                optClientCoversExpenses.Checked = True
+            End If
             If .LogoImage_fk = 0 Then
                 picLogo.Visible = False
             Else
-                picLogo.Image = .LogoImage
+                picLogo.Image = .LogoImageFromStream
                 picLogo.Visible = True
             End If
             If .SignatureImage_fk = 0 Then
                 picSignature.Visible = False
             Else
-                picSignature.Image = .SignatureImage
+                picSignature.Image = .SignatureImageFromStream
                 picSignature.Visible = True
             End If
         End With
     End Sub
 
+    Private Sub optClientCoversExpenses_CheckedChanged(sender As Object, e As EventArgs) Handles optClientCoversExpenses.CheckedChanged
+        Try
+            mobjAddressSelected.SignatorysExpenses = False
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+
+    Private Sub optSignatoryCoversExpenses_CheckedChanged(sender As Object, e As EventArgs) Handles optSignatoryCoversExpenses.CheckedChanged
+        Try
+            mobjAddressSelected.SignatorysExpenses = True
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
 End Class

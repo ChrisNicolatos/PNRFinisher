@@ -4,7 +4,7 @@ Public Class GDS_BOReferenceCollection
     Inherits Collections.Generic.Dictionary(Of String, GDS_BOReferenceItem)
     Private mintBackOffice As Integer
     Private mstrGDSCode As EnumGDSCode
-    Friend Sub Read(ByVal pBackOffice As Integer, ByVal pGDSCode As EnumGDSCode)
+    Public Sub Read(ByVal pBackOffice As Integer, ByVal pGDSCode As EnumGDSCode)
 
         If MyBase.Count = 0 Or pBackOffice <> mintBackOffice Or pGDSCode <> mstrGDSCode Then
             Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionStringPNR)
@@ -51,9 +51,5 @@ Public Class GDS_BOReferenceCollection
             Return mintBackOffice
         End Get
     End Property
-    Friend ReadOnly Property GDSCode As EnumGDSCode
-        Get
-            Return mstrGDSCode
-        End Get
-    End Property
+
 End Class

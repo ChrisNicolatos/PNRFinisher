@@ -29,7 +29,7 @@ Public Class DIItem
             Return mudtProps.Remark
         End Get
     End Property
-    Friend Sub SetValues(ByVal pElementNo As Integer, ByVal pCategory As String, ByVal pRemark As String)
+    Public Sub SetValues(ByVal pElementNo As Integer, ByVal pCategory As String, ByVal pRemark As String)
         With mudtProps
             .ElementNo = pElementNo
             .CategoryDescription = pCategory

@@ -56,7 +56,7 @@ Public Class AirlineNotesItem
     Public Overrides Function ToString() As String
         Return mudtProps.GDSText
     End Function
-    Friend Sub SetValues(ByVal pID As Integer, ByVal pAirlineCode As String, ByVal pFlightType As String, ByVal pSeaman As Boolean,
+    Public Sub SetValues(ByVal pID As Integer, ByVal pAirlineCode As String, ByVal pFlightType As String, ByVal pSeaman As Boolean,
                          ByVal pSeqNo As Integer, ByVal pGDSElement As String, ByVal pGDSText As String, ByVal pGDSEntry As String)
         With mudtProps
             .ID = pID

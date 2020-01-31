@@ -23,7 +23,7 @@ Public Class ReferenceItem
     Public Overrides Function ToString() As String
         Return mudtProps.Code & If(Description = "", "", " - " & mudtProps.Description)
     End Function
-    'Friend Sub SetValues(ByVal pCode As String, ByVal pDescription As String)
+    'Public Sub SetValues(ByVal pCode As String, ByVal pDescription As String)
     '    With mudtProps
     '        .Code = pCode
     '        .Description = pDescription

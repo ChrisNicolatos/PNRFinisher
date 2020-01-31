@@ -9,7 +9,7 @@ Public Class CloseOffEntriesItem
             Return MySettings.ConvertGDSValue(mEntry)
         End Get
     End Property
-    Friend Sub SetValues(ByVal CloseOffEntry As String)
+    Public Sub SetValues(ByVal CloseOffEntry As String)
         mEntry = CloseOffEntry
     End Sub
 End Class

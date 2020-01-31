@@ -14,7 +14,7 @@
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>\\gr-ath-fs1\PNR Finisher ATH\</PublishUrl>
+    <PublishUrl>\\gr-ath-pc078\PNR Finisher V2\</PublishUrl>
     <Install>false</Install>
     <InstallFrom>Unc</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -24,9 +24,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>\\gr-ath-fs1\PNR Finisher ATH\</InstallUrl>
-    <ApplicationRevision>19</ApplicationRevision>
-    <ApplicationVersion>3.0.0.%2a</ApplicationVersion>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>4.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -82,7 +83,7 @@
     <ManifestKeyFile>PNRFinisher_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="itextsharp">
@@ -132,28 +133,66 @@
     <Compile Include="Classes\BaggageAllowanceItem.vb" />
     <Compile Include="Classes\ClassOfServiceCollection.vb" />
     <Compile Include="Classes\ClassOfServiceItem.vb" />
+    <Compile Include="Classes\ClientReferences\ClientReference.vb" />
+    <Compile Include="Classes\ClientReferences\ClientReferenceCollection.vb" />
+    <Compile Include="Classes\ClientReferences\ClientReferenceGDSEntry.vb" />
+    <Compile Include="Classes\ClientReferences\ClientReferenceGDSEntryCollection.vb" />
+    <Compile Include="Classes\ClientReferences\ClientReferenceItemValuesCollection.vb" />
+    <Compile Include="Classes\ClientReferences\ClientReferencePax.vb" />
+    <Compile Include="Classes\Client\ClientFromDB.vb" />
     <Compile Include="Classes\CloseOffEntriesCollection.vb" />
     <Compile Include="Classes\CloseOffEntriesItem.vb" />
     <Compile Include="Classes\CO2Item.vb" />
     <Compile Include="Classes\ConditionalGDSEntryCollection.vb" />
     <Compile Include="Classes\ConditionalGDSEntryItem.vb" />
     <Compile Include="Classes\Config.vb" />
+    <Compile Include="Classes\GDSDateTime.vb" />
+    <Compile Include="Classes\GDSGeography.vb" />
+    <Compile Include="Forms\frmClientReferencePax.Designer.vb">
+      <DependentUpon>frmClientReferencePax.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmClientReferencePax.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GlobalSuppressions.vb" />
+    <Compile Include="User Controls\UCRef.Designer.vb">
+      <DependentUpon>UCRef.vb</DependentUpon>
+    </Compile>
+    <Compile Include="User Controls\UCRef.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\frm02Finisher.Designer.vb">
+      <DependentUpon>frm02Finisher.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frm02Finisher.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frm03Itinerary.Designer.vb">
+      <DependentUpon>frm03Itinerary.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frm03Itinerary.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frm04OSM.Designer.vb">
+      <DependentUpon>frm04OSM.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frm04OSM.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modules\modPriceOptimizer.vb" />
     <Compile Include="Scenarios\GDS_BOReferenceCollection.vb" />
     <Compile Include="Scenarios\GDS_BOReferenceItem.vb" />
     <Compile Include="Classes\CostCentreLookupCollection.vb" />
     <Compile Include="Classes\CostCentreLookupItem.vb" />
     <Compile Include="Classes\CRMCollection.vb" />
     <Compile Include="Classes\CRMItem.vb" />
-    <Compile Include="Classes\CustomerCollection.vb" />
-    <Compile Include="Classes\CustomerCollectionAll.vb" />
-    <Compile Include="Classes\CustomerGroupCollection.vb" />
-    <Compile Include="Classes\CustomerGroupCollectionAll.vb" />
-    <Compile Include="Classes\CustomerGroupItem.vb" />
-    <Compile Include="Classes\CustomerItem.vb" />
-    <Compile Include="Classes\CustomPropertiesCollection.vb" />
-    <Compile Include="Classes\CustomPropertiesItem.vb" />
-    <Compile Include="Classes\CustomPropertiesValues.vb" />
-    <Compile Include="Classes\CustomPropertiesXMLValues.vb" />
+    <Compile Include="Classes\Client\ClientCollection.vb" />
+    <Compile Include="Classes\Client\ClientCollectionAll.vb" />
+    <Compile Include="Classes\Client\ClientGroupCollection.vb" />
+    <Compile Include="Classes\Client\ClientGroupCollectionAll.vb" />
+    <Compile Include="Classes\Client\ClientGroup.vb" />
+    <Compile Include="Classes\Client\Client.vb" />
+    <Compile Include="Classes\ClientReferences\ClientReferenceItemValue.vb" />
     <Compile Include="Classes\DBUser.vb" />
     <Compile Include="Classes\DICollection.vb" />
     <Compile Include="Classes\DIItem.vb" />
@@ -238,28 +277,10 @@
     <Compile Include="Forms\frmCostCentre.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmFormFinisher.Designer.vb">
-      <DependentUpon>frmFormFinisher.vb</DependentUpon>
+    <Compile Include="Forms\frm01Main.Designer.vb">
+      <DependentUpon>frm01Main.vb</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frmFormFinisher.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\frmFormOSM.Designer.vb">
-      <DependentUpon>frmFormOSM.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\frmFormOSM.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\frmFormItinerary.Designer.vb">
-      <DependentUpon>frmFormItinerary.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\frmFormItinerary.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\frmFormMain.Designer.vb">
-      <DependentUpon>frmFormMain.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\frmFormMain.vb">
+    <Compile Include="Forms\frm01Main.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmOSMAddVessel.Designer.vb">
@@ -294,12 +315,6 @@
       <DependentUpon>frmPaxCTC.vb</DependentUpon>
     </Compile>
     <Compile Include="PaxCTC\frmPaxCTC.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\frmPNR.Designer.vb">
-      <DependentUpon>frmPNR.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\frmPNR.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmPriceOptimiser.Designer.vb">
@@ -365,6 +380,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\frmClientReferencePax.resx">
+      <DependentUpon>frmClientReferencePax.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User Controls\UCRef.resx">
+      <DependentUpon>UCRef.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frm02Finisher.resx">
+      <DependentUpon>frm02Finisher.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frm03Itinerary.resx">
+      <DependentUpon>frm03Itinerary.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frm04OSM.resx">
+      <DependentUpon>frm04OSM.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmAPISPax.resx">
       <DependentUpon>frmAPISPax.vb</DependentUpon>
     </EmbeddedResource>
@@ -374,17 +404,8 @@
     <EmbeddedResource Include="Forms\frmCostCentre.resx">
       <DependentUpon>frmCostCentre.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmFormFinisher.resx">
-      <DependentUpon>frmFormFinisher.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmFormItinerary.resx">
-      <DependentUpon>frmFormItinerary.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmFormOSM.resx">
-      <DependentUpon>frmFormOSM.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmFormMain.resx">
-      <DependentUpon>frmFormMain.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\frm01Main.resx">
+      <DependentUpon>frm01Main.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmOSMAddVessel.resx">
       <DependentUpon>frmOSMAddVessel.vb</DependentUpon>
@@ -400,9 +421,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PaxCTC\frmPaxCTC.resx">
       <DependentUpon>frmPaxCTC.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmPNR.resx">
-      <DependentUpon>frmPNR.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmPriceOptimiser.resx">
       <DependentUpon>frmPriceOptimiser.vb</DependentUpon>

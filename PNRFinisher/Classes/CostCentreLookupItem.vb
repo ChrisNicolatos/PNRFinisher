@@ -12,7 +12,7 @@ Public Class CostCentreLookupItem
     End Structure
     Dim mudtProps As ClassProps
 
-    Friend Sub New(ByVal Id As Integer, ByVal Code As String, ByVal OldCode As String, ByVal ClientName As String, ByVal ClientLogo As String, ByVal VesselName As String, ByVal CostCentre As String)
+    Public Sub New(ByVal Id As Integer, ByVal Code As String, ByVal OldCode As String, ByVal ClientName As String, ByVal ClientLogo As String, ByVal VesselName As String, ByVal CostCentre As String)
 
         With mudtProps
             .Id = Id

@@ -41,17 +41,20 @@ Public Class OSMLog
     End Sub
     Private Sub PDFDocument(ByVal pFileName As String, ByVal CrewMembersText As String, Optional ByRef pPax As GDSPaxItem = Nothing)
 
-        Dim pLogoImage As Image = Image.GetInstance(mobjAddressItem.LogoImageByteArray)
-
-        'Dim pLogoFile As String = System.IO.Path.Combine(UtilitiesDB.MyConfigPath, "OSM Maritime logo.png")
-        'Dim gif As Image = Image.GetInstance(pLogoFile)
-        'Dim pSignature As String = System.IO.Path.Combine(UtilitiesDB.MyConfigPath, "crn sign.jpg")
-        'Dim pSignatureGif As Image = Image.GetInstance(pSignature)
+        Dim pLogoImage As Image = Image.GetInstance(mobjAddressItem.LogoImage)
         Dim pDoc As New Document(PageSize.A4, 36, 36, 36, 36)
         Dim pArial11 As Font = FontFactory.GetFont("arial", 11, FontStyle.Regular)
         Dim pArial11b As Font = FontFactory.GetFont("arial", 11, FontStyle.Bold)
         Dim pArial12 As Font = FontFactory.GetFont("arial", 12, FontStyle.Regular)
         Dim pArial16b As Font = FontFactory.GetFont("arial", 16, FontStyle.Bold)
+
+        Dim pExpensesBy As String = ""
+
+        If mobjAddressItem.SignatorysExpenses Then
+            pExpensesBy = mobjAddressItem.CompanyName
+        Else
+            pExpensesBy = mobjPNR.ExistingElements.ClientName
+        End If
 
         PdfWriter.GetInstance(pDoc, New FileStream(pFileName, FileMode.Create))
         pDoc.Open()
@@ -64,9 +67,9 @@ Public Class OSMLog
         pDoc.Add(AddParagraph("To Whom It May Concern", pArial11, 0, 14, "Left"))
 
         If MySettings.OSMLoGOnSigner Then
-            pDoc.Add(AddParagraph("We hereby declare that our " & CrewMembersText & " to arrive on " & mobjPNR.LastSegment.ArrivalDate & " to embark the vessel/rig " & mobjPNR.VesselName & " in " & mobjPNR.LastSegment.OffPointCityName & If(mobjPNR.LastSegment.OffPointCountryName <> "", ", " & mobjPNR.LastSegment.OffPointCountryName, ""), pArial11, 0, 6, "Left"))
+            pDoc.Add(AddParagraph("We hereby declare that our " & CrewMembersText & " to arrive on " & mobjPNR.Segments.Values.Last.Arrival.SegDate & " to embark the vessel/rig " & mobjPNR.ExistingElements.VesselName & " in " & mobjPNR.Segments.Values.Last.Destination.CityName & If(mobjPNR.Segments.Values.Last.Destination.CountryName <> "", ", " & mobjPNR.Segments.Values.Last.Destination.CountryName, ""), pArial11, 0, 6, "Left"))
         Else
-            pDoc.Add(AddParagraph("We hereby declare that our " & CrewMembersText & " to depart on " & mobjPNR.FirstSegment.DepartureDate & " to disembark the vessel/rig " & mobjPNR.VesselName & " in " & mobjPNR.FirstSegment.BoardCityName & If(mobjPNR.FirstSegment.BoardCountryName <> "", ", " & mobjPNR.FirstSegment.BoardCountryName, ""), pArial11, 0, 6, "Left"))
+            pDoc.Add(AddParagraph("We hereby declare that our " & CrewMembersText & " to depart on " & mobjPNR.Segments.First.Value.Departure.SegDate & " to disembark the vessel/rig " & mobjPNR.ExistingElements.VesselName & " in " & mobjPNR.Segments.First.Value.Origin.CityName & If(mobjPNR.Segments.First.Value.Origin.CountryName <> "", ", " & mobjPNR.Segments.First.Value.Origin.CountryName, ""), pArial11, 0, 6, "Left"))
         End If
         pDoc.Add(AddParagraph("By carrying this letter, the crew is entitled to travel on maritime/offshore fares.", pArial11, 0, 0, "Left"))
 
@@ -86,29 +89,14 @@ Public Class OSMLog
             pDoc.Add(AddParagraph(mobjPortAgent.Email, pArial11, 0, 7, "Left"))
         End If
         pDoc.Add(AddParagraph("We ask you kindly to render all necessary assistance.", pArial11, 0, 0, "Left"))
-        pDoc.Add(AddParagraph("We confirm that " & mobjPNR.ClientName & " will cover all expenses that may occur in connection with our employee's travel.", pArial11, 0, 14, "Left"))
+        pDoc.Add(AddParagraph("We confirm that " & pExpensesBy & " will cover all expenses that may occur in connection with our employee's travel.", pArial11, 0, 14, "Left"))
         pDoc.Add(AddParagraph("If you need any further information, please contact our employer as stated below.", pArial11, 0, 14, "Left"))
         pDoc.Add(AddParagraph("Sincerely,", pArial11, 0, 14, "Left"))
         If mobjAddressItem.SignatureImage_fk <> 0 Then
-            Dim pSignatureImage As Image = Image.GetInstance(mobjAddressItem.SignatureImageByteArray)
+            Dim pSignatureImage As Image = Image.GetInstance(mobjAddressItem.SignatureImage)
             pSignatureImage.ScalePercent(50)
             pDoc.Add(pSignatureImage)
         End If
-        'If mintSignatory = 2 Then
-        '    pDoc.Add(AddParagraph("Cherryl Rose Omnes Nemenzo", pArial11bu, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Crewing Support Manager", pArial11, 0, 14, "Left"))
-        '    pDoc.Add(AddParagraph("On behalf of", pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("OSM Maritime Services Inc.", pArial11b, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Address: OSM bldg, 479 Pedro Gil Street, Ermita, Manila", pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Phone: (632) 523-88-71 to 75", pArial11, 0, 0, "Left"))
-        'Else
-        '    pDoc.Add(AddParagraph(mstrSignedBy, pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Crewing", pArial11, 0, 14, "Left"))
-        '    pDoc.Add(AddParagraph("On behalf of", pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("OSM Crew Management Limited", pArial11b, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Address: OSM HOUSE, 22 Amathountos Avenue Agios Tychonas 4532 Limassol, Cyprus", pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Phone: +357 25 33 55 01", pArial11, 0, 0, "Left"))
-        'End If
 
         pDoc.Add(AddParagraph(mobjAddressItem.SignedByName, pArial11, 0, 0, "Left"))
         pDoc.Add(AddParagraph(mobjAddressItem.Title, pArial11, 0, 14, "Left"))
@@ -123,12 +111,7 @@ Public Class OSMLog
     End Sub
     Private Sub PDFDocumentLangBrazil(ByVal pFileName As String, Optional ByRef pPax As GDSPaxItem = Nothing)
 
-        Dim pLogoImage As Image = Image.GetInstance(mobjAddressItem.LogoImageByteArray)
-
-        'Dim pLogoFile As String = System.IO.Path.Combine(UtilitiesDB.MyConfigPath, "OSM Maritime logo.png")
-        'Dim gif As Image = Image.GetInstance(pLogoFile)
-        'Dim pSignature As String = System.IO.Path.Combine(UtilitiesDB.MyConfigPath, "crn sign.jpg")
-        'Dim pSignatureGif As Image = Image.GetInstance(pSignature)
+        Dim pLogoImage As Image = Image.GetInstance(mobjAddressItem.LogoImage)
         Dim pDoc As New Document(PageSize.A4, 36, 36, 36, 36)
         Dim pArial11 As Font = FontFactory.GetFont("arial", 11, FontStyle.Regular)
         Dim pArial11b As Font = FontFactory.GetFont("arial", 11, FontStyle.Bold)
@@ -140,10 +123,10 @@ Public Class OSMLog
         pDoc.Add(pLogoImage)
 
         pDoc.Add(AddParagraph("A QUEM POSSA INTERESSAR", pArial11, 0, 14, "Left"))
-        pDoc.Add(AddParagraph(mobjPNR.VesselName, pArial11, 0, 14, "Left"))
+        pDoc.Add(AddParagraph(mobjPNR.ExistingElements.VesselName, pArial11, 0, 14, "Left"))
         pDoc.Add(AddParagraph("Atenas," & MyMonthName(Now, EnumLoGLanguage.Brazil), pArial12, 0, 14, "Right"))
 
-        pDoc.Add(AddParagraph("Isso é para aconselhá-lo, que o representante do escritório o seguinte vai velejar com o navio legenda em " & mobjPNR.LastSegment.OffPointCityName & If(mobjPNR.LastSegment.OffPointCountryName <> "", ", " & mobjPNR.LastSegment.OffPointCountryName, ""), pArial11, 0, 6, "Left"))
+        pDoc.Add(AddParagraph("Isso é para aconselhá-lo, que o representante do escritório o seguinte vai velejar com o navio legenda em " & mobjPNR.Segments.Values.Last.Destination.CityName & If(mobjPNR.Segments.Values.Last.Destination.CountryName <> "", ", " & mobjPNR.Segments.Values.Last.Destination.CountryName, ""), pArial11, 0, 6, "Left"))
 
         If pPax Is Nothing Then
             pDoc.Add(MakePaxTableLangBrazil(mobjPNR.Passengers, pArial11))
@@ -160,38 +143,20 @@ Public Class OSMLog
             pDoc.Add(AddParagraph(mobjPortAgent.Details, pArial11, 0, 0, "Left"))
             pDoc.Add(AddParagraph(mobjPortAgent.Email, pArial11, 0, 7, "Left"))
         End If
-        pDoc.Add(AddParagraph("Por favor, dê-lhe toda a assistência possível, a fim de que ele deve chegar ao seu destino com o mínimo de atraso possível. Nós garantir que, no entanto, que será responsável para pagar todas as suas despesas de repatriamento, se as Autoridades Portuárias recusar a sua entrada no " & mobjPNR.VesselName & " por qualquer motivo.", pArial11, 0, 0, "Left"))
+        pDoc.Add(AddParagraph("Por favor, dê-lhe toda a assistência possível, a fim de que ele deve chegar ao seu destino com o mínimo de atraso possível. Nós garantir que, no entanto, que será responsável para pagar todas as suas despesas de repatriamento, se as Autoridades Portuárias recusar a sua entrada no " & mobjPNR.ExistingElements.VesselName & " por qualquer motivo.", pArial11, 0, 0, "Left"))
         pDoc.Add(AddParagraph("Agradecendo antecipadamente.", pArial11, 0, 14, "Left"))
         pDoc.Add(AddParagraph("Com os melhores cumprimentos.", pArial11, 0, 14, "Left"))
         If mobjAddressItem.SignatureImage_fk <> 0 Then
-            Dim pSignatureImage As Image = Image.GetInstance(mobjAddressItem.SignatureImageByteArray)
+            Dim pSignatureImage As Image = Image.GetInstance(mobjAddressItem.SignatureImage)
             pSignatureImage.ScalePercent(50)
             pDoc.Add(pSignatureImage)
         End If
-        'If mintSignatory = 2 Then
-        '    pSignatureGif.ScalePercent(50)
-        '    pDoc.Add(pSignatureGif)
-        '    pDoc.Add(AddParagraph("Cherryl Rose Omnes Nemenzo", pArial11bu, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Crewing Support Manager", pArial11, 0, 14, "Left"))
-        '    pDoc.Add(AddParagraph("On behalf of", pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("OSM Maritime Services Inc.", pArial11b, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Address: OSM bldg, 479 Pedro Gil Street, Ermita, Manila", pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Phone: (632) 523-88-71 to 75", pArial11, 0, 0, "Left"))
-        'Else
-        '    pDoc.Add(AddParagraph(mstrSignedBy, pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Crewing", pArial11, 0, 14, "Left"))
-        '    pDoc.Add(AddParagraph("On behalf of", pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("OSM Crew Management Limited", pArial11b, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Address: OSM HOUSE, 22 Amathountos Avenue Agios Tychonas 4532 Limassol, Cyprus", pArial11, 0, 0, "Left"))
-        '    pDoc.Add(AddParagraph("Phone: +357 25 33 55 01", pArial11, 0, 0, "Left"))
-        'End If
         pDoc.Add(AddParagraph(mobjAddressItem.SignedByName, pArial11, 0, 0, "Left"))
         pDoc.Add(AddParagraph(mobjAddressItem.Title, pArial11, 0, 14, "Left"))
         pDoc.Add(AddParagraph("On behalf of", pArial11, 0, 0, "Left"))
         pDoc.Add(AddParagraph(mobjAddressItem.CompanyName, pArial11b, 0, 0, "Left"))
         pDoc.Add(AddParagraph("Address: " & mobjAddressItem.Address & " " & mobjAddressItem.PCArea & " " & mobjAddressItem.Country, pArial11, 0, 0, "Left"))
         pDoc.Add(AddParagraph("Phone: " & mobjAddressItem.Telephone, pArial11, 0, 0, "Left"))
-
         pDoc.Close()
 
     End Sub
@@ -215,65 +180,6 @@ Public Class OSMLog
         AddParagraph = x2
 
     End Function
-    'Private Function MakePaxTable(ByRef pPassengers As GDSPaxCollection, ByVal pFont As Font, ByVal pHeaderFont As Font) As PdfPTable
-
-    '    Dim Table As New PdfPTable(2) With {
-    '        .LockedWidth = False,
-    '        .HorizontalAlignment = 0,
-    '        .SpacingBefore = 14,
-    '        .SpacingAfter = 14
-    '    }
-
-    '    Dim pPosition As Boolean = False
-    '    For Each pPax As GDSPaxItem In pPassengers.Values
-    '        If pPax.IdNo <> "" Then
-    '            pPosition = True
-    '            Exit For
-    '        End If
-    '    Next pPax
-    '    'relative col widths in proportions - 2/3 And 1/3
-    '    Dim widths() As Single = {2, 1}
-    '    Table.SetWidths(widths)
-    '    Table.AddCell(AddCell("Name", pHeaderFont))
-    '    If pPosition Then
-    '        Table.AddCell(AddCell("Position", pHeaderFont))
-    '    Else
-    '        Table.AddCell(AddCell(" ", pHeaderFont))
-    '    End If
-
-    '    For Each pPax As GDSPaxItem In pPassengers.Values
-    '        Table.AddCell(AddCell(pPax.PaxName, pFont))
-    '        Table.AddCell(AddCell(pPax.IdNo, pFont))
-    '    Next pPax
-
-    '    MakePaxTable = Table
-
-    'End Function
-    'Private Function MakePaxTable(ByRef pPax As GDSPaxItem, ByVal pFont As Font, ByVal pHeaderFont As Font) As PdfPTable
-
-    '    Dim Table As New PdfPTable(2) With {
-    '        .LockedWidth = False,
-    '        .HorizontalAlignment = 0,
-    '        .SpacingBefore = 14,
-    '        .SpacingAfter = 14
-    '    }
-
-    '    'relative col widths in proportions - 2/3 And 1/3
-    '    Dim widths() As Single = {1, 1}
-    '    Table.SetWidths(widths)
-
-    '    Table.AddCell(AddCell("Name", pHeaderFont))
-    '    If pPax.IdNo = "" Then
-    '        Table.AddCell(AddCell(" ", pHeaderFont))
-    '    Else
-    '        Table.AddCell(AddCell("Position", pHeaderFont))
-    '    End If
-    '    Table.AddCell(AddCell(pPax.PaxName, pFont))
-    '    Table.AddCell(AddCell(pPax.IdNo, pFont))
-
-    '    MakePaxTable = Table
-
-    'End Function
     Private Function MakePaxTableLangBrazil(ByRef pPassengers As GDSPaxCollection, ByVal pFont As Font) As PdfPTable
 
         Dim Table As New PdfPTable(2) With {
@@ -300,8 +206,8 @@ Public Class OSMLog
             Table.AddCell(OSMElements.AddCell(pPax.Initial, pFont))
             Table.AddCell(OSMElements.AddCell("Posição:", pFont))
             Table.AddCell(OSMElements.AddCell(pPax.IdNo, pFont))
-            If mobjPNR.SSRDocsExists Then
-                For Each pDocs As ApisPaxItem In mobjPNR.SSRDocsCollection.Values
+            If mobjPNR.ExistingElements.SSRDocsExists Then
+                For Each pDocs As ApisPaxItem In mobjPNR.ExistingElements.SSRDocsCollection.Values
                     If pDocs.Surname.Replace(" ", "") = pPax.LastName.Replace(" ", "") And pPax.Initial.Replace(" ", "").StartsWith(pDocs.FirstName.Replace(" ", "")) Then
                         'Nacionalidade: Portuguese
                         Table.AddCell(OSMElements.AddCell("Nacionalidade:", pFont))
@@ -351,8 +257,8 @@ Public Class OSMLog
         Table.AddCell(OSMElements.AddCell(pPax.Initial, pFont))
         Table.AddCell(OSMElements.AddCell("Posição:", pFont))
         Table.AddCell(OSMElements.AddCell(pPax.IdNo, pFont))
-        If mobjPNR.SSRDocsExists Then
-            For Each pDocs As ApisPaxItem In mobjPNR.SSRDocsCollection.Values
+        If mobjPNR.ExistingElements.SSRDocsExists Then
+            For Each pDocs As ApisPaxItem In mobjPNR.ExistingElements.SSRDocsCollection.Values
                 If pDocs.Surname = pPax.LastName And pDocs.FirstName = pPax.Initial Then
                     'Nacionalidade: Portuguese
                     Table.AddCell(OSMElements.AddCell("Nacionalidade:", pFont))
@@ -394,11 +300,11 @@ Public Class OSMLog
 
                 pWidths(0) = Math.Max(pWidths(0), g.MeasureString(.Airline, pVBFont).Width)
                 pWidths(1) = Math.Max(pWidths(1), g.MeasureString(.FlightNo, pVBFont).Width)
-                pWidths(2) = Math.Max(pWidths(2), g.MeasureString(.DepartureDateIATA, pVBFont).Width)
-                pWidths(3) = Math.Max(pWidths(3), g.MeasureString(.BoardCityName, pVBFont).Width)
-                pWidths(4) = Math.Max(pWidths(4), g.MeasureString(.OffPointCityName, pVBFont).Width)
-                pWidths(5) = Math.Max(pWidths(5), g.MeasureString(.DepartTimeShort, pVBFont).Width)
-                pWidths(6) = Math.Max(pWidths(6), g.MeasureString(.ArriveTimeShort, pVBFont).Width)
+                pWidths(2) = Math.Max(pWidths(2), g.MeasureString(.Departure.DateIATA, pVBFont).Width)
+                pWidths(3) = Math.Max(pWidths(3), g.MeasureString(.Origin.CityName, pVBFont).Width)
+                pWidths(4) = Math.Max(pWidths(4), g.MeasureString(.Destination.CityName, pVBFont).Width)
+                pWidths(5) = Math.Max(pWidths(5), g.MeasureString(.Departure.TimeShort, pVBFont).Width)
+                pWidths(6) = Math.Max(pWidths(6), g.MeasureString(.Arrival.TimeShort, pVBFont).Width)
             End With
         Next
         'relative col widths in proportions - 2/3 And 1/3
@@ -409,11 +315,11 @@ Public Class OSMLog
             With pSeg
                 Table.AddCell(OSMElements.AddCell(.Airline, pFont))
                 Table.AddCell(OSMElements.AddCell(.FlightNo, pFont))
-                Table.AddCell(OSMElements.AddCell(.DepartureDateIATA, pFont))
-                Table.AddCell(OSMElements.AddCell(.BoardCityName, pFont))
-                Table.AddCell(OSMElements.AddCell(.OffPointCityName, pFont))
-                Table.AddCell(OSMElements.AddCell(.DepartTimeShort, pFont))
-                Table.AddCell(OSMElements.AddCell(.ArriveTimeShort, pFont))
+                Table.AddCell(OSMElements.AddCell(.Departure.DateIATA, pFont))
+                Table.AddCell(OSMElements.AddCell(.Origin.CityName, pFont))
+                Table.AddCell(OSMElements.AddCell(.Destination.CityName, pFont))
+                Table.AddCell(OSMElements.AddCell(.Departure.TimeShort, pFont))
+                Table.AddCell(OSMElements.AddCell(.Arrival.TimeShort, pFont))
             End With
         Next
 
@@ -421,12 +327,6 @@ Public Class OSMLog
 
     End Function
 
-    'Private Shared Function AddCell(ByVal pText As String, ByVal pFont As Font) As PdfPCell
-    '    Dim c1 As New PdfPCell(New Phrase(pText, pFont)) With {
-    '                .Border = Rectangle.NO_BORDER
-    '            }
-    '    AddCell = c1
-    'End Function
     Private Sub ReadOptions()
 
         Dim pFrm As New frmOSMLoG(mobjPNR)

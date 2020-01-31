@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
-Partial Class frmFormItinerary
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+Partial Class frm03Itinerary
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()>
+    <System.Diagnostics.DebuggerNonUserCode()> _
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class frmFormItinerary
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()>
+    <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Me.fraGalileo = New System.Windows.Forms.GroupBox()
@@ -43,6 +43,7 @@ Partial Class frmFormItinerary
         Me.optItnFormatSeaChefs = New System.Windows.Forms.RadioButton()
         Me.optItnFormatPlain = New System.Windows.Forms.RadioButton()
         Me.optItnFormatDefault = New System.Windows.Forms.RadioButton()
+        Me.cmdItnExit = New System.Windows.Forms.Button()
         Me.lstItnRemarks = New System.Windows.Forms.CheckedListBox()
         Me.fraItnAirportName = New System.Windows.Forms.GroupBox()
         Me.optItnAirportCityBoth = New System.Windows.Forms.RadioButton()
@@ -75,6 +76,7 @@ Partial Class frmFormItinerary
         Me.SSGDS = New System.Windows.Forms.ToolStripStatusLabel()
         Me.SSPCC = New System.Windows.Forms.ToolStripStatusLabel()
         Me.SSUser = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.lblClient = New System.Windows.Forms.Label()
         Me.fraGalileo.SuspendLayout()
         Me.fraAmadeus.SuspendLayout()
         Me.fraItnFormat.SuspendLayout()
@@ -89,7 +91,7 @@ Partial Class frmFormItinerary
         Me.fraGalileo.Controls.Add(Me.cmdItn1GReadPNR)
         Me.fraGalileo.Controls.Add(Me.cmdItn1GReadCurrent)
         Me.fraGalileo.Controls.Add(Me.cmdItn1GReadQueue)
-        Me.fraGalileo.Location = New System.Drawing.Point(322, 24)
+        Me.fraGalileo.Location = New System.Drawing.Point(307, 12)
         Me.fraGalileo.Name = "fraGalileo"
         Me.fraGalileo.Size = New System.Drawing.Size(289, 46)
         Me.fraGalileo.TabIndex = 36
@@ -137,7 +139,7 @@ Partial Class frmFormItinerary
         Me.fraAmadeus.Controls.Add(Me.cmdItn1AReadCurrent)
         Me.fraAmadeus.Controls.Add(Me.cmdItn1AReadQueue)
         Me.fraAmadeus.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.fraAmadeus.Location = New System.Drawing.Point(27, 24)
+        Me.fraAmadeus.Location = New System.Drawing.Point(12, 12)
         Me.fraAmadeus.Name = "fraAmadeus"
         Me.fraAmadeus.Size = New System.Drawing.Size(289, 46)
         Me.fraAmadeus.TabIndex = 35
@@ -181,7 +183,7 @@ Partial Class frmFormItinerary
         '
         'cmdItnFormatOSMLoG
         '
-        Me.cmdItnFormatOSMLoG.Location = New System.Drawing.Point(631, 38)
+        Me.cmdItnFormatOSMLoG.Location = New System.Drawing.Point(616, 26)
         Me.cmdItnFormatOSMLoG.Name = "cmdItnFormatOSMLoG"
         Me.cmdItnFormatOSMLoG.Size = New System.Drawing.Size(108, 21)
         Me.cmdItnFormatOSMLoG.TabIndex = 34
@@ -193,10 +195,10 @@ Partial Class frmFormItinerary
         Me.webItnDoc.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.webItnDoc.Location = New System.Drawing.Point(1002, 38)
+        Me.webItnDoc.Location = New System.Drawing.Point(987, 26)
         Me.webItnDoc.MinimumSize = New System.Drawing.Size(20, 20)
         Me.webItnDoc.Name = "webItnDoc"
-        Me.webItnDoc.Size = New System.Drawing.Size(98, 66)
+        Me.webItnDoc.Size = New System.Drawing.Size(96, 27)
         Me.webItnDoc.TabIndex = 33
         Me.webItnDoc.Visible = False
         '
@@ -207,7 +209,7 @@ Partial Class frmFormItinerary
         Me.lblItnPNRCounter.Cursor = System.Windows.Forms.Cursors.Default
         Me.lblItnPNRCounter.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
         Me.lblItnPNRCounter.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.lblItnPNRCounter.Location = New System.Drawing.Point(29, 602)
+        Me.lblItnPNRCounter.Location = New System.Drawing.Point(14, 551)
         Me.lblItnPNRCounter.Name = "lblItnPNRCounter"
         Me.lblItnPNRCounter.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.lblItnPNRCounter.Size = New System.Drawing.Size(137, 13)
@@ -218,7 +220,7 @@ Partial Class frmFormItinerary
         'cmdItnRefresh
         '
         Me.cmdItnRefresh.Enabled = False
-        Me.cmdItnRefresh.Location = New System.Drawing.Point(775, 38)
+        Me.cmdItnRefresh.Location = New System.Drawing.Point(760, 26)
         Me.cmdItnRefresh.Name = "cmdItnRefresh"
         Me.cmdItnRefresh.Size = New System.Drawing.Size(80, 21)
         Me.cmdItnRefresh.TabIndex = 31
@@ -235,7 +237,7 @@ Partial Class frmFormItinerary
         Me.fraItnFormat.Controls.Add(Me.optItnFormatPlain)
         Me.fraItnFormat.Controls.Add(Me.optItnFormatDefault)
         Me.fraItnFormat.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.fraItnFormat.Location = New System.Drawing.Point(333, 76)
+        Me.fraItnFormat.Location = New System.Drawing.Point(318, 64)
         Me.fraItnFormat.Name = "fraItnFormat"
         Me.fraItnFormat.Size = New System.Drawing.Size(273, 134)
         Me.fraItnFormat.TabIndex = 26
@@ -321,15 +323,24 @@ Partial Class frmFormItinerary
         Me.optItnFormatDefault.Text = "Default"
         Me.optItnFormatDefault.UseVisualStyleBackColor = True
         '
+        'cmdItnExit
+        '
+        Me.cmdItnExit.Location = New System.Drawing.Point(844, 26)
+        Me.cmdItnExit.Name = "cmdItnExit"
+        Me.cmdItnExit.Size = New System.Drawing.Size(80, 21)
+        Me.cmdItnExit.TabIndex = 30
+        Me.cmdItnExit.Text = "Exit"
+        Me.cmdItnExit.UseVisualStyleBackColor = True
+        '
         'lstItnRemarks
         '
         Me.lstItnRemarks.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstItnRemarks.CheckOnClick = True
         Me.lstItnRemarks.FormattingEnabled = True
-        Me.lstItnRemarks.Location = New System.Drawing.Point(612, 83)
+        Me.lstItnRemarks.Location = New System.Drawing.Point(597, 71)
         Me.lstItnRemarks.Name = "lstItnRemarks"
-        Me.lstItnRemarks.Size = New System.Drawing.Size(836, 124)
+        Me.lstItnRemarks.Size = New System.Drawing.Size(834, 124)
         Me.lstItnRemarks.TabIndex = 28
         '
         'fraItnAirportName
@@ -340,7 +351,7 @@ Partial Class frmFormItinerary
         Me.fraItnAirportName.Controls.Add(Me.optItnAirportname)
         Me.fraItnAirportName.Controls.Add(Me.optItnAirportCode)
         Me.fraItnAirportName.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.fraItnAirportName.Location = New System.Drawing.Point(188, 76)
+        Me.fraItnAirportName.Location = New System.Drawing.Point(173, 64)
         Me.fraItnAirportName.Name = "fraItnAirportName"
         Me.fraItnAirportName.Size = New System.Drawing.Size(137, 134)
         Me.fraItnAirportName.TabIndex = 25
@@ -425,9 +436,9 @@ Partial Class frmFormItinerary
         Me.fraItnOptions.Controls.Add(Me.chkItnVessel)
         Me.fraItnOptions.Controls.Add(Me.chkItnAirlineLocator)
         Me.fraItnOptions.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.fraItnOptions.Location = New System.Drawing.Point(188, 210)
+        Me.fraItnOptions.Location = New System.Drawing.Point(173, 198)
         Me.fraItnOptions.Name = "fraItnOptions"
-        Me.fraItnOptions.Size = New System.Drawing.Size(137, 366)
+        Me.fraItnOptions.Size = New System.Drawing.Size(137, 393)
         Me.fraItnOptions.TabIndex = 27
         Me.fraItnOptions.TabStop = False
         Me.fraItnOptions.Text = "Options"
@@ -603,9 +614,9 @@ Partial Class frmFormItinerary
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.rtbItnDoc.Font = New System.Drawing.Font("Courier New", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.rtbItnDoc.Location = New System.Drawing.Point(331, 217)
+        Me.rtbItnDoc.Location = New System.Drawing.Point(316, 214)
         Me.rtbItnDoc.Name = "rtbItnDoc"
-        Me.rtbItnDoc.Size = New System.Drawing.Size(1117, 398)
+        Me.rtbItnDoc.Size = New System.Drawing.Size(1115, 350)
         Me.rtbItnDoc.TabIndex = 29
         Me.rtbItnDoc.Text = ""
         '
@@ -617,13 +628,13 @@ Partial Class frmFormItinerary
         Me.txtItnPNR.BackColor = System.Drawing.SystemColors.Window
         Me.txtItnPNR.Cursor = System.Windows.Forms.Cursors.IBeam
         Me.txtItnPNR.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtItnPNR.Location = New System.Drawing.Point(32, 92)
+        Me.txtItnPNR.Location = New System.Drawing.Point(17, 80)
         Me.txtItnPNR.MaxLength = 0
         Me.txtItnPNR.Multiline = True
         Me.txtItnPNR.Name = "txtItnPNR"
         Me.txtItnPNR.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.txtItnPNR.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtItnPNR.Size = New System.Drawing.Size(134, 507)
+        Me.txtItnPNR.Size = New System.Drawing.Size(134, 468)
         Me.txtItnPNR.TabIndex = 24
         '
         'lblItnPNR
@@ -632,7 +643,7 @@ Partial Class frmFormItinerary
         Me.lblItnPNR.Cursor = System.Windows.Forms.Cursors.Default
         Me.lblItnPNR.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
         Me.lblItnPNR.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.lblItnPNR.Location = New System.Drawing.Point(29, 76)
+        Me.lblItnPNR.Location = New System.Drawing.Point(14, 64)
         Me.lblItnPNR.Name = "lblItnPNR"
         Me.lblItnPNR.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.lblItnPNR.Size = New System.Drawing.Size(137, 13)
@@ -644,20 +655,20 @@ Partial Class frmFormItinerary
         '
         Me.menuITNSelectCopy.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.MenuCopyItn})
         Me.menuITNSelectCopy.Name = "menuSelectCopy"
-        Me.menuITNSelectCopy.Size = New System.Drawing.Size(149, 26)
+        Me.menuITNSelectCopy.Size = New System.Drawing.Size(181, 48)
         '
         'MenuCopyItn
         '
         Me.MenuCopyItn.Name = "MenuCopyItn"
-        Me.MenuCopyItn.Size = New System.Drawing.Size(148, 22)
+        Me.MenuCopyItn.Size = New System.Drawing.Size(180, 22)
         Me.MenuCopyItn.Text = "Copy Itinerary"
         '
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.SSGDS, Me.SSPCC, Me.SSUser})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 643)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 604)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(1474, 22)
+        Me.StatusStrip1.Size = New System.Drawing.Size(1472, 22)
         Me.StatusStrip1.TabIndex = 104
         Me.StatusStrip1.Text = "StatusStrip1"
         '
@@ -679,11 +690,26 @@ Partial Class frmFormItinerary
         Me.SSUser.Size = New System.Drawing.Size(30, 17)
         Me.SSUser.Text = "User"
         '
-        'frmFormItinerary
+        'lblClient
+        '
+        Me.lblClient.BackColor = System.Drawing.Color.Yellow
+        Me.lblClient.Cursor = System.Windows.Forms.Cursors.Default
+        Me.lblClient.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
+        Me.lblClient.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.lblClient.Location = New System.Drawing.Point(316, 198)
+        Me.lblClient.Name = "lblClient"
+        Me.lblClient.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.lblClient.Size = New System.Drawing.Size(1115, 13)
+        Me.lblClient.TabIndex = 105
+        Me.lblClient.Text = "Client"
+        Me.lblClient.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'frm03Itinerary
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1474, 665)
+        Me.ClientSize = New System.Drawing.Size(1472, 626)
+        Me.Controls.Add(Me.lblClient)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.fraGalileo)
         Me.Controls.Add(Me.fraAmadeus)
@@ -692,14 +718,14 @@ Partial Class frmFormItinerary
         Me.Controls.Add(Me.lblItnPNRCounter)
         Me.Controls.Add(Me.cmdItnRefresh)
         Me.Controls.Add(Me.fraItnFormat)
+        Me.Controls.Add(Me.cmdItnExit)
         Me.Controls.Add(Me.lstItnRemarks)
         Me.Controls.Add(Me.fraItnAirportName)
         Me.Controls.Add(Me.fraItnOptions)
         Me.Controls.Add(Me.rtbItnDoc)
         Me.Controls.Add(Me.txtItnPNR)
         Me.Controls.Add(Me.lblItnPNR)
-        Me.MinimumSize = New System.Drawing.Size(1490, 704)
-        Me.Name = "frmFormItinerary"
+        Me.Name = "frm03Itinerary"
         Me.Text = "Itinerary"
         Me.fraGalileo.ResumeLayout(False)
         Me.fraAmadeus.ResumeLayout(False)
@@ -737,6 +763,7 @@ Partial Class frmFormItinerary
     Friend WithEvents optItnFormatSeaChefs As RadioButton
     Friend WithEvents optItnFormatPlain As RadioButton
     Friend WithEvents optItnFormatDefault As RadioButton
+    Friend WithEvents cmdItnExit As Button
     Friend WithEvents lstItnRemarks As CheckedListBox
     Friend WithEvents fraItnAirportName As GroupBox
     Friend WithEvents optItnAirportCityBoth As RadioButton
@@ -769,4 +796,5 @@ Partial Class frmFormItinerary
     Friend WithEvents SSGDS As ToolStripStatusLabel
     Friend WithEvents SSPCC As ToolStripStatusLabel
     Friend WithEvents SSUser As ToolStripStatusLabel
+    Public WithEvents lblClient As Label
 End Class

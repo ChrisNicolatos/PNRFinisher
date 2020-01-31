@@ -3,7 +3,7 @@ Option Explicit On
 Public Class GDSPaxCollection
     Inherits Collections.Generic.Dictionary(Of String, GDSPaxItem)
 
-    Friend Sub AddItem(ByVal pElementNo As Integer, ByVal pInitial As String, ByVal pLastName As String, ByVal pID As String)
+    Public Sub AddItem(ByVal pElementNo As Integer, ByVal pInitial As String, ByVal pLastName As String, ByVal pID As String)
 
         Dim pobjClass As GDSPaxItem
 

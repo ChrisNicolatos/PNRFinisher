@@ -34,7 +34,7 @@ Public Class OptionQueueItem
             Return mudtProps.Remark
         End Get
     End Property
-    Friend Sub SetValues(ByVal pElementNo As Integer, ByVal pPCC As String, ByVal pActionDateTime As Date, ByVal pQueueNumber As String, ByVal pRemark As String)
+    Public Sub SetValues(ByVal pElementNo As Integer, ByVal pPCC As String, ByVal pActionDateTime As Date, ByVal pQueueNumber As String, ByVal pRemark As String)
         With mudtProps
             .ElementNo = pElementNo
             .PCC = pPCC

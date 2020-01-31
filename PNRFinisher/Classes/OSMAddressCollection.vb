@@ -24,6 +24,7 @@ Public Class OSMAddressCollection
                           ,osmaTelephone
                           ,ISNULL(osmaLogoImage, 0) AS osmaLogoImage
                           ,ISNULL(osmaSignatureImage, 0) AS osmaSignatureImage
+                          ,ISNULL(osmaSignatorysExpenses, 0) AS osmaSignatorysExpenses
                       FROM AmadeusReports.dbo.osmOfficeAddresses
                       ORDER BY osmaOffice"
             pobjReader = .ExecuteReader
@@ -31,10 +32,9 @@ Public Class OSMAddressCollection
 
         With pobjReader
             Do While .Read
-                pobjClass = New OSMAddressItem
-                pobjClass.SetValues(CInt(.Item("osmaId")), CStr(.Item("osmaOffice")), CStr(.Item("osmaName")), CStr(.Item("osmaTitle")) _
+                pobjClass = New OSMAddressItem(CInt(.Item("osmaId")), CStr(.Item("osmaOffice")), CStr(.Item("osmaName")), CStr(.Item("osmaTitle")) _
                                     , CStr(.Item("osmaCompanyName")), CStr(.Item("osmaAddress")), CStr(.Item("osmaPCArea")), CStr(.Item("osmaCountry")) _
-                                    , CStr(.Item("osmaTelephone")), CInt(.Item("osmaLogoImage")), CInt(.Item("osmaSignatureImage")))
+                                    , CStr(.Item("osmaTelephone")), CInt(.Item("osmaLogoImage")), CInt(.Item("osmaSignatureImage")), CBool(.Item("osmaSignatorysExpenses")))
                 MyBase.Add(pobjClass.Id, pobjClass)
             Loop
             .Close()

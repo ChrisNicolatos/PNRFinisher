@@ -60,12 +60,12 @@ Module modPNR
 
 
     End Sub
-    Public Function InitSettings(ByVal mGDSUser As GDSUser, ByVal pBackOffice As Integer) As Integer
+    Public Function InitSettings(ByVal mGDSUser As GDSUser) As EnumBOCode
         Try
             mstrRequestedPCC = mGDSUser.PCC
             mstrRequestedUser = mGDSUser.User
 
-            mMySettings = New Config(mGDSUser, pBackOffice)
+            mMySettings = New Config(mGDSUser)
             If Not mHomeSettingsExist Then
                 mHomeSettings = mMySettings
                 mHomeSettingsExist = True
@@ -77,7 +77,6 @@ Module modPNR
                 Throw New Exception(ex.Message)
             End If
         End Try
-
         Return mMySettings.PCCBackOffice
     End Function
     Public ReadOnly Property MySettings As Config
@@ -86,16 +85,7 @@ Module modPNR
         End Get
 
     End Property
-    Public ReadOnly Property RequestedPCC As String
-        Get
-            Return mstrRequestedPCC
-        End Get
-    End Property
-    Public ReadOnly Property RequestedUser As String
-        Get
-            Return mstrRequestedUser
-        End Get
-    End Property
+
     Public Function MyMonthName(ByVal pDate As Date, ByVal Language As EnumLoGLanguage) As String
         Static Dim pNamesLang1() As String = {"janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"}
 

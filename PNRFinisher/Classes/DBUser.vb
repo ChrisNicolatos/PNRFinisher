@@ -19,7 +19,7 @@ Public Class DBUser
         Dim IsOPQueueValid As Boolean
     End Structure
     Private mudtProps As ClassProps
-    Friend Sub New(ByVal pGDS As EnumGDSCode, ByVal pPCC As String, ByVal pUserId As String)
+    Public Sub New(ByVal pGDS As EnumGDSCode, ByVal pPCC As String, ByVal pUserId As String)
         With mudtProps
             .GDS = pGDS
             .PCC = pPCC
@@ -33,7 +33,7 @@ Public Class DBUser
         End With
         CheckValid()
     End Sub
-    Friend ReadOnly Property GDS As EnumGDSCode
+    Public ReadOnly Property GDS As EnumGDSCode
         Get
             Return mudtProps.GDS
         End Get

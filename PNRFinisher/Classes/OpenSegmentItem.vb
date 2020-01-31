@@ -34,7 +34,7 @@ Public Class OpenSegmentItem
             Return mudtProps.Remark
         End Get
     End Property
-    Friend Sub SetValues(ByVal pElementNo As Integer, ByVal pSegmentType As String, ByVal pRemarkType As String, ByVal pRemarkDate As Date, ByVal pRemark As String)
+    Public Sub SetValues(ByVal pElementNo As Integer, ByVal pSegmentType As String, ByVal pRemarkType As String, ByVal pRemarkDate As Date, ByVal pRemark As String)
         With mudtProps
             .ElementNo = pElementNo
             .SegmentType = pSegmentType

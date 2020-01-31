@@ -5,7 +5,7 @@ Public Class FrequentFlyerCollection
     Public Sub New()
         MyBase.New
     End Sub
-    Friend Sub AddItem(ByVal pPaxName As String, ByVal pAirline As String, ByVal pFrequentTravelerNo As String, ByVal pCrossAccrual As String)
+    Public Sub AddItem(ByVal pPaxName As String, ByVal pAirline As String, ByVal pFrequentTravelerNo As String, ByVal pCrossAccrual As String)
         Dim pobjClass As FrequentFlyerItem
 
         pobjClass = New FrequentFlyerItem

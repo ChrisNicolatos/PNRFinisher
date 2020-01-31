@@ -171,7 +171,7 @@ Public Class frmItineraryHelper
         Dim pLevel4 As New TreeNode
         Dim pLevel5 As New TreeNode
         Dim pCurrentLevel = 0
-        pItin.Load(mstrOrigin, mstrStopover, mstrDestination, mdteFromDate, mflgFromAirportOnly, mflgStopoverAirportOnly, mflgToAirportOnly, mintBackOffice)
+        pItin.Load(mstrOrigin, mstrStopover, mstrDestination, mdteFromDate, mflgFromAirportOnly, mflgStopoverAirportOnly, mflgToAirportOnly)
         tvwItineraries.Nodes.Clear()
         If pItin.Count > 0 Then
             For Each pItem As IHItinItem In pItin

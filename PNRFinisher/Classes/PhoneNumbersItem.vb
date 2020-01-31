@@ -28,7 +28,7 @@ Public Class PhoneNumbersItem
             Return mudtProps.PhoneNumber
         End Get
     End Property
-    Friend Sub SetValues(ByVal pElementNo As Integer, ByVal pCityCode As String, ByVal pPhoneType As String, ByVal pPhoneNumber As String)
+    Public Sub SetValues(ByVal pElementNo As Integer, ByVal pCityCode As String, ByVal pPhoneType As String, ByVal pPhoneNumber As String)
         With mudtProps
             .ElementNo = pElementNo
             .CityCode = pCityCode

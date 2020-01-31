@@ -1,11 +1,138 @@
-﻿Option Strict On
-Option Explicit On
-Public Class frmFormOSM
+﻿Public Class frm04OSM
+
     Private mflgLoading As Boolean
 
-    Private mOSMPax As New OSMPaxCollection
     Private mOSMAgentIndex As Integer = -1
     Private mOSMAgents As New OSMEmailCollection
+    Private mOSMPax As New OSMPaxCollection
+
+    Private Sub cmdOSMClearSelected_Click(sender As Object, e As EventArgs) Handles cmdOSMClearSelected.Click
+        Try
+            mflgLoading = True
+            For i As Integer = 0 To lstOSMVessels.Items.Count - 1
+                lstOSMVessels.SetSelected(i, False)
+            Next
+            For i As Integer = 0 To lstOSMAgents.Items.Count - 1
+                lstOSMAgents.SetSelected(i, False)
+            Next
+            mflgLoading = False
+            OSMShowSelectedVesselEmails()
+        Catch ex As Exception
+            mflgLoading = False
+            MessageBox.Show("cmdOSMClearSelected_Click()" & vbCrLf & ex.Message)
+        End Try
+    End Sub
+    Private Sub lstOSMAgents_MouseMove(sender As Object, e As MouseEventArgs) Handles lstOSMAgents.MouseMove
+        Try
+            Dim pIndex As Integer = lstOSMAgents.IndexFromPoint(e.Location)
+            If pIndex >= 0 And pIndex < lstOSMAgents.Items.Count And mOSMAgentIndex <> pIndex Then
+                ttpToolTip.SetToolTip(lstOSMAgents, lstOSMAgents.Items(pIndex).ToString)
+                mOSMAgentIndex = pIndex
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub lstOSMAgents_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstOSMAgents.SelectedIndexChanged
+        Try
+            cmdOSMCopyTo.Enabled = (lstOSMToEmail.Items.Count > 0 Or lstOSMAgents.SelectedItems.Count > 0)
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub txtOSMAgentsFilter_TextChanged(sender As Object, e As EventArgs) Handles txtOSMAgentsFilter.TextChanged
+        Try
+            lstOSMAgents.Items.Clear()
+            mOSMAgentIndex = -1
+            If txtOSMAgentsFilter.Text.Trim = "" Then
+                For Each pAgent As OSMEmailItem In mOSMAgents.Values
+                    lstOSMAgents.Items.Add(pAgent)
+                Next
+            Else
+                Dim pFilter() As String = txtOSMAgentsFilter.Text.ToUpper.Trim.Split({"|"}, StringSplitOptions.RemoveEmptyEntries)
+
+                For Each pAgent As OSMEmailItem In mOSMAgents.Values
+                    For i As Integer = 0 To pFilter.GetUpperBound(0)
+                        If pAgent.ToString.ToUpper.IndexOf(pFilter(i).Trim) >= 0 Then
+                            lstOSMAgents.Items.Add(pAgent)
+                            Exit For
+                        End If
+                    Next
+                Next
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub chkOSMVesselInUse_CheckedChanged(sender As Object, e As EventArgs) Handles chkOSMVesselInUse.CheckedChanged
+        Try
+            If Not mflgLoading And chkOSMVesselInUse.Visible Then
+                OSMRefreshVessels(lstOSMVessels, chkOSMVesselInUse.Checked)
+            End If
+        Catch ex As Exception
+            Throw New Exception(ex.Message)
+        End Try
+    End Sub
+
+    Private Sub OSMAnalyzePax()
+        Try
+            mOSMPax.Load(txtOSMPax.Text)
+            dgvOSMPax.Rows.Clear()
+            For Each iPax As OSMPaxItem In mOSMPax.Values
+                Dim pId As New DataGridViewTextBoxCell
+                Dim pLastName As New DataGridViewTextBoxCell
+                Dim pFirstName As New DataGridViewTextBoxCell
+                Dim pNationality As New DataGridViewTextBoxCell
+                Dim pJoiner As New DataGridViewComboBoxCell
+                Dim pVisaType As New DataGridViewComboBoxCell
+                pId.Value = iPax.Id
+                pLastName.Value = iPax.LastName
+                pFirstName.Value = iPax.FirstName
+                pNationality.Value = iPax.Nationality
+                pJoiner.Items.AddRange({"ONSIGNER", "OFFSIGNER"})
+                pVisaType.Items.AddRange({"OKTB", "VISA", "NO VISA"})
+                If iPax.JoinerLeaver <> "" Then
+                    pJoiner.Value = iPax.JoinerLeaver
+                End If
+                Dim pRow As New DataGridViewRow
+                pRow.Cells.Add(pId)
+                pRow.Cells.Add(pLastName)
+                pRow.Cells.Add(pFirstName)
+                pRow.Cells.Add(pNationality)
+                pRow.Cells.Add(pJoiner)
+                pRow.Cells.Add(pVisaType)
+                dgvOSMPax.Rows.Add(pRow)
+            Next
+            dgvOSMPax.Columns(1).ReadOnly = True
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub OSMShowSelectedVesselEmails()
+
+        Try
+
+            OSMDisplayEmails(lstOSMVessels, lstOSMToEmail, lstOSMCCEmail, lstOSMAgents)
+            mOSMAgents.Load()
+            mOSMAgentIndex = -1
+
+            cmdOSMCopyTo.Enabled = (lstOSMToEmail.Items.Count > 0 Or lstOSMAgents.SelectedItems.Count > 0)
+            cmdOSMCopyCC.Enabled = (lstOSMCCEmail.Items.Count > 0)
+
+            lblOSMVessel.Text = ""
+            txtOSMAgentsFilter.Clear()
+
+            For Each pVessel As OSMVesselItem In lstOSMVessels.SelectedItems
+                If lblOSMVessel.Text <> "" Then
+                    lblOSMVessel.Text &= " / "
+                End If
+                lblOSMVessel.Text &= pVessel.ToString
+            Next
+        Catch ex As Exception
+            Throw New Exception("OSMShowSelectedVesselEmails()" & vbCrLf & ex.Message)
+        End Try
+
+    End Sub
 
     Private Sub cmdOSMRefresh_Click(sender As Object, e As EventArgs) Handles cmdOSMRefresh.Click
 
@@ -185,143 +312,12 @@ Public Class frmFormOSM
             MessageBox.Show(ex.Message)
         End Try
     End Sub
-    Private Sub cmdOSMClearSelected_Click(sender As Object, e As EventArgs) Handles cmdOSMClearSelected.Click
-        Try
-            mflgLoading = True
-            For i As Integer = 0 To lstOSMVessels.Items.Count - 1
-                lstOSMVessels.SetSelected(i, False)
-            Next
-            For i As Integer = 0 To lstOSMAgents.Items.Count - 1
-                lstOSMAgents.SetSelected(i, False)
-            Next
-            mflgLoading = False
-            OSMShowSelectedVesselEmails()
-        Catch ex As Exception
-            mflgLoading = False
-            MessageBox.Show("cmdOSMClearSelected_Click()" & vbCrLf & ex.Message)
-        End Try
-    End Sub
-    Private Sub lstOSMAgents_MouseMove(sender As Object, e As MouseEventArgs) Handles lstOSMAgents.MouseMove
-        Try
-            Dim pIndex As Integer = lstOSMAgents.IndexFromPoint(e.Location)
-            If pIndex >= 0 And pIndex < lstOSMAgents.Items.Count And mOSMAgentIndex <> pIndex Then
-                ttpToolTip.SetToolTip(lstOSMAgents, lstOSMAgents.Items(pIndex).ToString)
-                mOSMAgentIndex = pIndex
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub lstOSMAgents_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstOSMAgents.SelectedIndexChanged
-        Try
-            cmdOSMCopyTo.Enabled = (lstOSMToEmail.Items.Count > 0 Or lstOSMAgents.SelectedItems.Count > 0)
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub txtOSMAgentsFilter_TextChanged(sender As Object, e As EventArgs) Handles txtOSMAgentsFilter.TextChanged
-        Try
-            lstOSMAgents.Items.Clear()
-            mOSMAgentIndex = -1
-            If txtOSMAgentsFilter.Text.Trim = "" Then
-                For Each pAgent As OSMEmailItem In mOSMAgents.Values
-                    lstOSMAgents.Items.Add(pAgent)
-                Next
-            Else
-                Dim pFilter() As String = txtOSMAgentsFilter.Text.ToUpper.Trim.Split({"|"}, StringSplitOptions.RemoveEmptyEntries)
 
-                For Each pAgent As OSMEmailItem In mOSMAgents.Values
-                    For i As Integer = 0 To pFilter.GetUpperBound(0)
-                        If pAgent.ToString.ToUpper.IndexOf(pFilter(i).Trim) >= 0 Then
-                            lstOSMAgents.Items.Add(pAgent)
-                            Exit For
-                        End If
-                    Next
-                Next
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub chkOSMVesselInUse_CheckedChanged(sender As Object, e As EventArgs) Handles chkOSMVesselInUse.CheckedChanged
-        Try
-            If Not mflgLoading And chkOSMVesselInUse.Visible Then
-                OSMRefreshVessels(lstOSMVessels, chkOSMVesselInUse.Checked)
-            End If
-        Catch ex As Exception
-            Throw New Exception(ex.Message)
-        End Try
-    End Sub
-    Private Sub OSMShowSelectedVesselEmails()
+    Private Sub frm04OSM_Load(sender As Object, e As EventArgs) Handles Me.Load
 
-        Try
-
-            OSMDisplayEmails(lstOSMVessels, lstOSMToEmail, lstOSMCCEmail, lstOSMAgents)
-            mOSMAgents.Load()
-            mOSMAgentIndex = -1
-
-            cmdOSMCopyTo.Enabled = (lstOSMToEmail.Items.Count > 0 Or lstOSMAgents.SelectedItems.Count > 0)
-            cmdOSMCopyCC.Enabled = (lstOSMCCEmail.Items.Count > 0)
-
-            lblOSMVessel.Text = ""
-            txtOSMAgentsFilter.Clear()
-
-            For Each pVessel As OSMVesselItem In lstOSMVessels.SelectedItems
-                If lblOSMVessel.Text <> "" Then
-                    lblOSMVessel.Text &= " / "
-                End If
-                lblOSMVessel.Text &= pVessel.ToString
-            Next
-        Catch ex As Exception
-            Throw New Exception("OSMShowSelectedVesselEmails()" & vbCrLf & ex.Message)
-        End Try
-
-    End Sub
-    Private Sub OSMAnalyzePax()
-        Try
-            mOSMPax.Load(txtOSMPax.Text)
-            dgvOSMPax.Rows.Clear()
-            For Each iPax As OSMPaxItem In mOSMPax.Values
-                Dim pId As New DataGridViewTextBoxCell
-                Dim pLastName As New DataGridViewTextBoxCell
-                Dim pFirstName As New DataGridViewTextBoxCell
-                Dim pNationality As New DataGridViewTextBoxCell
-                Dim pJoiner As New DataGridViewComboBoxCell
-                Dim pVisaType As New DataGridViewComboBoxCell
-                pId.Value = iPax.Id
-                pLastName.Value = iPax.LastName
-                pFirstName.Value = iPax.FirstName
-                pNationality.Value = iPax.Nationality
-                pJoiner.Items.AddRange({"ONSIGNER", "OFFSIGNER"})
-                pVisaType.Items.AddRange({"OKTB", "VISA", "NO VISA"})
-                If iPax.JoinerLeaver <> "" Then
-                    pJoiner.Value = iPax.JoinerLeaver
-                End If
-                Dim pRow As New DataGridViewRow
-                pRow.Cells.Add(pId)
-                pRow.Cells.Add(pLastName)
-                pRow.Cells.Add(pFirstName)
-                pRow.Cells.Add(pNationality)
-                pRow.Cells.Add(pJoiner)
-                pRow.Cells.Add(pVisaType)
-                dgvOSMPax.Rows.Add(pRow)
-            Next
-            dgvOSMPax.Columns(1).ReadOnly = True
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-
-    Private Sub frmFormOSM_Load(sender As Object, e As EventArgs) Handles Me.Load
-
-        Try
-            OSMRefreshVesselGroup(cmbOSMVesselGroup)
-            OSMRefreshVessels(lstOSMVessels, chkOSMVesselInUse.Checked)
-            cmdOSMCopyDocument.Enabled = False
-
-        Catch ex As Exception
-
-        End Try
+        OSMRefreshVesselGroup(cmbOSMVesselGroup)
+        OSMRefreshVessels(lstOSMVessels, chkOSMVesselInUse.Checked)
+        cmdOSMCopyDocument.Enabled = False
 
     End Sub
 End Class

@@ -1,7 +1,7 @@
 ﻿Option Strict On
 Option Explicit On
-Public Class frmFormMain
-    Private Const VersionText As String = "V 3.17 (18/06/2019 16:45)"
+Public Class frm01Main
+    Private Const VersionText As String = "V 4.2 HOTFIX (31/01/2020 10:36)"
     ' 08/11/2018 17:11
     ' 1. Show EMD Tickets and ancillary services description
     ' 2. Show RIR and *RI
@@ -97,6 +97,7 @@ Public Class frmFormMain
     ' URGENT Fix for baggage allowance
     ' In Baggage AllowanceCollection.AddItem()
     ' added a check that the key does not exist in the collection before adding it. For complex TQTs this could crash
+
     ' REMEMBER TO REMOVE UNNECCESSARY COLUMNS FROM PaxApisInformation
     ' ppQRFrequentFlyer
     ' ppIDNumber
@@ -106,7 +107,16 @@ Public Class frmFormMain
     ' AFTER THE NEW VERSION HAS BEEN INSTALLED 
     ' 18/06/2019 16:46  (PNRFinisher_3_0_0_17)
     ' 1. Added an option for CO2 allowance in the itineraries
-
+    ' V 4.0 (07/11/2019 12:11)
+    ' 1. Change form to MDI
+    ' 2. Add facility to read corporate deals per vessel 
+    ' 3. Add option in OSM LoG so that the Copmpany that covers exp[enses is not always our client
+    ' these were the requirements as listed previously
+    ' 8. There is a requirement that the airline corporate deals can be connected to a vessel and not to the client
+    ' 9. In OSM LoG, the guarantor of the expenses can be other than the client
+    ' V 4.1 (07/11/2019 14:17)
+    ' I had to publish again because I had left in 2 command which were used for testing the
+    ' Price Optimiser and it was running always as user 9680TN
     ' TODO
     ' 1. start setting up the Finisher to handle scenarios (OSM/Takis)
     ' Scenarios will be set up depending on the type of booking:
@@ -133,9 +143,9 @@ Public Class frmFormMain
     ' 6. Vessel is not picked up correctly for OSM LoG
     ' 7. When reading existing PNRs, the references can be confusing depending if they are from Athens, Crewlink, Discovery etc
 
-    Private pfrmFinisher As frmFormFinisher
-    Private pfrmItinerary As frmFormItinerary
-    Private pfrmOSM As frmFormOSM
+    Private pfrmFinisher As frm02Finisher
+    Private pfrmItinerary As frm03Itinerary
+    Private pfrmOSM As frm04OSM
 
     Private Sub CascadeToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CascadeToolStripMenuItem.Click
         Me.LayoutMdi(MdiLayout.Cascade)
@@ -154,18 +164,25 @@ Public Class frmFormMain
     End Sub
 
     Private Sub FinisherToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles FinisherToolStripMenuItem.Click
+        Try
+            ShowFinisher()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub ShowFinisher()
         If pfrmFinisher Is Nothing OrElse pfrmFinisher.IsDisposed Then
-            pfrmFinisher = New frmFormFinisher With {
+            pfrmFinisher = New frm02Finisher With {
             .MdiParent = Me,
             .WindowState = FormWindowState.Maximized}
         End If
         pfrmFinisher.Show()
         pfrmFinisher.BringToFront()
-    End Sub
 
+    End Sub
     Private Sub ItineraryToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ItineraryToolStripMenuItem.Click
         If pfrmItinerary Is Nothing OrElse pfrmItinerary.IsDisposed Then
-            pfrmItinerary = New frmFormItinerary With {
+            pfrmItinerary = New frm03Itinerary With {
             .MdiParent = Me,
             .WindowState = FormWindowState.Maximized}
         End If
@@ -175,7 +192,7 @@ Public Class frmFormMain
 
     Private Sub OSMToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OSMToolStripMenuItem.Click
         If pfrmOSM Is Nothing OrElse pfrmOSM.IsDisposed Then
-            pfrmOSM = New frmFormOSM With {
+            pfrmOSM = New frm04OSM With {
             .MdiParent = Me,
             .WindowState = FormWindowState.Maximized}
         End If
@@ -185,6 +202,7 @@ Public Class frmFormMain
 
     Private Sub frmFormMain_Load(sender As Object, e As EventArgs) Handles Me.Load
         SSVersion.Text = VersionText
+        ShowFinisher()
     End Sub
 
     Private Sub OptionsToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles OptionsToolStripMenuItem.Click
@@ -203,5 +221,9 @@ Public Class frmFormMain
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
+    End Sub
+
+    Private Sub PriceOptimizerToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles PriceOptimizerToolStripMenuItem.Click
+        ShowPriceOptimiser(Me, True)
     End Sub
 End Class

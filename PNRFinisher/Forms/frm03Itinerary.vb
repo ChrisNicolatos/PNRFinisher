@@ -1,22 +1,23 @@
 ﻿Option Strict On
 Option Explicit On
-Public Class frmFormItinerary
-    Private mSelectedGDSCode As EnumGDSCode
+Public Class frm03Itinerary
+
+    Private mSelectedGDSCode As EnumGDSCode = EnumGDSCode.Unknown
+    Private mSelectedBOCode As EnumBOCode = EnumBOCode.Unknown
+
     Private mflgLoading As Boolean
     Private mflgLoadingItin As Boolean
 
     Private mobjPNR As GDSReadPNR
 
-    Private mfrmOptimiser As frmPriceOptimiser
-
     Private Sub cmdItn1AReadPNR_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadPNR.Click
 
-        mSelectedGDSCode = EnumGDSCode.Amadeus
-        mobjPNR = New GDSReadPNR(mSelectedGDSCode)
         Try
+            mSelectedGDSCode = EnumGDSCode.Amadeus
+            mobjPNR = New GDSReadPNR(mSelectedGDSCode)
             Cursor = System.Windows.Forms.Cursors.WaitCursor
             Dim mGDSUser As New GDSUser(EnumGDSCode.Amadeus)
-            InitSettings(mGDSUser, 0)
+            mSelectedBOCode = InitSettings(mGDSUser)
             SetupPCCOptions()
             lblItnPNRCounter.Text = ""
             ProcessRequestedPNRs(txtItnPNR)
@@ -24,7 +25,6 @@ Public Class frmFormItinerary
             cmdItnRefresh.Enabled = False
             cmdItnFormatOSMLoG.Enabled = True
             Cursor = Cursors.Default
-            MessageBox.Show("Ready", "Read PNR", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Catch ex As Exception
             Cursor = Cursors.Default
             MessageBox.Show(ex.Message)
@@ -32,7 +32,7 @@ Public Class frmFormItinerary
 
     End Sub
 
-    Private Sub cmdItnReadQueue_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadQueue.Click
+    Private Sub cmdItn1AReadQueue_Click(sender As Object, e As EventArgs) Handles cmdItn1AReadQueue.Click
 
         Try
             mSelectedGDSCode = EnumGDSCode.Amadeus
@@ -41,14 +41,13 @@ Public Class frmFormItinerary
             Cursor = System.Windows.Forms.Cursors.WaitCursor
             txtItnPNR.Text = mobjPNR.RetrievePNRsFromQueue(txtItnPNR.Text)
             Dim mGDSUser As New GDSUser(mSelectedGDSCode)
-            InitSettings(mGDSUser, 0)
+            InitSettings(mGDSUser)
             SetupPCCOptions()
             ProcessRequestedPNRs(txtItnPNR)
             CopyItinToClipboard()
             cmdItnRefresh.Enabled = False
             cmdItnFormatOSMLoG.Enabled = False
             Cursor = Cursors.Default
-            MessageBox.Show("Ready", "Read PNR", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Catch ex As Exception
             Cursor = Cursors.Default
             MessageBox.Show(ex.Message)
@@ -74,23 +73,10 @@ Public Class frmFormItinerary
         End Try
 
     End Sub
-    Private Sub cmdItnFormatOSMLoG_Click(sender As Object, e As EventArgs) Handles cmdItnFormatOSMLoG.Click
+    Private Sub ITNReadCurrent()
         Try
-            If mobjPNR.Segments.Count > 0 And mobjPNR.Passengers.Count > 0 Then
-                Dim pOSMLoG = New OSMLog
-                pOSMLoG.CreatePDF(mobjPNR)
-            Else
-                MessageBox.Show("PNR must have passengers and segments to produce a Letter of Guarantee")
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub lstItnRemarks_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstItnRemarks.SelectedIndexChanged
-        Try
-            If cmdItnRefresh.Enabled Then
-                ReadPNRandCreateItn(True)
-            End If
+            ItnReadCurrentPNR()
+            ShowPriceOptimiser(Me.MdiParent, False)
         Catch ex As Exception
             MessageBox.Show(ex.Message)
         End Try
@@ -446,22 +432,7 @@ Public Class frmFormItinerary
             MessageBox.Show(ex.Message)
         End Try
     End Sub
-    Private Sub txtPNR_TextChanged(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles txtItnPNR.TextChanged
 
-        Try
-            If Not mflgLoading Then
-                If Not MySettings Is Nothing Then
-                    cmdItn1AReadPNR.Enabled = (txtItnPNR.Text.Trim.Length >= 6)
-                    cmdItn1AReadQueue.Enabled = (txtItnPNR.Text.Trim.Length >= 2)
-                    cmdItn1GReadPNR.Enabled = cmdItn1AReadPNR.Enabled
-                    cmdItn1GReadQueue.Enabled = cmdItn1AReadQueue.Enabled
-                End If
-            End If
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-
-    End Sub
     Private Sub optItnFormatDefaultAndPlain_CheckedChanged(sender As Object, e As EventArgs) Handles optItnFormatDefault.CheckedChanged, optItnFormatPlain.CheckedChanged
         Try
             If CType(sender, RadioButton).Checked Then
@@ -489,78 +460,87 @@ Public Class frmFormItinerary
             MessageBox.Show(ex.Message)
         End Try
     End Sub
-    Private Sub SetupPCCOptions()
+    Private Sub ChangeItinFormat(ByVal pSetITNEnabled As Boolean)
         Try
-            mflgLoading = True
-            Dim pText As String = ""
-            If MySettings.GDSPcc <> "" And MySettings.GDSUser <> "" Then
-                pText &= MySettings.GDSPcc & " " & MySettings.GDSUser
-                SSGDS.Text = MySettings.GDSAbbreviation
-                SSPCC.Text = MySettings.GDSPcc
-                SSUser.Text = MySettings.GDSUser
-            Else
-                Throw New Exception("No GDS signed in")
-            End If
+            If Not mflgLoading Or Not mflgLoadingItin Then
+                If Not MySettings Is Nothing Then
+                    If optItnFormatDefault.Checked Then
+                        MySettings.FormatStyle = EnumItnFormat.DefaultFormat
+                    ElseIf optItnFormatPlain.Checked Then
+                        MySettings.FormatStyle = EnumItnFormat.Plain
+                    ElseIf optItnFormatSeaChefs.Checked Then
+                        MySettings.FormatStyle = EnumItnFormat.SeaChefs
+                    ElseIf optItnFormatSeaChefsWith3LetterCode.Checked Then
+                        MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode
+                    ElseIf optItnFormatEuronav.Checked Then
+                        MySettings.FormatStyle = EnumItnFormat.Euronav
+                    ElseIf optItnFormatFleet.Checked Then
+                        MySettings.FormatStyle = EnumItnFormat.Fleet
+                    ElseIf optItnFormatAimeryMoxie.Checked Then
+                        MySettings.FormatStyle = EnumItnFormat.AimeryMoxie
+                    End If
+                    MySettings.Save()
 
-            If CheckOptions() Then
-                ' itinerary tab
-                LoadRemarks()
-                If MySettings.AirportName = 0 Then
-                    optItnAirportCode.Checked = True
-                ElseIf MySettings.AirportName = 1 Then
-                    optItnAirportname.Checked = True
-                ElseIf MySettings.AirportName = 2 Then
-                    optItnAirportBoth.Checked = True
-                ElseIf MySettings.AirportName = 3 Then
-                    optItnAirportCityName.Checked = True
-                ElseIf MySettings.AirportName = 4 Then
-                    optItnAirportCityBoth.Checked = True
+                    If cmdItnRefresh.Enabled Then
+                        ReadPNRandCreateItn(True)
+                    End If
+                    mflgLoadingItin = True
+                    SetITNEnabled(pSetITNEnabled)
+                    mflgLoadingItin = False
                 End If
-
-                Select Case MySettings.FormatStyle
-                    Case EnumItnFormat.DefaultFormat
-                        optItnFormatDefault.Checked = True
-                    Case EnumItnFormat.Plain
-                        optItnFormatPlain.Checked = True
-                    Case EnumItnFormat.SeaChefs
-                        optItnFormatSeaChefs.Checked = True
-                    Case EnumItnFormat.SeaChefsWithCode
-                        optItnFormatSeaChefsWith3LetterCode.Checked = True
-                    Case EnumItnFormat.Euronav
-                        optItnFormatEuronav.Checked = True
-                    Case EnumItnFormat.Fleet
-                        optItnFormatFleet.Checked = True
-                End Select
-                SetITNEnabled(True)
-
-                chkItnVessel.Checked = MySettings.ShowVessel
-                chkItnClass.Checked = MySettings.ShowClassOfService
-                chkItnAirlineLocator.Checked = MySettings.ShowAirlineLocator
-                chkItnTickets.Checked = MySettings.ShowTickets
-                chkItnEMD.Checked = MySettings.ShowEMD
-                chkItnPaxSegPerTicket.Checked = MySettings.ShowPaxSegPerTkt
-                chkItnSeating.Checked = MySettings.ShowSeating
-                chkItnStopovers.Checked = MySettings.ShowStopovers
-                chkItnTerminal.Checked = MySettings.ShowTerminal
-                chkItnFlyingTime.Checked = MySettings.ShowFlyingTime
-                chkItnCostCentre.Checked = MySettings.ShowCostCentre
-                chkItnCabinDescription.Checked = MySettings.ShowCabinDescription
-                chkItnItinRemarks.Checked = MySettings.ShowItinRemarks
-                chkItnEquipmentCode.Checked = MySettings.ShowEquipmentCode
-                chkItnCO2.Checked = MySettings.ShowCO2
-                cmdItn1AReadPNR.Enabled = False
-                cmdItn1AReadQueue.Enabled = False
-                cmdItn1GReadPNR.Enabled = False
-                cmdItn1GReadQueue.Enabled = False
-            Else
-                Throw New Exception("User not authorized for this PCC")
             End If
         Catch ex As Exception
-        Finally
-            mflgLoading = False
+            Throw New Exception("ChangeItinFormat()" & vbCrLf & ex.Message)
+        End Try
+    End Sub
+    Private Sub cmdItnFormatOSMLoG_Click(sender As Object, e As EventArgs) Handles cmdItnFormatOSMLoG.Click
+        Try
+            If mobjPNR.Segments.Count > 0 And mobjPNR.Passengers.Count > 0 Then
+                Dim pOSMLoG = New OSMLog
+                pOSMLoG.CreatePDF(mobjPNR)
+            Else
+                MessageBox.Show("PNR must have passengers and segments to produce a Letter of Guarantee")
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+    Private Sub lstItnRemarks_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstItnRemarks.SelectedIndexChanged
+        Try
+            If cmdItnRefresh.Enabled Then
+                ReadPNRandCreateItn(True)
+            End If
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        End Try
+    End Sub
+
+    Private Sub webItnDoc_DocumentCompleted(sender As Object, e As WebBrowserDocumentCompletedEventArgs) Handles webItnDoc.DocumentCompleted
+
+        Try
+            If optItnFormatEuronav.Checked Then
+                Dim dobj As New DataObject
+                dobj.SetData(DataFormats.Text, webItnDoc.Document.Body.InnerText)
+                dobj.SetData(DataFormats.Html, webItnDoc.DocumentStream)
+                Clipboard.Clear()
+                Clipboard.SetDataObject(dobj, True)
+            End If
+        Catch ex As Exception
+            ' ignore any error that occurs when copying to clipboard
         End Try
 
     End Sub
+
+    Private Sub ItnReadCurrentPNR()
+        Dim mGDSUser As New GDSUser(mSelectedGDSCode)
+        mSelectedBOCode = InitSettings(mGDSUser)
+        SetupPCCOptions()
+        lblItnPNRCounter.Text = ""
+        ReadPNRandCreateItn(False)
+        cmdItnRefresh.Enabled = True
+        cmdItnFormatOSMLoG.Enabled = True
+    End Sub
+
     Private Sub ProcessRequestedPNRs(ByVal RefreshOnly As Boolean)
 
         Try
@@ -631,132 +611,6 @@ Public Class frmFormItinerary
         End Try
 
     End Sub
-    Private Sub CopyItinToClipboard()
-
-        Try
-            If Not optItnFormatEuronav.Checked Then
-                rtbItnDoc.SelectAll()
-                Clipboard.Clear()
-                Clipboard.SetText(rtbItnDoc.Rtf, TextDataFormat.Rtf)
-                Clipboard.SetText(rtbItnDoc.SelectedText, TextDataFormat.Text)
-            End If
-        Catch ex As Exception
-            ' ignore any error that occurs when copying to clipboard
-        End Try
-
-    End Sub
-    Private Sub ITNReadCurrent()
-        Try
-            ItnReadCurrentPNR()
-            ShowPriceOptimiser()
-        Catch ex As Exception
-            MessageBox.Show(ex.Message)
-        End Try
-    End Sub
-    Private Sub ReadPNRandCreateItn(ByVal RefreshOnly As Boolean)
-
-        Try
-            Cursor = System.Windows.Forms.Cursors.WaitCursor
-            ProcessRequestedPNRs(RefreshOnly)
-            CopyItinToClipboard()
-            If Not RefreshOnly Then
-                MessageBox.Show("Ready", "Read PNR", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            End If
-        Catch ex As Exception
-            Throw New Exception("ReadPNRandCreateItn" & vbCrLf & ex.Message)
-        Finally
-            Cursor = Cursors.Default
-        End Try
-    End Sub
-    Private Sub ChangeItinFormat(ByVal pSetITNEnabled As Boolean)
-        Try
-            If Not mflgLoading Or Not mflgLoadingItin Then
-                If Not MySettings Is Nothing Then
-                    If optItnFormatDefault.Checked Then
-                        MySettings.FormatStyle = EnumItnFormat.DefaultFormat
-                    ElseIf optItnFormatPlain.Checked Then
-                        MySettings.FormatStyle = EnumItnFormat.Plain
-                    ElseIf optItnFormatSeaChefs.Checked Then
-                        MySettings.FormatStyle = EnumItnFormat.SeaChefs
-                    ElseIf optItnFormatSeaChefsWith3LetterCode.Checked Then
-                        MySettings.FormatStyle = EnumItnFormat.SeaChefsWithCode
-                    ElseIf optItnFormatEuronav.Checked Then
-                        MySettings.FormatStyle = EnumItnFormat.Euronav
-                    ElseIf optItnFormatFleet.Checked Then
-                        MySettings.FormatStyle = EnumItnFormat.Fleet
-                    ElseIf optItnFormatAimeryMoxie.Checked Then
-                        MySettings.FormatStyle = EnumItnFormat.AimeryMoxie
-                    End If
-                    MySettings.Save()
-
-                    If cmdItnRefresh.Enabled Then
-                        ReadPNRandCreateItn(True)
-                    End If
-                    mflgLoadingItin = True
-                    SetITNEnabled(pSetITNEnabled)
-                    mflgLoadingItin = False
-                End If
-            End If
-        Catch ex As Exception
-            Throw New Exception("ChangeItinFormat()" & vbCrLf & ex.Message)
-        End Try
-    End Sub
-    Private Function CheckOptions() As Boolean
-        Try
-            With MySettings
-                While Not .isValid
-                    If MessageBox.Show("Please enter your details", "Options Missing", MessageBoxButtons.OKCancel) = Windows.Forms.DialogResult.Cancel Then
-                        Return False
-                    End If
-                    ShowOptionsForm()
-                End While
-                Return True
-            End With
-        Catch ex As Exception
-            Throw New Exception("CheckOptions()" & vbCrLf & ex.Message)
-        End Try
-
-    End Function
-    Private Sub LoadRemarks()
-
-        Try
-            Dim pRemarksCollection As New RemarksCollection
-            pRemarksCollection.Load()
-            With lstItnRemarks.Items()
-                .Clear()
-                For Each pRem As RemarksItem In pRemarksCollection.Values
-                    .Add(pRem)
-                Next
-            End With
-
-        Catch ex As Exception
-            Throw New Exception("LoadRemarks()" & vbCrLf & ex.Message)
-        End Try
-
-    End Sub
-    Private Sub SetITNEnabled(ByVal AllowOptions As Boolean)
-        fraItnAirportName.Enabled = AllowOptions
-        fraItnOptions.Enabled = AllowOptions
-        lstItnRemarks.Enabled = AllowOptions
-    End Sub
-    Private Sub ItnReadCurrentPNR()
-        Dim mGDSUser As New GDSUser(mSelectedGDSCode)
-        InitSettings(mGDSUser, 0)
-        SetupPCCOptions()
-        lblItnPNRCounter.Text = ""
-        ReadPNRandCreateItn(False)
-        cmdItnRefresh.Enabled = True
-        cmdItnFormatOSMLoG.Enabled = True
-    End Sub
-    Private Sub readGDS(ByVal RecordLocator As String)
-
-        Try
-            mobjPNR.Read(RecordLocator)
-        Catch ex As Exception
-            Throw New Exception("readGDS()" & vbCrLf & ex.Message)
-        End Try
-
-    End Sub
     Private Sub makeRTBDoc()
 
         Dim pItnRTBDoc As New ItnRTBDoc(mobjPNR, lstItnRemarks)
@@ -779,48 +633,149 @@ Public Class frmFormItinerary
         End If
 
     End Sub
-    Private Sub ShowPriceOptimiser()
-        If Not MySettings Is Nothing Then
-            If MySettings.PriceOptimiser Then
-                If MySettings.GDSPcc <> "" And MySettings.GDSUser <> "" Then
-                    Dim pPCC As String = MySettings.GDSPcc
-                    Dim pUserId As String = MySettings.GDSUser
-                    ' for testing only
-#If DEBUG Then
-                    'pPCC = "750B"
-                    'pUserId = "038981"
-#End If
-                    'pPCC = "750B"
-                    'pUserId = "051244"
-                    'Dim pDownsell As New DownsellCollection
-                    'If pDownsell.CountNonVerified(pPCC, pUserId) > 0 Then
-                    If mfrmOptimiser Is Nothing OrElse mfrmOptimiser.IsDisposed Then
-                        mfrmOptimiser = New frmPriceOptimiser
-                    End If
-                    mfrmOptimiser.DisplayItems(pPCC, pUserId, Me.Height, Me.Width)
-                    If mfrmOptimiser.FormIsExpanded Then
-                        mfrmOptimiser.Show()
-                        mfrmOptimiser.BringToFront()
-                    End If
-                    'End If
-                End If
-            End If
-        End If
+
+    Private Sub ReadPNRandCreateItn(ByVal RefreshOnly As Boolean)
+
+        Try
+            Cursor = System.Windows.Forms.Cursors.WaitCursor
+            ProcessRequestedPNRs(RefreshOnly)
+            CopyItinToClipboard()
+        Catch ex As Exception
+            Throw New Exception("ReadPNRandCreateItn" & vbCrLf & ex.Message)
+        Finally
+            Cursor = Cursors.Default
+        End Try
+
     End Sub
 
-    Private Sub frmFormItinerary_Load(sender As Object, e As EventArgs) Handles Me.Load
+    Private Sub SetITNEnabled(ByVal AllowOptions As Boolean)
+        fraItnAirportName.Enabled = AllowOptions
+        fraItnOptions.Enabled = AllowOptions
+        lstItnRemarks.Enabled = AllowOptions
+    End Sub
+
+    Private Sub CopyItinToClipboard()
+
         Try
-            mflgLoading = True
-            cmdItnFormatOSMLoG.Enabled = False
-            If Not MySettings Is Nothing AndAlso MySettings.PriceOptimiser Then
-                mfrmOptimiser = New frmPriceOptimiser
+            If Not optItnFormatEuronav.Checked Then
+                rtbItnDoc.SelectAll()
+                Clipboard.Clear()
+                Clipboard.SetText(rtbItnDoc.Rtf, TextDataFormat.Rtf)
+                Clipboard.SetText(rtbItnDoc.SelectedText, TextDataFormat.Text)
+            End If
+        Catch ex As Exception
+            ' ignore any error that occurs when copying to clipboard
+        End Try
+
+    End Sub
+
+    Private Sub txtPNR_TextChanged(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles txtItnPNR.TextChanged
+
+        Try
+            If Not mflgLoading Then
+                If Not MySettings Is Nothing Then
+                    cmdItn1AReadPNR.Enabled = (txtItnPNR.Text.Trim.Length >= 6)
+                    cmdItn1AReadQueue.Enabled = (txtItnPNR.Text.Trim.Length >= 2)
+                    cmdItn1GReadPNR.Enabled = cmdItn1AReadPNR.Enabled
+                    cmdItn1GReadQueue.Enabled = cmdItn1AReadQueue.Enabled
+                End If
             End If
         Catch ex As Exception
             MessageBox.Show(ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub SetupPCCOptions()
+        Try
+            If Not MySettings Is Nothing Then
+                mflgLoading = True
+                Dim pText As String = ""
+                If MySettings.GDSPcc <> "" And MySettings.GDSUser <> "" Then
+                    pText &= MySettings.GDSPcc & " " & MySettings.GDSUser
+                    SSGDS.Text = MySettings.GDSAbbreviation
+                    SSPCC.Text = MySettings.GDSPcc
+                    SSUser.Text = MySettings.GDSUser
+                Else
+                    Throw New Exception("No GDS signed in")
+                End If
+                If CheckOptions() Then
+                    ' itinerary tab
+                    LoadRemarks()
+                    If MySettings.AirportName = 0 Then
+                        optItnAirportCode.Checked = True
+                    ElseIf MySettings.AirportName = 1 Then
+                        optItnAirportname.Checked = True
+                    ElseIf MySettings.AirportName = 2 Then
+                        optItnAirportBoth.Checked = True
+                    ElseIf MySettings.AirportName = 3 Then
+                        optItnAirportCityName.Checked = True
+                    ElseIf MySettings.AirportName = 4 Then
+                        optItnAirportCityBoth.Checked = True
+                    End If
+
+                    Select Case MySettings.FormatStyle
+                        Case EnumItnFormat.DefaultFormat
+                            optItnFormatDefault.Checked = True
+                        Case EnumItnFormat.Plain
+                            optItnFormatPlain.Checked = True
+                        Case EnumItnFormat.SeaChefs
+                            optItnFormatSeaChefs.Checked = True
+                        Case EnumItnFormat.SeaChefsWithCode
+                            optItnFormatSeaChefsWith3LetterCode.Checked = True
+                        Case EnumItnFormat.Euronav
+                            optItnFormatEuronav.Checked = True
+                        Case EnumItnFormat.Fleet
+                            optItnFormatFleet.Checked = True
+                    End Select
+                    SetITNEnabled(True)
+
+                    chkItnVessel.Checked = MySettings.ShowVessel
+                    chkItnClass.Checked = MySettings.ShowClassOfService
+                    chkItnAirlineLocator.Checked = MySettings.ShowAirlineLocator
+                    chkItnTickets.Checked = MySettings.ShowTickets
+                    chkItnEMD.Checked = MySettings.ShowEMD
+                    chkItnPaxSegPerTicket.Checked = MySettings.ShowPaxSegPerTkt
+                    chkItnSeating.Checked = MySettings.ShowSeating
+                    chkItnStopovers.Checked = MySettings.ShowStopovers
+                    chkItnTerminal.Checked = MySettings.ShowTerminal
+                    chkItnFlyingTime.Checked = MySettings.ShowFlyingTime
+                    chkItnCostCentre.Checked = MySettings.ShowCostCentre
+                    chkItnCabinDescription.Checked = MySettings.ShowCabinDescription
+                    chkItnItinRemarks.Checked = MySettings.ShowItinRemarks
+                    chkItnEquipmentCode.Checked = MySettings.ShowEquipmentCode
+                    chkItnCO2.Checked = MySettings.ShowCO2
+                    cmdItn1AReadPNR.Enabled = False
+                    cmdItn1AReadQueue.Enabled = False
+                    cmdItn1GReadPNR.Enabled = False
+                    cmdItn1GReadQueue.Enabled = False
+                Else
+                    Throw New Exception("User not authorized for this PCC")
+                End If
+            End If
+        Catch ex As Exception
         Finally
             mflgLoading = False
         End Try
+
     End Sub
+
+    Private Function CheckOptions() As Boolean
+        Try
+            With MySettings
+                While Not .isValid
+                    If MessageBox.Show("Please enter your details", "Options Missing", MessageBoxButtons.OKCancel) = Windows.Forms.DialogResult.Cancel Then
+                        Return False
+                    End If
+                    ShowOptionsForm()
+                End While
+                Return True
+            End With
+        Catch ex As Exception
+            Throw New Exception("CheckOptions()" & vbCrLf & ex.Message)
+        End Try
+
+    End Function
     Private Sub ShowOptionsForm()
         Try
             Dim pFrm As New frmShowOptions
@@ -829,29 +784,47 @@ Public Class frmFormItinerary
             MessageBox.Show(ex.Message)
         End Try
     End Sub
-    Private Sub MenuCopyItn_Click(sender As Object, e As EventArgs) Handles MenuCopyItn.Click
-        Try
-            rtbItnDoc.SelectAll()
-            Clipboard.Clear()
-            Clipboard.SetText(rtbItnDoc.Rtf, TextDataFormat.Rtf)
-            Clipboard.SetText(rtbItnDoc.SelectedText, TextDataFormat.Text)
-        Catch ex As Exception
-            ' ignore any error that occurs when copying to clipboard
-        End Try
-    End Sub
-    Private Sub webItnDoc_DocumentCompleted(sender As Object, e As WebBrowserDocumentCompletedEventArgs) Handles webItnDoc.DocumentCompleted
+
+    Private Sub LoadRemarks()
 
         Try
-            If optItnFormatEuronav.Checked Then
-                Dim dobj As New DataObject
-                dobj.SetData(DataFormats.Text, webItnDoc.Document.Body.InnerText)
-                dobj.SetData(DataFormats.Html, webItnDoc.DocumentStream)
-                Clipboard.Clear()
-                Clipboard.SetDataObject(dobj, True)
+            Dim pRemarksCollection As New RemarksCollection
+            pRemarksCollection.Load()
+            With lstItnRemarks.Items()
+                .Clear()
+                For Each pRem As RemarksItem In pRemarksCollection.Values
+                    .Add(pRem)
+                Next
+            End With
+
+        Catch ex As Exception
+            Throw New Exception("LoadRemarks()" & vbCrLf & ex.Message)
+        End Try
+
+    End Sub
+
+    Private Sub readGDS(ByVal RecordLocator As String)
+
+        Try
+            mobjPNR.ReadItinerary(mSelectedBOCode, RecordLocator)
+            If Not mobjPNR.ExistingElements Is Nothing Then
+                If mSelectedBOCode = EnumBOCode.ATH And mobjPNR.ExistingElements.ClientCode = "020208" Then
+                    mSelectedBOCode = EnumBOCode.QLI
+                    MySettings.CountryCode = "CY"
+                    mobjPNR.ReadItinerary(mSelectedBOCode, RecordLocator)
+                End If
+                lblClient.Text = mobjPNR.ExistingElements.ClientCode & " " & mobjPNR.ExistingElements.ClientName
             End If
         Catch ex As Exception
-            ' ignore any error that occurs when copying to clipboard
+            Throw New Exception("readGDS()" & vbCrLf & ex.Message)
         End Try
 
     End Sub
+
+    Private Sub frm03Itinerary_Load(sender As Object, e As EventArgs) Handles Me.Load
+
+        cmdItnFormatOSMLoG.Enabled = False
+        SetupPCCOptions()
+    End Sub
+
 End Class

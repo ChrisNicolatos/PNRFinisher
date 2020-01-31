@@ -1,0 +1,35 @@
+﻿Public Class ClientReferenceGDSEntryCollection
+    Inherits Collections.Generic.Dictionary(Of String, ClientReferenceGDSEntry)
+    Public Sub New()
+        MyBase.Clear()
+        MyBase.Add("101", New ClientReferenceGDSEntry("1", "01", "RM *GRACE/BBY/", "DI.FT-GRACE/BBY/", False, True, False))
+        MyBase.Add("102", New ClientReferenceGDSEntry("1", "02", "RM *GRACE/DPT/", "DI.FT-GRACE/DPT/", False, False, False))
+        MyBase.Add("104", New ClientReferenceGDSEntry("1", "04", "RM *GRACE/RFT/", "DI.FT-GRACE/RFT/", False, False, False))
+        MyBase.Add("105", New ClientReferenceGDSEntry("1", "05", "RM *GRACE/CC/", "DI.FT-GRACE/CC/", False, False, True))
+        MyBase.Add("114", New ClientReferenceGDSEntry("1", "14", "RM *GRACEIRF/", "DI.FT-GRACEIRF/", False, False, False))
+        MyBase.Add("115", New ClientReferenceGDSEntry("1", "15", "RM *GRACE/AC/", "DI.FT-GRACE/AC/", False, False, False))
+        MyBase.Add("199", New ClientReferenceGDSEntry("1", "99", "RM *GRACE/REF/", "DI.FT-GRACE/REF/", False, False, False))
+
+        MyBase.Add("2PO", New ClientReferenceGDSEntry("2", "PO", "RM *D,PO-", "DI.FT-PO-", False, False, False))
+        MyBase.Add("2CC1", New ClientReferenceGDSEntry("2", "CC1", "RM *D,CC1-", "DI.FT-CC1-", True, False, False))
+        MyBase.Add("2CC2", New ClientReferenceGDSEntry("2", "CC2", "RM *D,CC2-", "DI.FT-CC2-", False, False, True))
+        MyBase.Add("2BBY", New ClientReferenceGDSEntry("2", "BBY", "RM *D,BOOKED-", "DI.FT-BOOKED-", False, True, False))
+
+        MyBase.Add("2REF1", New ClientReferenceGDSEntry("2", "REF1", "RM *D,REF1-", "DI.FT-REF1-", False, False, False))
+        MyBase.Add("2REF2", New ClientReferenceGDSEntry("2", "REF2", "RM *D,REF2-", "DI.FT-REF2-", False, False, False))
+        MyBase.Add("2REF3", New ClientReferenceGDSEntry("2", "REF3", "RM *D,REF3-", "DI.FT-REF3-", False, False, False))
+        MyBase.Add("2REF4", New ClientReferenceGDSEntry("2", "REF4", "RM *D,REF4-", "DI.FT-REF4-", False, False, False))
+        MyBase.Add("2REF5", New ClientReferenceGDSEntry("2", "REF5", "RM *D,REF5-", "DI.FT-REF5-", False, False, False))
+        MyBase.Add("2REF6", New ClientReferenceGDSEntry("2", "REF6", "RM *D,REF6-", "DI.FT-REF6-", False, False, False))
+        MyBase.Add("2REF7", New ClientReferenceGDSEntry("2", "REF7", "RM *D,REF7-", "DI.FT-REF7-", False, False, False))
+        MyBase.Add("2REF8", New ClientReferenceGDSEntry("2", "REF8", "RM *D,REF8-", "DI.FT-REF8-", False, False, False))
+        MyBase.Add("2REF9", New ClientReferenceGDSEntry("2", "REF9", "RM *D,REF9-", "DI.FT-REF9-", False, False, False))
+        MyBase.Add("2REF10", New ClientReferenceGDSEntry("2", "REF10", "RM *D,REF10-", "DI.FT-REF10-", False, False, False))
+        MyBase.Add("2REF11", New ClientReferenceGDSEntry("2", "REF11", "RM *D,REF11-", "DI.FT-REF11-", False, False, False))
+        MyBase.Add("2REF12", New ClientReferenceGDSEntry("2", "REF12", "RM *D,REF12-", "DI.FT-REF12-", False, False, False))
+        MyBase.Add("2REF13", New ClientReferenceGDSEntry("2", "REF13", "RM *D,REF13-", "DI.FT-REF13-", False, False, False))
+        MyBase.Add("2REF14", New ClientReferenceGDSEntry("2", "REF14", "RM *D,REF14-", "DI.FT-REF14-", False, False, False))
+        MyBase.Add("2REF15", New ClientReferenceGDSEntry("2", "REF15", "RM *D,REF15-", "DI.FT-REF15-", False, False, False))
+
+    End Sub
+End Class

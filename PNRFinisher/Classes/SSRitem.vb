@@ -65,7 +65,7 @@ Public Class SSRitem
         End Get
     End Property
 
-    Friend Sub SetValues(ByVal pElementNo As Integer, ByVal pSSRType As String, ByVal pSSRCode As String, ByVal pCarrierCode As String _
+    Public Sub SetValues(ByVal pElementNo As Integer, ByVal pSSRType As String, ByVal pSSRCode As String, ByVal pCarrierCode As String _
                          , ByVal pStatusCode As String, ByVal pText As String, ByVal pLastName As String, ByVal pFirstname As String _
                          , ByVal pDateOfBirth As Date, ByVal pPassportNumber As String)
         With mudtProps

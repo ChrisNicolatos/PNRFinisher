@@ -54,6 +54,8 @@ Partial Class frmOSMLoG
         Me.fraLOGLayout = New System.Windows.Forms.GroupBox()
         Me.optPerPax = New System.Windows.Forms.RadioButton()
         Me.optPerPNR = New System.Windows.Forms.RadioButton()
+        Me.optSignatoryCoversExpenses = New System.Windows.Forms.RadioButton()
+        Me.optClientCoversExpenses = New System.Windows.Forms.RadioButton()
         CType(Me.picSignature, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.picLogo, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.fraSignedBy.SuspendLayout()
@@ -67,7 +69,7 @@ Partial Class frmOSMLoG
         Me.lblPNR.BackColor = System.Drawing.Color.Aqua
         Me.lblPNR.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblPNR.ForeColor = System.Drawing.Color.Blue
-        Me.lblPNR.Location = New System.Drawing.Point(34, 429)
+        Me.lblPNR.Location = New System.Drawing.Point(34, 461)
         Me.lblPNR.Name = "lblPNR"
         Me.lblPNR.Size = New System.Drawing.Size(197, 89)
         Me.lblPNR.TabIndex = 27
@@ -134,6 +136,8 @@ Partial Class frmOSMLoG
         '
         'fraSignedBy
         '
+        Me.fraSignedBy.Controls.Add(Me.optSignatoryCoversExpenses)
+        Me.fraSignedBy.Controls.Add(Me.optClientCoversExpenses)
         Me.fraSignedBy.Controls.Add(Me.picSignature)
         Me.fraSignedBy.Controls.Add(Me.picLogo)
         Me.fraSignedBy.Controls.Add(Me.txtTelephone)
@@ -146,7 +150,7 @@ Partial Class frmOSMLoG
         Me.fraSignedBy.Controls.Add(Me.txtSignedBy)
         Me.fraSignedBy.Location = New System.Drawing.Point(26, 202)
         Me.fraSignedBy.Name = "fraSignedBy"
-        Me.fraSignedBy.Size = New System.Drawing.Size(877, 167)
+        Me.fraSignedBy.Size = New System.Drawing.Size(877, 217)
         Me.fraSignedBy.TabIndex = 26
         Me.fraSignedBy.TabStop = False
         Me.fraSignedBy.Text = "Signed By"
@@ -171,7 +175,7 @@ Partial Class frmOSMLoG
         Me.lblSegs.BackColor = System.Drawing.Color.Aqua
         Me.lblSegs.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblSegs.ForeColor = System.Drawing.Color.Blue
-        Me.lblSegs.Location = New System.Drawing.Point(609, 429)
+        Me.lblSegs.Location = New System.Drawing.Point(609, 461)
         Me.lblSegs.Name = "lblSegs"
         Me.lblSegs.Size = New System.Drawing.Size(288, 89)
         Me.lblSegs.TabIndex = 25
@@ -181,14 +185,14 @@ Partial Class frmOSMLoG
         Me.lblPax.BackColor = System.Drawing.Color.Aqua
         Me.lblPax.Font = New System.Drawing.Font("Courier New", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblPax.ForeColor = System.Drawing.Color.Blue
-        Me.lblPax.Location = New System.Drawing.Point(276, 429)
+        Me.lblPax.Location = New System.Drawing.Point(276, 461)
         Me.lblPax.Name = "lblPax"
         Me.lblPax.Size = New System.Drawing.Size(288, 89)
         Me.lblPax.TabIndex = 24
         '
         'cmdExit
         '
-        Me.cmdExit.Location = New System.Drawing.Point(391, 533)
+        Me.cmdExit.Location = New System.Drawing.Point(391, 565)
         Me.cmdExit.Name = "cmdExit"
         Me.cmdExit.Size = New System.Drawing.Size(103, 23)
         Me.cmdExit.TabIndex = 23
@@ -197,7 +201,7 @@ Partial Class frmOSMLoG
         '
         'cmdCreatePDF
         '
-        Me.cmdCreatePDF.Location = New System.Drawing.Point(266, 533)
+        Me.cmdCreatePDF.Location = New System.Drawing.Point(266, 565)
         Me.cmdCreatePDF.Name = "cmdCreatePDF"
         Me.cmdCreatePDF.Size = New System.Drawing.Size(103, 23)
         Me.cmdCreatePDF.TabIndex = 22
@@ -207,7 +211,7 @@ Partial Class frmOSMLoG
         'cmdFileDestination
         '
         Me.cmdFileDestination.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdFileDestination.Location = New System.Drawing.Point(635, 390)
+        Me.cmdFileDestination.Location = New System.Drawing.Point(635, 435)
         Me.cmdFileDestination.Name = "cmdFileDestination"
         Me.cmdFileDestination.Size = New System.Drawing.Size(45, 20)
         Me.cmdFileDestination.TabIndex = 21
@@ -217,7 +221,7 @@ Partial Class frmOSMLoG
         'txtFileDestination
         '
         Me.txtFileDestination.Enabled = False
-        Me.txtFileDestination.Location = New System.Drawing.Point(111, 390)
+        Me.txtFileDestination.Location = New System.Drawing.Point(111, 435)
         Me.txtFileDestination.Name = "txtFileDestination"
         Me.txtFileDestination.Size = New System.Drawing.Size(518, 20)
         Me.txtFileDestination.TabIndex = 20
@@ -225,7 +229,7 @@ Partial Class frmOSMLoG
         'lblFileDestination
         '
         Me.lblFileDestination.AutoSize = True
-        Me.lblFileDestination.Location = New System.Drawing.Point(26, 394)
+        Me.lblFileDestination.Location = New System.Drawing.Point(26, 439)
         Me.lblFileDestination.Name = "lblFileDestination"
         Me.lblFileDestination.Size = New System.Drawing.Size(79, 13)
         Me.lblFileDestination.TabIndex = 19
@@ -357,11 +361,33 @@ Partial Class frmOSMLoG
         Me.optPerPNR.Text = "1 Letter for all the passengers"
         Me.optPerPNR.UseVisualStyleBackColor = True
         '
+        'optSignatoryCoversExpenses
+        '
+        Me.optSignatoryCoversExpenses.AutoSize = True
+        Me.optSignatoryCoversExpenses.Location = New System.Drawing.Point(222, 188)
+        Me.optSignatoryCoversExpenses.Name = "optSignatoryCoversExpenses"
+        Me.optSignatoryCoversExpenses.Size = New System.Drawing.Size(125, 17)
+        Me.optSignatoryCoversExpenses.TabIndex = 26
+        Me.optSignatoryCoversExpenses.TabStop = True
+        Me.optSignatoryCoversExpenses.Text = "Signatory's Expenses"
+        Me.optSignatoryCoversExpenses.UseVisualStyleBackColor = True
+        '
+        'optClientCoversExpenses
+        '
+        Me.optClientCoversExpenses.AutoSize = True
+        Me.optClientCoversExpenses.Location = New System.Drawing.Point(222, 165)
+        Me.optClientCoversExpenses.Name = "optClientCoversExpenses"
+        Me.optClientCoversExpenses.Size = New System.Drawing.Size(101, 17)
+        Me.optClientCoversExpenses.TabIndex = 25
+        Me.optClientCoversExpenses.TabStop = True
+        Me.optClientCoversExpenses.Text = "Client's expense"
+        Me.optClientCoversExpenses.UseVisualStyleBackColor = True
+        '
         'frmOSMLoG
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(929, 569)
+        Me.ClientSize = New System.Drawing.Size(929, 597)
         Me.Controls.Add(Me.lblPNR)
         Me.Controls.Add(Me.fraSignedBy)
         Me.Controls.Add(Me.lblSegs)
@@ -425,4 +451,6 @@ Partial Class frmOSMLoG
     Friend WithEvents fraLOGLayout As GroupBox
     Friend WithEvents optPerPax As RadioButton
     Friend WithEvents optPerPNR As RadioButton
+    Friend WithEvents optSignatoryCoversExpenses As RadioButton
+    Friend WithEvents optClientCoversExpenses As RadioButton
 End Class

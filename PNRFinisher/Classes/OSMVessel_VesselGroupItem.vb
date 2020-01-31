@@ -62,7 +62,7 @@ Public Class OSMVessel_VesselGroupItem
             mudtProps.Exists = value
         End Set
     End Property
-    Friend Sub SetValues(ByVal pId As Integer, ByVal pVesselId As Integer, ByVal pVesselGroupId As Integer, ByVal pVesselName As String, ByVal pVesselGroupName As String, ByVal pVesselId_fkey As Integer)
+    Public Sub SetValues(ByVal pId As Integer, ByVal pVesselId As Integer, ByVal pVesselGroupId As Integer, ByVal pVesselName As String, ByVal pVesselGroupName As String, ByVal pVesselId_fkey As Integer)
         With mudtProps
             .Id = pId
             .VesselId = pVesselId

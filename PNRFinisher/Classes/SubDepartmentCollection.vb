@@ -1,9 +1,8 @@
 ﻿Option Strict On
 Option Explicit On
-Friend Class SubDepartmentCollection
+Public Class SubDepartmentCollection
 
     Inherits Collections.Generic.Dictionary(Of Integer, SubDepartmentItem)
-    Private mlngEntityID As Long
 
     Public Sub Load(ByVal pEntityID As Long, ByVal pBackOffice As Integer)
         If pBackOffice = 1 Then
@@ -12,8 +11,6 @@ Friend Class SubDepartmentCollection
             Dim pobjComm As New SqlClient.SqlCommand
             Dim pobjReader As SqlClient.SqlDataReader
             Dim pobjClass As SubDepartmentItem
-
-            mlngEntityID = pEntityID
 
             pobjConn.Open()
             pobjComm = pobjConn.CreateCommand

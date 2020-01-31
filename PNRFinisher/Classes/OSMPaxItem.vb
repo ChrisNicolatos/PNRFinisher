@@ -49,7 +49,7 @@ Public Class OSMPaxItem
             mudtProps.JoinerLeaver = value
         End Set
     End Property
-    Friend Sub SetData(ByVal pId As Integer, ByVal pJoiner As String, ByVal pText As String)
+    Public Sub SetData(ByVal pId As Integer, ByVal pJoiner As String, ByVal pText As String)
 
         mudtProps.Id = pId
         mudtProps.TextFullDetails = pText

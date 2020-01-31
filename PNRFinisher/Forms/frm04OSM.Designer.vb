@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmFormOSM
+Partial Class frm04OSM
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -47,6 +47,7 @@ Partial Class frmFormOSM
         Me.cmdOSMVesselsEdit = New System.Windows.Forms.Button()
         Me.lblOSMVessels = New System.Windows.Forms.Label()
         Me.cmdOSMAgentEdit = New System.Windows.Forms.Button()
+        Me.lblOSMAgents = New System.Windows.Forms.Label()
         Me.lstOSMAgents = New System.Windows.Forms.ListBox()
         Me.cmdOSMCopyCC = New System.Windows.Forms.Button()
         Me.cmdOSMCopyTo = New System.Windows.Forms.Button()
@@ -63,10 +64,10 @@ Partial Class frmFormOSM
         'chkOSMFullPaxSDetails
         '
         Me.chkOSMFullPaxSDetails.AutoSize = True
-        Me.chkOSMFullPaxSDetails.Location = New System.Drawing.Point(756, 451)
+        Me.chkOSMFullPaxSDetails.Location = New System.Drawing.Point(753, 412)
         Me.chkOSMFullPaxSDetails.Name = "chkOSMFullPaxSDetails"
         Me.chkOSMFullPaxSDetails.Size = New System.Drawing.Size(126, 17)
-        Me.chkOSMFullPaxSDetails.TabIndex = 54
+        Me.chkOSMFullPaxSDetails.TabIndex = 55
         Me.chkOSMFullPaxSDetails.Text = "Show Full Pax details"
         Me.chkOSMFullPaxSDetails.UseVisualStyleBackColor = True
         '
@@ -74,10 +75,10 @@ Partial Class frmFormOSM
         '
         Me.Label2.BackColor = System.Drawing.Color.Yellow
         Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.Label2.Location = New System.Drawing.Point(19, 84)
+        Me.Label2.Location = New System.Drawing.Point(16, 45)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(193, 13)
-        Me.Label2.TabIndex = 53
+        Me.Label2.TabIndex = 54
         Me.Label2.Text = "Vessel Group"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
@@ -85,20 +86,20 @@ Partial Class frmFormOSM
         '
         Me.cmbOSMVesselGroup.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbOSMVesselGroup.FormattingEnabled = True
-        Me.cmbOSMVesselGroup.Location = New System.Drawing.Point(19, 105)
+        Me.cmbOSMVesselGroup.Location = New System.Drawing.Point(16, 66)
         Me.cmbOSMVesselGroup.Name = "cmbOSMVesselGroup"
         Me.cmbOSMVesselGroup.Size = New System.Drawing.Size(193, 21)
-        Me.cmbOSMVesselGroup.TabIndex = 52
+        Me.cmbOSMVesselGroup.TabIndex = 53
         '
         'chkOSMVesselInUse
         '
         Me.chkOSMVesselInUse.AutoSize = True
         Me.chkOSMVesselInUse.Checked = True
         Me.chkOSMVesselInUse.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.chkOSMVesselInUse.Location = New System.Drawing.Point(19, 159)
+        Me.chkOSMVesselInUse.Location = New System.Drawing.Point(16, 120)
         Me.chkOSMVesselInUse.Name = "chkOSMVesselInUse"
         Me.chkOSMVesselInUse.Size = New System.Drawing.Size(81, 17)
-        Me.chkOSMVesselInUse.TabIndex = 51
+        Me.chkOSMVesselInUse.TabIndex = 52
         Me.chkOSMVesselInUse.Text = "In Use Only"
         Me.chkOSMVesselInUse.UseVisualStyleBackColor = True
         '
@@ -106,26 +107,26 @@ Partial Class frmFormOSM
         '
         Me.lblOSMMultipleSearchSeparator.AutoSize = True
         Me.lblOSMMultipleSearchSeparator.Font = New System.Drawing.Font("Microsoft Sans Serif", 6.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.lblOSMMultipleSearchSeparator.Location = New System.Drawing.Point(218, 355)
+        Me.lblOSMMultipleSearchSeparator.Location = New System.Drawing.Point(215, 316)
         Me.lblOSMMultipleSearchSeparator.Name = "lblOSMMultipleSearchSeparator"
         Me.lblOSMMultipleSearchSeparator.Size = New System.Drawing.Size(112, 9)
-        Me.lblOSMMultipleSearchSeparator.TabIndex = 50
+        Me.lblOSMMultipleSearchSeparator.TabIndex = 51
         Me.lblOSMMultipleSearchSeparator.Text = "Multiple search separated with |"
         '
         'txtOSMAgentsFilter
         '
-        Me.txtOSMAgentsFilter.Location = New System.Drawing.Point(218, 332)
+        Me.txtOSMAgentsFilter.Location = New System.Drawing.Point(215, 293)
         Me.txtOSMAgentsFilter.Name = "txtOSMAgentsFilter"
         Me.txtOSMAgentsFilter.Size = New System.Drawing.Size(166, 20)
-        Me.txtOSMAgentsFilter.TabIndex = 49
+        Me.txtOSMAgentsFilter.TabIndex = 50
         '
         'cmdOSMClearSelected
         '
         Me.cmdOSMClearSelected.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.cmdOSMClearSelected.Location = New System.Drawing.Point(19, 585)
+        Me.cmdOSMClearSelected.Location = New System.Drawing.Point(16, 507)
         Me.cmdOSMClearSelected.Name = "cmdOSMClearSelected"
         Me.cmdOSMClearSelected.Size = New System.Drawing.Size(483, 30)
-        Me.cmdOSMClearSelected.TabIndex = 48
+        Me.cmdOSMClearSelected.TabIndex = 49
         Me.cmdOSMClearSelected.Text = "Clear Selected Vessel(s) and/or Agent(s)"
         Me.cmdOSMClearSelected.UseVisualStyleBackColor = True
         '
@@ -133,10 +134,10 @@ Partial Class frmFormOSM
         '
         Me.cmdOSMEmailClear.BackColor = System.Drawing.Color.Red
         Me.cmdOSMEmailClear.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdOSMEmailClear.Location = New System.Drawing.Point(769, 92)
+        Me.cmdOSMEmailClear.Location = New System.Drawing.Point(766, 53)
         Me.cmdOSMEmailClear.Name = "cmdOSMEmailClear"
         Me.cmdOSMEmailClear.Size = New System.Drawing.Size(21, 13)
-        Me.cmdOSMEmailClear.TabIndex = 42
+        Me.cmdOSMEmailClear.TabIndex = 43
         Me.cmdOSMEmailClear.Text = "X"
         Me.cmdOSMEmailClear.UseVisualStyleBackColor = False
         '
@@ -145,11 +146,11 @@ Partial Class frmFormOSM
         Me.webOSMDoc.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.webOSMDoc.Location = New System.Drawing.Point(509, 475)
+        Me.webOSMDoc.Location = New System.Drawing.Point(506, 436)
         Me.webOSMDoc.MinimumSize = New System.Drawing.Size(20, 20)
         Me.webOSMDoc.Name = "webOSMDoc"
-        Me.webOSMDoc.Size = New System.Drawing.Size(911, 140)
-        Me.webOSMDoc.TabIndex = 47
+        Me.webOSMDoc.Size = New System.Drawing.Size(909, 101)
+        Me.webOSMDoc.TabIndex = 48
         '
         'lstOSMVessels
         '
@@ -157,28 +158,28 @@ Partial Class frmFormOSM
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.lstOSMVessels.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed
         Me.lstOSMVessels.FormattingEnabled = True
-        Me.lstOSMVessels.Location = New System.Drawing.Point(19, 184)
+        Me.lstOSMVessels.Location = New System.Drawing.Point(16, 145)
         Me.lstOSMVessels.Name = "lstOSMVessels"
         Me.lstOSMVessels.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple
-        Me.lstOSMVessels.Size = New System.Drawing.Size(193, 368)
+        Me.lstOSMVessels.Size = New System.Drawing.Size(193, 329)
         Me.lstOSMVessels.TabIndex = 32
         '
         'cmdOSMCopyDocument
         '
         Me.cmdOSMCopyDocument.Enabled = False
-        Me.cmdOSMCopyDocument.Location = New System.Drawing.Point(628, 443)
+        Me.cmdOSMCopyDocument.Location = New System.Drawing.Point(625, 404)
         Me.cmdOSMCopyDocument.Name = "cmdOSMCopyDocument"
         Me.cmdOSMCopyDocument.Size = New System.Drawing.Size(113, 30)
-        Me.cmdOSMCopyDocument.TabIndex = 46
+        Me.cmdOSMCopyDocument.TabIndex = 47
         Me.cmdOSMCopyDocument.Text = "Copy Document"
         Me.cmdOSMCopyDocument.UseVisualStyleBackColor = True
         '
         'cmdOSMPrepareDoc
         '
-        Me.cmdOSMPrepareDoc.Location = New System.Drawing.Point(509, 443)
+        Me.cmdOSMPrepareDoc.Location = New System.Drawing.Point(506, 404)
         Me.cmdOSMPrepareDoc.Name = "cmdOSMPrepareDoc"
         Me.cmdOSMPrepareDoc.Size = New System.Drawing.Size(113, 30)
-        Me.cmdOSMPrepareDoc.TabIndex = 45
+        Me.cmdOSMPrepareDoc.TabIndex = 46
         Me.cmdOSMPrepareDoc.Text = "Prepare Document"
         Me.cmdOSMPrepareDoc.UseVisualStyleBackColor = True
         '
@@ -190,10 +191,10 @@ Partial Class frmFormOSM
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.dgvOSMPax.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.dgvOSMPax.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Id, Me.LastName, Me.FirstName, Me.Nationality, Me.JoinerLeaver, Me.VisaType})
-        Me.dgvOSMPax.Location = New System.Drawing.Point(812, 105)
+        Me.dgvOSMPax.Location = New System.Drawing.Point(809, 66)
         Me.dgvOSMPax.Name = "dgvOSMPax"
-        Me.dgvOSMPax.Size = New System.Drawing.Size(647, 332)
-        Me.dgvOSMPax.TabIndex = 44
+        Me.dgvOSMPax.Size = New System.Drawing.Size(645, 332)
+        Me.dgvOSMPax.TabIndex = 45
         '
         'Id
         '
@@ -231,10 +232,10 @@ Partial Class frmFormOSM
         '
         Me.lblOSMPasteEmailsHere.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.lblOSMPasteEmailsHere.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.lblOSMPasteEmailsHere.Location = New System.Drawing.Point(510, 92)
+        Me.lblOSMPasteEmailsHere.Location = New System.Drawing.Point(507, 53)
         Me.lblOSMPasteEmailsHere.Name = "lblOSMPasteEmailsHere"
         Me.lblOSMPasteEmailsHere.Size = New System.Drawing.Size(262, 13)
-        Me.lblOSMPasteEmailsHere.TabIndex = 41
+        Me.lblOSMPasteEmailsHere.TabIndex = 42
         Me.lblOSMPasteEmailsHere.Text = "PASTE OSM EMAIL HERE"
         Me.lblOSMPasteEmailsHere.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
@@ -244,16 +245,16 @@ Partial Class frmFormOSM
         Me.txtOSMPax.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(128, Byte), Integer))
         Me.txtOSMPax.Font = New System.Drawing.Font("Courier New", 7.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
         Me.txtOSMPax.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtOSMPax.Location = New System.Drawing.Point(508, 105)
+        Me.txtOSMPax.Location = New System.Drawing.Point(505, 66)
         Me.txtOSMPax.Multiline = True
         Me.txtOSMPax.Name = "txtOSMPax"
         Me.txtOSMPax.ScrollBars = System.Windows.Forms.ScrollBars.Both
         Me.txtOSMPax.Size = New System.Drawing.Size(282, 332)
-        Me.txtOSMPax.TabIndex = 43
+        Me.txtOSMPax.TabIndex = 44
         '
         'cmdOSMVesselsEdit
         '
-        Me.cmdOSMVesselsEdit.Location = New System.Drawing.Point(114, 156)
+        Me.cmdOSMVesselsEdit.Location = New System.Drawing.Point(111, 117)
         Me.cmdOSMVesselsEdit.Name = "cmdOSMVesselsEdit"
         Me.cmdOSMVesselsEdit.Size = New System.Drawing.Size(98, 21)
         Me.cmdOSMVesselsEdit.TabIndex = 31
@@ -264,7 +265,7 @@ Partial Class frmFormOSM
         '
         Me.lblOSMVessels.BackColor = System.Drawing.Color.Yellow
         Me.lblOSMVessels.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.lblOSMVessels.Location = New System.Drawing.Point(19, 135)
+        Me.lblOSMVessels.Location = New System.Drawing.Point(16, 96)
         Me.lblOSMVessels.Name = "lblOSMVessels"
         Me.lblOSMVessels.Size = New System.Drawing.Size(193, 13)
         Me.lblOSMVessels.TabIndex = 30
@@ -273,28 +274,39 @@ Partial Class frmFormOSM
         '
         'cmdOSMAgentEdit
         '
-        Me.cmdOSMAgentEdit.Location = New System.Drawing.Point(405, 343)
+        Me.cmdOSMAgentEdit.Location = New System.Drawing.Point(402, 304)
         Me.cmdOSMAgentEdit.Name = "cmdOSMAgentEdit"
         Me.cmdOSMAgentEdit.Size = New System.Drawing.Size(98, 21)
-        Me.cmdOSMAgentEdit.TabIndex = 39
+        Me.cmdOSMAgentEdit.TabIndex = 40
         Me.cmdOSMAgentEdit.Text = "Edit Agents"
         Me.cmdOSMAgentEdit.UseVisualStyleBackColor = True
+        '
+        'lblOSMAgents
+        '
+        Me.lblOSMAgents.BackColor = System.Drawing.Color.Yellow
+        Me.lblOSMAgents.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
+        Me.lblOSMAgents.Location = New System.Drawing.Point(215, 274)
+        Me.lblOSMAgents.Name = "lblOSMAgents"
+        Me.lblOSMAgents.Size = New System.Drawing.Size(285, 13)
+        Me.lblOSMAgents.TabIndex = 39
+        Me.lblOSMAgents.Text = "Agents"
+        Me.lblOSMAgents.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'lstOSMAgents
         '
         Me.lstOSMAgents.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.lstOSMAgents.FormattingEnabled = True
-        Me.lstOSMAgents.Location = New System.Drawing.Point(218, 366)
+        Me.lstOSMAgents.Location = New System.Drawing.Point(215, 327)
         Me.lstOSMAgents.Name = "lstOSMAgents"
         Me.lstOSMAgents.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple
-        Me.lstOSMAgents.Size = New System.Drawing.Size(285, 186)
-        Me.lstOSMAgents.TabIndex = 40
+        Me.lstOSMAgents.Size = New System.Drawing.Size(285, 147)
+        Me.lstOSMAgents.TabIndex = 41
         '
         'cmdOSMCopyCC
         '
         Me.cmdOSMCopyCC.Enabled = False
-        Me.cmdOSMCopyCC.Location = New System.Drawing.Point(405, 203)
+        Me.cmdOSMCopyCC.Location = New System.Drawing.Point(402, 164)
         Me.cmdOSMCopyCC.Name = "cmdOSMCopyCC"
         Me.cmdOSMCopyCC.Size = New System.Drawing.Size(98, 21)
         Me.cmdOSMCopyCC.TabIndex = 37
@@ -304,7 +316,7 @@ Partial Class frmFormOSM
         'cmdOSMCopyTo
         '
         Me.cmdOSMCopyTo.Enabled = False
-        Me.cmdOSMCopyTo.Location = New System.Drawing.Point(404, 84)
+        Me.cmdOSMCopyTo.Location = New System.Drawing.Point(401, 45)
         Me.cmdOSMCopyTo.Name = "cmdOSMCopyTo"
         Me.cmdOSMCopyTo.Size = New System.Drawing.Size(98, 21)
         Me.cmdOSMCopyTo.TabIndex = 34
@@ -314,7 +326,7 @@ Partial Class frmFormOSM
         'lblOSMEmailsCC
         '
         Me.lblOSMEmailsCC.AutoSize = True
-        Me.lblOSMEmailsCC.Location = New System.Drawing.Point(218, 203)
+        Me.lblOSMEmailsCC.Location = New System.Drawing.Point(215, 164)
         Me.lblOSMEmailsCC.Name = "lblOSMEmailsCC"
         Me.lblOSMEmailsCC.Size = New System.Drawing.Size(53, 13)
         Me.lblOSMEmailsCC.TabIndex = 36
@@ -323,7 +335,7 @@ Partial Class frmFormOSM
         'lblOSMEmailsTo
         '
         Me.lblOSMEmailsTo.AutoSize = True
-        Me.lblOSMEmailsTo.Location = New System.Drawing.Point(218, 84)
+        Me.lblOSMEmailsTo.Location = New System.Drawing.Point(215, 45)
         Me.lblOSMEmailsTo.Name = "lblOSMEmailsTo"
         Me.lblOSMEmailsTo.Size = New System.Drawing.Size(54, 13)
         Me.lblOSMEmailsTo.TabIndex = 33
@@ -332,7 +344,7 @@ Partial Class frmFormOSM
         'lstOSMCCEmail
         '
         Me.lstOSMCCEmail.FormattingEnabled = True
-        Me.lstOSMCCEmail.Location = New System.Drawing.Point(218, 222)
+        Me.lstOSMCCEmail.Location = New System.Drawing.Point(215, 183)
         Me.lstOSMCCEmail.Name = "lstOSMCCEmail"
         Me.lstOSMCCEmail.SelectionMode = System.Windows.Forms.SelectionMode.None
         Me.lstOSMCCEmail.Size = New System.Drawing.Size(285, 82)
@@ -341,7 +353,7 @@ Partial Class frmFormOSM
         'lstOSMToEmail
         '
         Me.lstOSMToEmail.FormattingEnabled = True
-        Me.lstOSMToEmail.Location = New System.Drawing.Point(218, 105)
+        Me.lstOSMToEmail.Location = New System.Drawing.Point(215, 66)
         Me.lstOSMToEmail.Name = "lstOSMToEmail"
         Me.lstOSMToEmail.SelectionMode = System.Windows.Forms.SelectionMode.None
         Me.lstOSMToEmail.Size = New System.Drawing.Size(285, 82)
@@ -349,7 +361,7 @@ Partial Class frmFormOSM
         '
         'cmdOSMRefresh
         '
-        Me.cmdOSMRefresh.Location = New System.Drawing.Point(15, 51)
+        Me.cmdOSMRefresh.Location = New System.Drawing.Point(12, 12)
         Me.cmdOSMRefresh.Name = "cmdOSMRefresh"
         Me.cmdOSMRefresh.Size = New System.Drawing.Size(70, 22)
         Me.cmdOSMRefresh.TabIndex = 29
@@ -361,16 +373,16 @@ Partial Class frmFormOSM
         Me.lblOSMVessel.AutoSize = True
         Me.lblOSMVessel.BackColor = System.Drawing.Color.Yellow
         Me.lblOSMVessel.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(161, Byte))
-        Me.lblOSMVessel.Location = New System.Drawing.Point(218, 56)
+        Me.lblOSMVessel.Location = New System.Drawing.Point(141, 17)
         Me.lblOSMVessel.Name = "lblOSMVessel"
         Me.lblOSMVessel.Size = New System.Drawing.Size(0, 13)
-        Me.lblOSMVessel.TabIndex = 55
+        Me.lblOSMVessel.TabIndex = 56
         '
-        'frmFormOSM
+        'frm04OSM
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1474, 665)
+        Me.ClientSize = New System.Drawing.Size(1472, 626)
         Me.Controls.Add(Me.lblOSMVessel)
         Me.Controls.Add(Me.chkOSMFullPaxSDetails)
         Me.Controls.Add(Me.Label2)
@@ -390,6 +402,7 @@ Partial Class frmFormOSM
         Me.Controls.Add(Me.cmdOSMVesselsEdit)
         Me.Controls.Add(Me.lblOSMVessels)
         Me.Controls.Add(Me.cmdOSMAgentEdit)
+        Me.Controls.Add(Me.lblOSMAgents)
         Me.Controls.Add(Me.lstOSMAgents)
         Me.Controls.Add(Me.cmdOSMCopyCC)
         Me.Controls.Add(Me.cmdOSMCopyTo)
@@ -398,8 +411,7 @@ Partial Class frmFormOSM
         Me.Controls.Add(Me.lstOSMCCEmail)
         Me.Controls.Add(Me.lstOSMToEmail)
         Me.Controls.Add(Me.cmdOSMRefresh)
-        Me.MinimumSize = New System.Drawing.Size(1490, 704)
-        Me.Name = "frmFormOSM"
+        Me.Name = "frm04OSM"
         Me.Text = "OSM"
         CType(Me.dgvOSMPax, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
@@ -431,6 +443,7 @@ Partial Class frmFormOSM
     Friend WithEvents cmdOSMVesselsEdit As Button
     Friend WithEvents lblOSMVessels As Label
     Friend WithEvents cmdOSMAgentEdit As Button
+    Friend WithEvents lblOSMAgents As Label
     Friend WithEvents lstOSMAgents As ListBox
     Friend WithEvents cmdOSMCopyCC As Button
     Friend WithEvents cmdOSMCopyTo As Button

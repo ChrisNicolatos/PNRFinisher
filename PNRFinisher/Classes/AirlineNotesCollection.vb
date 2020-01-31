@@ -2,7 +2,7 @@
 Option Explicit On
 Public Class AirlineNotesCollection
     Inherits System.Collections.Generic.Dictionary(Of Integer, AirlineNotesItem)
-    Friend Sub Load(ByVal pAirlineCode As String, ByVal GDSCode As EnumGDSCode)
+    Public Sub Load(ByVal pAirlineCode As String, ByVal GDSCode As EnumGDSCode)
         Dim pCommandText As String
         If GDSCode = EnumGDSCode.Amadeus Then
             pCommandText = "SELECT anID,  

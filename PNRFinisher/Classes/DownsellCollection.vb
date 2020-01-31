@@ -78,7 +78,7 @@ LEFT JOIN [Eudc-clssql15\DBS1].[TravelForceCosmos].[dbo].[TFEntities]
 ON doClientCode=TFEntities.Code
 LEFT JOIN [AmadeusReports].[dbo].[PNRFinisherAlerts]
 ON pnaClientCode = doClientCode
-WHERE TFEntities.Id IS NOT NULL AND  ISNULL(doVerifiedbyUser, 0) = @Verified
+WHERE TFEntities.Id IS NOT NULL AND  (ISNULL(doVerifiedbyUser, 0) = @Verified ) 
 
 SELECT DISTINCT 
 1 AS OwnPNR
@@ -114,7 +114,7 @@ SELECT DISTINCT
 ,doPCC
 ,doGDS
 ,doPNR
-,doUserGdsId
+,COALESCE(pfAgentName, doUserGdsId, '') AS doUserGdsId
 ,doDateLogged
 ,doDownsellDecision
 ,doClientCode
@@ -131,7 +131,9 @@ SELECT DISTINCT
 FROM AmadeusReports.dbo.DownsellPNRLog
 LEFT JOIN #TempClients
 ON doClientCode = #TempClients.ClientCode
-WHERE ISNULL(doVerifiedbyUser, 0) = @Verified
+LEFT JOIN AmadeusReports.dbo.PNRFinisherUsers
+ON doPCC = pfPCC AND doUserGdsId = pfUser
+WHERE (ISNULL(doVerifiedbyUser, 0) = @Verified )
 AND (doPCC + '|' + doUserGdsId in (SELECT  pfPCC + '|' + pfUser AS UserKey
                                    FROM AmadeusReports.dbo.PNRFinisherUserName
                                    LEFT JOIN AmadeusReports.dbo.PNRFinisherUsers
@@ -144,15 +146,19 @@ AND (doPCC + '|' + doUserGdsId in (SELECT  pfPCC + '|' + pfUser AS UserKey
                     FROM AmadeusReports.dbo.PNRFinisherUserName
                     LEFT JOIN AmadeusReports.dbo.PNRFinisherUsers
                     ON pfnID = pfUsername_fk
-                    WHERE ISNULL(pfnUserTeamleaderID_fk,0) = (SELECT ISNULL(PU.pfUserName_fk,1) 
-								                                             FROM AmadeusReports.dbo.PNRFinisherUsers PU 
-																             WHERE PU.pfPCC = @PCC AND PU.pfUser = @UserID)))
+                    WHERE  PNRFinisherUsers.pfPCC = @PCC AND PNRFinisherUsers.pfUser = @UserID))
 
 	OR (SELECT pfnIsAdministrator
 		FROM AmadeusReports.dbo.PNRFinisherUsers
 		LEFT JOIN AmadeusReports.dbo.PNRFinisherUserName
 		ON pfUserName_fk = pfnID
 		WHERE pfPCC = @PCC AND pfUser = @UserID)=1)
+
+AND doPCC + '|' + doUserGdsId NOT IN (SELECT pfPCC + '|' + pfUser AS UserKey
+                                  FROM AmadeusReports.dbo.PNRFinisherUsers
+                                  WHERE pfUserName_fk IN (SELECT PU.pfUserName_fk 
+								                          FROM AmadeusReports.dbo.PNRFinisherUsers PU 
+														  WHERE PU.pfPCC = @PCC AND PU.pfUser = @UserID))
 ORDER BY OwnPNR,doPCC,doUserGdsId
 
 If(OBJECT_ID('tempdb..#TempClients') Is Not Null)

@@ -4,8 +4,8 @@ Public Class IHItinCollection
     Inherits Collections.Generic.List(Of IHItinItem)
     Private mdblMin() As Double = {Double.MaxValue, Double.MaxValue, Double.MaxValue, Double.MaxValue, Double.MaxValue, Double.MaxValue, Double.MaxValue}
     Private mintMaxLen() As Integer = {0, 0, 0, 0, 0, 0, 0}
-    Public Sub Load(ByVal Origin As String, ByVal Stopover As String, ByVal Destination As String, ByVal FromDate As Date, ByVal FromAirportOnly As Boolean, ByVal StopoverAirportOnly As Boolean, ByVal ToAirportOnly As Boolean, ByVal pBackOffice As Integer)
-        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(pBackOffice))
+    Public Sub Load(ByVal Origin As String, ByVal Stopover As String, ByVal Destination As String, ByVal FromDate As Date, ByVal FromAirportOnly As Boolean, ByVal StopoverAirportOnly As Boolean, ByVal ToAirportOnly As Boolean)
+        Dim pobjConn As New SqlClient.SqlConnection(UtilitiesDB.ConnectionString(1))
         Dim pobjComm As New SqlClient.SqlCommand
         Dim pobjReader As SqlClient.SqlDataReader
 
@@ -357,15 +357,13 @@ End
 If(OBJECT_ID('tempdb..#TempSTOPOVER') Is Not Null)
 Begin
 Drop Table #TempSTOPOVER
-End
-
-"
+End"
             pobjReader = .ExecuteReader
         End With
         With pobjReader
             Do While .Read
                 Dim pItem As New IHItinItem
-                pItem.SetValues(CStr(.Item("Routing")), CStr(.Item("TicketingAirline")), CStr(.Item("Ticket")), CStr(.Item("Client")), CStr(.Item("PNR")), CStr(.Item("Name")), CDbl(.Item("TotalFarePlusTaxes")), CInt(.Item("Pax")), CInt(.Item("NumTickets")))
+                pItem.SetValues(CStr(.Item("Routing")), CStr(.Item("Ticket")), CStr(.Item("Client")), CStr(.Item("PNR")), CStr(.Item("Name")), CDbl(.Item("TotalFarePlusTaxes")), CInt(.Item("Pax")), CInt(.Item("NumTickets")))
                 MyBase.Add(pItem)
                 If pItem.TotalFarePlusTaxes < mdblMin(pItem.Level) Then
                     mdblMin(pItem.Level) = pItem.TotalFarePlusTaxes

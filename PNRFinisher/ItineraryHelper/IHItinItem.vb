@@ -86,7 +86,7 @@ Public Class IHItinItem
             Return mudtProps.Level
         End Get
     End Property
-    Public Sub SetValues(ByVal pRouting As String, ByVal pTicketingAirline As String, ByVal pTicket As String, ByVal pClient As String, ByVal pPNR As String _
+    Public Sub SetValues(ByVal pRouting As String, ByVal pTicket As String, ByVal pClient As String, ByVal pPNR As String _
                          , ByVal pPassengerName As String, ByVal pTotalFarePlusTaxes As Double, ByVal pPax As Integer, ByVal pNumTickets As Integer)
         With mudtProps
             .Routing = pRouting
